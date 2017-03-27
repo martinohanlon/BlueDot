@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BlueButton</string>
+    <string name="title_activity_button">Button</string>
+</resources>

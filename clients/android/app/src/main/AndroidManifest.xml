@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.stuffaboutcode.bluedot">
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_bluebutton"
+        android:label="Blue Dot"
+        android:roundIcon="@mipmap/ic_launcher_bluebutton"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".Devices"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Button"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+        <uses-sdk android:minSdkVersion="5" />
+    </application>
+
+</manifest>
