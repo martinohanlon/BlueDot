@@ -153,5 +153,5 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'searchbox.html'], }
 

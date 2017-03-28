@@ -5,6 +5,10 @@ BlueDot is a bluetooth remote and zero boiler plate (super simple to use :) pyth
 
 You can use the Blue Dot app to control your raspberry pi wirelessly using Bluetooth.
 
+## Current Status
+
+Alpha - it works, but expect rough edges and future changes which break compatability.
+
 ## Installation
 
 ### Blue Dot client
@@ -16,7 +20,6 @@ The Blue Dot app is available from the Android Play Store - tbc.
 Open a terminal, click `Menu > Accessories > Terminal`:
 
 ```
-sudo apt-get install python3-dbus
 sudo pip3 install bluedot
 ```
 
@@ -30,13 +33,13 @@ In order to connect the Blue Dot app you will need to pair the client (android p
 
 ### Python program
 
-1. Start up Python 3, click `Menu, Programming, Python 3`
+1. Start up Python 3, click `Menu > Programming > Python 3`
 2. Click `File > New File` to create a new program
 3. Create your python program:
 
 ```python
 from bluedot import BlueDot
-dot = BlueDot
+dot = BlueDot()
 dot.wait_for_press()
 print("You pressed the blue dot!")
 ```

@@ -87,7 +87,7 @@ class BlueDotPosition():
         Returns ``True`` if the BlueDot is pressed, held or released at the bottom.
         """        
         return True if self.distance > 0.5 and (self.angle > 135 or self.angle <= -135) else False
-    
+
     @property
     def left(self):
         """
