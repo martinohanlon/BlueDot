@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stuffaboutcode.bluedot">
+    package="com.stuffaboutcode.bluedot"
+    android:versionName="0.0.1 (alpha)"
+    android:versionCode="1">
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-sdk android:minSdkVersion="5" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +29,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait">
         </activity>
-        <uses-sdk android:minSdkVersion="5" />
     </application>
 
 </manifest>
