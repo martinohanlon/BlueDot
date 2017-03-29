@@ -4,8 +4,11 @@ Getting started
 Installation
 ------------
 
-Blue Dot client
+Blue Dot App
 ~~~~~~~~~~~~~~~
+
+After alpha the Blue Dot app will be available from the Google Play Store - until then you can download `here 
+<https://github.com/martinohanlon/BlueDot/blob/android-dev/clients/android/app/app-release.apk?raw=true>`_.
 
 The Blue Dot app is available from the Android Play Store - tbc.
 
@@ -63,3 +66,6 @@ Blue Dot App
 ~~~~~~~~~~~~
 
 Start the BlueDot app, connect to your Raspberry Pi, press the blue dot. 
+
+
+.. _AppDownload: https://github.com/martinohanlon/BlueDot/blob/android-dev/clients/android/app/app-release.apk?raw=true
