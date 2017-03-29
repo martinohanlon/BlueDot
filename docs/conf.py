@@ -155,3 +155,4 @@ texinfo_documents = [
 
 html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'searchbox.html'], }
 
+suppress_warnings = ['image.nonlocal_uri']
