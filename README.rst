@@ -1,0 +1,46 @@
+Blue Dot
+========
+
+Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
+
+Created by `Martin O'Hanlon<https://github.com/martinohanlon>`_ `stuffaboutco.de<http://stuffaboutco.de>`_.
+
+start
+-----
+
+Getting started is really simple:
+
+1. Download the Blue Dot App
+2. Pair your Raspberry Pi to your Bluetooth device
+3. Install the Python library
+4. Write some code::
+
+    from bluedot import BlueDot
+    dot = BlueDot()
+    dot.wait_for_press()
+    print("You pressed the blue dot!")
+
+5. Press the Blue Dot
+
+See the `getting started<http://bluedot.readthedocs.io/en/latest/gettingstarted.html>`_ guide to 'get started'!
+
+more
+----
+
+The Blue Dot is a joystick as well as button, you can tell if the dot was pressed in the middle, on the top, bottom, left or right.
+
+Why be restricted by such vague positions like top and bottom though, you can get the exact x, y position or even the angle and distance from centre where the dot was pressed.
+
+Its not all about when the button was pressed either - pressed, released or moved they all work.
+
+One blue circle can do a lot.
+
+even more
+---------
+
+The `online documentation<http://bluedot.readthedocs.io/en/latest/>`_ describes how to use Blue Dot and the Python library, be sure to also check out the `examples <https://github.com/martinohanlon/BlueDot/tree/master/examples>`_.
+
+status
+------
+
+Alpha - it works, but expect rough edges and future changes which break compatability.
