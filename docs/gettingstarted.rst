@@ -1,16 +1,16 @@
 Getting started
 ===============
 
-Installation
+installation
 ------------
 
-Blue Dot App
-~~~~~~~~~~~~~~~
+app
+~~~
 
-After alpha the Blue Dot app will be available from the Google Play Store - until then you can download `here 
+After alpha the `Blue Dot app`_ will be available from the Google Play Store - until then you can download `here 
 <https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true>`_.
 
-Python library
+python library
 ~~~~~~~~~~~~~~
 
 Open a terminal, click ``Menu > Accessories > Terminal``::
@@ -18,11 +18,11 @@ Open a terminal, click ``Menu > Accessories > Terminal``::
     sudo apt-get install python3-dbus
     sudo pip3 install bluedot
 
-Usage
+usage
 -----
 
-Pairing
-~~~~~~~
+pair
+~~~~
 
 In order to connect the Blue Dot app you will need to pair the client (android phone) to the Raspberry Pi.
 
@@ -46,8 +46,8 @@ Raspberry Pi
 
 Your Raspberry Pi and Android phone are now paired.
 
-Python program
-~~~~~~~~~~~~~~
+write code
+~~~~~~~~~~
 
 1. Start up Python 3, click ``Menu > Programming > Python 3``
 2. Click ``File > New File`` to create a new program
@@ -60,10 +60,9 @@ Python program
 
 4. Run the program, click ``Run > Run Module`` or press ``F5``
 
-Blue Dot App
-~~~~~~~~~~~~
+connect
+~~~~~~~
 
-Start the BlueDot app, connect to your Raspberry Pi, press the blue dot. 
+Start the `Blue Dot app`_, connect to your Raspberry Pi, press the blue dot. 
 
-
-.. _AppDownload: https://github.com/martinohanlon/BlueDot/blob/android-dev/clients/android/app/app-release.apk?raw=true
+.. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/android-dev/clients/android/app/app-release.apk?raw=true
