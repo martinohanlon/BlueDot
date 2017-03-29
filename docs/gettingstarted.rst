@@ -14,6 +14,7 @@ Python library
 
 Open a terminal, click ``Menu > Accessories > Terminal``::
 
+    sudo apt-get install python3-dbus
     sudo pip3 install bluedot
 
 Usage
