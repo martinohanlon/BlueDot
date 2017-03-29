@@ -3,7 +3,7 @@ Blue Dot
 
 Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
 
-Created by `Martin O'Hanlon<https://github.com/martinohanlon>`_ `stuffaboutco.de<http://stuffaboutco.de>`_.
+Created by `Martin O'Hanlon`_ `stuffaboutco.de`_ `@martinohanlon`_.
 
 start
 -----
@@ -22,7 +22,7 @@ Getting started is really simple:
 
 5. Press the Blue Dot
 
-See the `getting started<http://bluedot.readthedocs.io/en/latest/gettingstarted.html>`_ guide to 'get started'!
+See the `getting started`_ guide to 'get started'!
 
 more
 ----
@@ -44,3 +44,9 @@ status
 ------
 
 Alpha - it works, but expect rough edges and future changes which break compatability.
+
+
+.. _Martin O'Hanlon: https://github.com/martinohanlon
+.. _stuffaboutco.de: https://stuffaboutco.de
+.. _@martinohanlon: https://twitter.com/martinohanlon
+.. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
