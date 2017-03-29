@@ -13,13 +13,14 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 
 ### Blue Dot client
 
-After alpha the Blue Dot app will be available from the Google Play Store - until then you can download [here](https://github.com/martinohanlon/BlueDot/blob/android-dev/clients/android/app/app-release.apk?raw=true).
+After alpha the Blue Dot app will be available from the Google Play Store - until then you can download [here](https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true).
 
 ### Python library
 
 Open a terminal, click `Menu > Accessories > Terminal`:
 
 ```
+sudo apt-get install python3-dbus
 sudo pip3 install bluedot
 ```
 
