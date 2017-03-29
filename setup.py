@@ -33,5 +33,5 @@ setup(name='bluedot',
       author_email = __author_email__,
       license= __license__,
       packages = [__project__],
-      install_requires = __requires__,
+#      install_requires = __requires__,
       zip_safe=False)
