@@ -198,6 +198,14 @@ class BlueDot():
         Returns a 1 if the Blue Dot is pressed, 0 if released.
         """
         return 1 if self.is_pressed else 0
+    
+    @property
+    def values(self):
+        """
+        Returns an infinite generator constantly yielding the current value
+        """
+        while True:
+            yield self.value
 
     @property
     def dot_position(self):
