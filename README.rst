@@ -18,8 +18,8 @@ Getting started is really simple:
 4. Write some code::
 
     from bluedot import BlueDot
-    dot = BlueDot()
-    dot.wait_for_press()
+    bd = BlueDot()
+    bd.wait_for_press()
     print("You pressed the blue dot!")
 
 5. Press the Blue Dot
@@ -52,7 +52,7 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 .. _stuffaboutco.de: https://stuffaboutco.de
 .. _@martinohanlon: https://twitter.com/martinohanlon
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
-.. _online documentation: <http://bluedot.readthedocs.io/en/latest/
+.. _online documentation: http://bluedot.readthedocs.io/en/latest/
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
 
