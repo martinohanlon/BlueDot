@@ -54,8 +54,8 @@ write code
 3. Create your python program::
 
     from bluedot import BlueDot
-    dot = BlueDot()
-    dot.wait_for_press()
+    bd = BlueDot()
+    bd.wait_for_press()
     print("You pressed the blue dot!")
 
 4. Run the program, click ``Run > Run Module`` or press ``F5``
