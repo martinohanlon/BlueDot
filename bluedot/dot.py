@@ -108,8 +108,8 @@ class BlueDot():
     The following example will print a message when the Blue Dot is pressed::
     
         from bluedot import BlueDot
-        dot = BlueDot()
-        dot.wait_for_press()
+        bd = BlueDot()
+        bd.wait_for_press()
         print("The blue dot was pressed")
 
     :param string device:
@@ -181,7 +181,7 @@ class BlueDot():
     @property
     def is_connected(self):
         """
-        Returns ``True`` is a Blue Dot client is connected.
+        Returns ``True`` if a Blue Dot client is connected.
         """
         return self._is_connected_event.is_set()
 
@@ -226,8 +226,8 @@ class BlueDot():
             def dot_was_pressed():
                 print("The Blue Dot was pressed")
                 
-            dot = BlueDot()
-            dot.when_pressed = dot_was_pressed
+            bd = BlueDot()
+            bd.when_pressed = dot_was_pressed
             
         This example shows how the position of where the dot was pressed can be obtained::
         
@@ -236,8 +236,8 @@ class BlueDot():
             def dot_was_pressed(pos):
                 print("The Blue Dot was pressed at pos x={} y={}".format(pos.x, pos.y))
                 
-            dot = BlueDot()
-            dot.when_pressed = dot_was_pressed
+            bd = BlueDot()
+            bd.when_pressed = dot_was_pressed
         
         """
         return self._when_pressed
