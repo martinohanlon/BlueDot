@@ -15,7 +15,7 @@ protocol
 
 The transmission is a 1 way stream between client and server, the server sends no acknowledgements or data to the client.
 
-The message between client and server conforms to the same format::
+All messages between client and server conforms to the same format::
 
     [operation],[x],[y]\n
 
