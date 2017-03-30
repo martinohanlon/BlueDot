@@ -13,8 +13,8 @@ hello world
 When the Blue Dot is pressed, lets say Hello World::
 
     from bluedot import BlueDot
-    dot = BlueDot()
-    dot.wait_for_press()
+    bd = BlueDot()
+    bd.wait_for_press()
     print("Hello World")
 
 Alternatively you can also use ``when_pressed`` to call a function::
@@ -24,8 +24,8 @@ Alternatively you can also use ``when_pressed`` to call a function::
     def say_hello():
         print("Hello World")
 
-    dot = BlueDot()
-    dot.when_pressed = say_hello
+    bd = BlueDot()
+    bd.when_pressed = say_hello
 
 ``wait_for_release()`` and ``when_released`` also allow you to interact when the Blue Dot is released::
 
@@ -37,9 +37,9 @@ Alternatively you can also use ``when_pressed`` to call a function::
     def say_goodbye():
         print("goodbye")
 
-    dot = BlueDot()
-    dot.when_pressed = say_hello
-    dot.when_released = say_goodbye
+    bd = BlueDot()
+    bd.when_pressed = say_hello
+    bd.when_released = say_goodbye
 
 flash an led
 ~~~~~~~~~~~~
@@ -51,13 +51,13 @@ When the Blue Dot is pressed, the LED will turn on, when released it will turn o
     from bluedot import BlueDot
     from gpiozero import LED
 
-    dot = BlueDot()
+    bd = BlueDot()
     led = LED(pin)
 
-    dot.wait_for_press()
+    bd.wait_for_press()
     led.on()
 
-    dot.wait_for_release()
+    bd.wait_for_release()
     led.off()
 
 Alternatively::
@@ -65,12 +65,11 @@ Alternatively::
     from bluedot import BlueDot
     from gpiozero import LED
 
-    dot = BlueDot()
+    bd = BlueDot()
     led = LED(pin)
 
-    dot.when_pressed = led.on
-
-    dot.when_released = led.off
+    bd.when_pressed = led.on
+    bd.when_released = led.off
 
 remote camera
 ~~~~~~~~~~~~~
@@ -80,13 +79,13 @@ Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily crea
     from bluedot import BlueDot
     from picamera import PiCamera
     
-    dot = BlueDot()
+    bd = BlueDot()
     cam = PiCamera()
 
     def take_picture():
         cam.capture("pic.jpg")
 
-    dot.when_pressed = take_picture
+    bd.when_pressed = take_picture
 
 joystick
 --------
