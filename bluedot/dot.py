@@ -331,6 +331,7 @@ class BlueDot():
     def wait_for_press(self, timeout = None):
         """
         Waits until a Blue Dot is pressed. 
+        Returns ``True`` if the Blue Dot was pressed. 
 
         :param float timeout:
             Number of seconds to wait for a Blue Dot to be pressed, if ``None`` (the default), 
@@ -341,6 +342,7 @@ class BlueDot():
     def wait_for_release(self, timeout = None):
         """
         Waits until a Blue Dot is released. 
+        Returns ``True`` if the Blue Dot was released. 
 
         :param float timeout:
             Number of seconds to wait for a Blue Dot to be released, if ``None`` (the default), 
@@ -351,6 +353,7 @@ class BlueDot():
     def wait_for_move(self, timeout = None):
         """
         Waits until the position where the Blue Dot is pressed is moved. 
+        Returns ``True`` if the position pressed on the Blue Dot was moved. 
 
         :param float timeout:
             Number of seconds to wait for the position that the Blue Dot is pressed to move, if ``None`` (the default), 
