@@ -19,10 +19,13 @@ class BlueDotPosition():
         and 1 being at the top. 
     """
     def __init__(self, x, y):
-        self._x = float(x)
-        self._y = float(y)
+        self._x = self._clamped(float(x))
+        self._y = self._clamped(float(y))
         self._angle = None
         self._distance = None
+        
+    def _clamped(self, v):                                                                 
+        return max(-1, min(1, v))
         
     @property
     def x(self):
@@ -149,7 +152,7 @@ class BlueDot():
         self._when_released = None
         self._when_moved = None
 
-        self._dot_position = None
+        self._position = None
 
         self._server = None
 
@@ -198,18 +201,26 @@ class BlueDot():
         Returns a 1 if the Blue Dot is pressed, 0 if released.
         """
         return 1 if self.is_pressed else 0
+        
+    @property
+    def values(self):
+        """
+        Returns an infinite generator constantly yielding the current value
+        """
+        while True:
+            yield self.value
 
     @property
-    def dot_position(self):
+    def position(self):
         """
         Returns an instance of BlueDotPosition representing the last 
         position the Blue Dot was pressed or released. 
         
-        Note - if the Blue Dot is released (and inactive), the dot_position 
+        Note - if the Blue Dot is released (and inactive), the position 
         will continue to hold the position when it was released, until
         it is pressed again.
         """
-        return self._dot_position
+        return self._position
 
     @property
     def when_pressed(self):
@@ -371,7 +382,7 @@ class BlueDot():
 
     def _data_received(self, data):
         #add the data received to the buffer
-        self._data_buffer += str(data, 'utf-8')
+        self._data_buffer += data.decode('utf-8')
         
         #get any full commands ended by \n
         last_command = self._data_buffer.rfind("\n")
@@ -385,7 +396,7 @@ class BlueDot():
         
         for command in commands:
             operation, x, y = command.split(",")
-            self._dot_position = BlueDotPosition(x, y)
+            self._position = BlueDotPosition(x, y)
         
             #dot released
             if operation == "0":
@@ -396,7 +407,7 @@ class BlueDot():
                     if len(getargspec(self.when_released).args) == 0:
                         self.when_released()
                     else:
-                        self.when_released(self._dot_position)
+                        self.when_released(self._position)
     
             #dot pressed
             elif operation == "1":
@@ -407,13 +418,13 @@ class BlueDot():
                     if len(getargspec(self.when_pressed).args) == 0:
                         self.when_pressed()
                     else:
-                        self.when_pressed(self._dot_position)
+                        self.when_pressed(self._position)
 
             #dot pressed position moved
             elif operation == "2":
                 self._is_moved_event.set()
                 if self.when_moved:
-                    self.when_moved(self._dot_position)
+                    self.when_moved(self._position)
                 self._is_moved_event.clear()
                 
     def _print_message(self, message):

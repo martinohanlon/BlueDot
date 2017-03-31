@@ -10,7 +10,7 @@ Created by `Martin O'Hanlon`_, `@martinohanlon`_, `stuffaboutco.de`_.
 start
 -----
 
-Getting started is really simple:
+`Install and usage`_ is really simple:
 
 1. Download the `Blue Dot app`_
 2. Pair your Raspberry Pi to your Bluetooth device
@@ -52,12 +52,13 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 .. _stuffaboutco.de: https://stuffaboutco.de
 .. _@martinohanlon: https://twitter.com/martinohanlon
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
+.. _Install and usage: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _online documentation: http://bluedot.readthedocs.io/en/latest/
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
 
-.. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid.png
-   :height: 1231 px
-   :width: 719 px
-   :scale: 20 %
+.. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
+   :height: 247 px
+   :width: 144 px
+   :scale: 100 %
    :alt: blue dot app

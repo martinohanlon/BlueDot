@@ -1,8 +1,14 @@
 import socket
+import sys
 from time import sleep
 
 from .threads import WrapThread
 from .utils import register_spp, get_mac
+
+if sys.version_info[0] > 2:
+    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError)
+else:
+    BLUETOOTH_EXCEPTIONS = (IOError)
 
 BLUETOOTH_TIMEOUT = 0.01
 
@@ -141,9 +147,7 @@ class BluetoothServer():
             data = ""
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except BlockingIOError as e:
-                self._handle_bt_error(e)
-            except ConnectionResetError as e:
+            except BLUETOOTH_EXCEPTIONS as e:
                 self._handle_bt_error(e)
             if len(data) > 0:
                 #print("received [%s]" % data)
