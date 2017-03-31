@@ -18,6 +18,11 @@ Open a terminal, click ``Menu > Accessories > Terminal``::
     sudo apt-get install python3-dbus
     sudo pip3 install bluedot
 
+If you want to use bluedot with Python 2 (there really is no need though!)::
+
+    sudo apt-get install python-dbus
+    sudo pip install bluedot
+
 usage
 -----
 
@@ -54,8 +59,8 @@ write code
 3. Create your python program::
 
     from bluedot import BlueDot
-    dot = BlueDot()
-    dot.wait_for_press()
+    bd = BlueDot()
+    bd.wait_for_press()
     print("You pressed the blue dot!")
 
 4. Run the program, click ``Run > Run Module`` or press ``F5``

@@ -7,5 +7,6 @@ Table of Contents
    :maxdepth: 2
 
    gettingstarted
+   recipes
    code
    protocol
