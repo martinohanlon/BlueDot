@@ -20,7 +20,7 @@ Open a terminal, click ``Menu > Accessories > Terminal``::
 
 If you want to use bluedot with Python 2 (there really is no need though!)::
 
-    sudo apt-get install python3-dbus
+    sudo apt-get install python-dbus
     sudo pip install bluedot
 
 usage

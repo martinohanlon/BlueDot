@@ -60,7 +60,7 @@ When the Blue Dot is pressed, the LED will turn on, when released it will turn o
     bd.wait_for_release()
     led.off()
 
-Alternatively::
+You could also use ``when_pressed`` and ``when_released``::
 
     from bluedot import BlueDot
     from gpiozero import LED
@@ -70,6 +70,16 @@ Alternatively::
 
     bd.when_pressed = led.on
     bd.when_released = led.off
+
+Alternatively use ``LED.source`` and ``BlueDot.values``::
+
+    from bluedot import BlueDot
+    from gpiozero import LED
+
+    bd = BlueDot()
+    led = LED(pin)
+
+    led.source = bd.values
 
 remote camera
 ~~~~~~~~~~~~~
@@ -126,7 +136,6 @@ fade an led
 ~~~~~~~~~~~
 
 to come
-
 
 .. _gpiozero: https://gpiozero.readthedocs.io
 .. _picamera: https://picamera.readthedocs.io
