@@ -40,7 +40,7 @@ One blue circle can do a lot.
 even more
 ---------
 
-The `online documentation`_ describes how to use Blue Dot and the Python library, be sure to also check out the `examples`_.
+The `online documentation`_ describes how to use Blue Dot and the `Python library`_, be sure to also check out the `recipes`_.
 
 status
 ------
@@ -54,7 +54,9 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _Install and usage: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _online documentation: http://bluedot.readthedocs.io/en/latest/
+.. _Python library: http://bluedot.readthedocs.io/en/latest/code.html
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
+.. _recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
 .. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
