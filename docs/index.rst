@@ -10,3 +10,4 @@ Table of Contents
    recipes
    code
    protocol
+   changelog
