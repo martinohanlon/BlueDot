@@ -4,7 +4,7 @@ from threading import Event
 from math import atan2, degrees, hypot
 from inspect import getargspec
 
-from .server import BluetoothServer, MockBluetoothServer
+from .server import BluetoothServer
 
 class BlueDotPosition():
     """
@@ -432,16 +432,3 @@ class BlueDot():
     def _print_message(self, message):
         if self.print_messages:
             print(message)
-
-class MockBlueDot(BlueDot):
-    """
-    MockBlueDot inherits from BlueDot but overrides create server, to create
-    a MockBluetoothServer which can be used for testing.
-    """
-    def _create_server(self):
-        self._server = MockBluetoothServer(
-                self._data_received, 
-                when_client_connects = self._client_connected,
-                when_client_disconnects = self._client_disconnected,
-                device = self.device,
-                port = self.port)
