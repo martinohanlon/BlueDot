@@ -27,6 +27,7 @@ android app
 ~~~~~~~~~~~~~~~~~~~~~~
 
  * icon transparency
+ * connection monitor
 
 0.0.1 - 2017-03-29
 ~~~~~~~~~~~~~~~~~~
