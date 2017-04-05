@@ -305,20 +305,22 @@ class BlueDot():
         Start the BluetoothServer if it is not already running. By default the server is started at
         initialisation.
         """
-
         if self._server == None:
-            self._server = BluetoothServer(
-                self._data_received, 
-                when_client_connects = self._client_connected,
-                when_client_disconnects = self._client_disconnected,
-                device = self.device,
-                port = self.port)
+            self._create_server()
 
             self._print_message("Server started {}".format(self.server.server_address))
             self._print_message("Waiting for connection")
         else:
             pass
             #should i raise an error if the server is already running?
+
+    def _create_server(self):
+        self._server = BluetoothServer(
+                self._data_received, 
+                when_client_connects = self._client_connected,
+                when_client_disconnects = self._client_disconnected,
+                device = self.device,
+                port = self.port)
 
     def stop(self):
         """

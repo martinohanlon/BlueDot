@@ -174,3 +174,4 @@ class BluetoothServer():
                 self.when_client_disconnects()
             return
         raise bt_error
+

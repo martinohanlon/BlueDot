@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.content.Intent;
 import android.widget.ArrayAdapter;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.view.View;
+import android.net.Uri;
 
 import java.util.Set;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 public class Devices extends AppCompatActivity {
 
     ListView devicelist;
+    ImageButton infoButton;
 
     private BluetoothAdapter myBluetooth = null;
     private Set<BluetoothDevice> pairedDevices;
@@ -30,6 +33,7 @@ public class Devices extends AppCompatActivity {
         setContentView(R.layout.activity_devices);
 
         devicelist = (ListView)findViewById(R.id.listView);
+        infoButton = (ImageButton) findViewById(R.id.infoButton);
 
         //if the device has bluetooth
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -45,6 +49,14 @@ public class Devices extends AppCompatActivity {
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnBTon,1);
         }
+
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Uri uri = Uri.parse("http://bluedot.readthedocs.io");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
 
         pairedDevicesList();
 

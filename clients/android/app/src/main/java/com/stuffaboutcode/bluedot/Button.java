@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.AsyncTask;
@@ -25,6 +24,7 @@ public class Button extends AppCompatActivity {
     BluetoothAdapter myBluetooth = null;
     BluetoothSocket btSocket = null;
     private boolean isBtConnected = false;
+    private boolean connectionLost = false;
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private ProgressDialog progress;
@@ -63,6 +63,7 @@ public class Button extends AppCompatActivity {
                 return false;
             }
         });
+
     }
 
     private String buildMessage(String operation, View roundButton, MotionEvent event) {
@@ -87,6 +88,7 @@ public class Button extends AppCompatActivity {
     private void Disconnect() {
         if (btSocket!=null) {
             try {
+                isBtConnected = false;
                 btSocket.close();
             } catch (IOException e) {
                 msg("Error");
@@ -135,8 +137,46 @@ public class Button extends AppCompatActivity {
             } else {
                 msg("Connected to " + deviceName);
                 isBtConnected = true;
+                // start the connection monitor
+                new MonitorConnection().execute();
             }
             progress.dismiss();
+        }
+    }
+
+    private class MonitorConnection extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... devices) {
+            while (!connectionLost) {
+                try {
+                    //read from the buffer, when this errors the connection is lost
+                    // this was the only reliable way I found of monitoring the connection
+                    // .isConnected didnt work
+                    // BluetoothDevice.ACTION_ACL_DISCONNECTED didnt fire
+                    btSocket.getInputStream().read();
+                } catch (IOException e) {
+                    connectionLost = true;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            // if the bt is still connected, the connection must have been lost
+            if (isBtConnected) {
+                try {
+                    isBtConnected = false;
+                    btSocket.close();
+                } catch (IOException e) {
+                    // nothing doing, we are ending anyway!
+                }
+                Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_LONG).show();
+                finish();
+            }
         }
     }
 
