@@ -4,7 +4,7 @@ Changelog
 bluedot python library
 ----------------------
 
-0.0.5 - 2017-04-05
+0.0.6 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 
  * Added MockBlueDot for testing and debugging
