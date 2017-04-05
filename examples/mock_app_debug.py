@@ -1,4 +1,4 @@
-from bluedot.mock import MockBlueDot
+from bluedot import MockBlueDot
 from time import sleep
 
 dot = MockBlueDot(auto_start_server = False)

@@ -4,10 +4,11 @@ Changelog
 bluedot python library
 ----------------------
 
-0.0.5 - <still in dev>
+0.0.5 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Added MockBlueDot for testing
+ * Added MockBlueDot for testing and debugging
+ * more docs
 
 0.0.4 - 2017-03-31
 ~~~~~~~~~~~~~~~~~~
@@ -28,7 +29,7 @@ Alpha - initial testing
 android app
 -----------
 
-0.0.2 - <still in dev>
+0.0.2 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 
  * icon transparency
