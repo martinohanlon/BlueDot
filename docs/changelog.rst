@@ -8,6 +8,7 @@ bluedot python library
 ~~~~~~~~~~~~~~~~
 
  * Check Bluetooth adapter is powered
+ * Handle client connection timeouts 
 
 0.0.6 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -1,5 +1,5 @@
 from bluedot import BlueDot
-from time import sleep
+from time import sleep, time
 
 dot = BlueDot(auto_start_server = False)
 
@@ -13,9 +13,13 @@ def released():
 def moved(pos):
     print("Moved: x-{} y-{}".format(pos.x, pos.y))
 
-dot.when_pressed = pressed
-dot.when_released = released
-dot.when_moved = moved
+def log_time():
+    print("logged: {}".format(time()))
+
+dot.when_pressed = log_time
+#dot.when_pressed = pressed
+#dot.when_released = released
+#dot.when_moved = moved
 dot.start()
 dot.wait_for_connection()
 

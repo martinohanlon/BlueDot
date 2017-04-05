@@ -6,7 +6,7 @@ from .threads import WrapThread
 from .utils import register_spp, get_mac, get_adapter_powered_status
 
 if sys.version_info[0] > 2:
-    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError)
+    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError, TimeoutError)
 else:
     BLUETOOTH_EXCEPTIONS = (IOError)
 
@@ -172,6 +172,13 @@ class BluetoothServer():
             return
         #'connection reset' is caused when the client disconnects
         if str(bt_error) == "[Errno 104] Connection reset by peer":
+            self._client_connected = False
+            if self.when_client_disconnects:
+                self.when_client_disconnects()
+            return
+        #'conection timeout' is caused when the server can no longer connect to read from the client
+        # (perhaps the client has gone out of range)
+        if str(bt_error) == "[Errno 110] Connection timed out"
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
