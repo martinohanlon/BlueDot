@@ -4,6 +4,11 @@ Changelog
 bluedot python library
 ----------------------
 
+0.0.7 - <in dev>
+~~~~~~~~~~~~~~~~
+
+ * Check Bluetooth adapter is powered
+
 0.0.6 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 

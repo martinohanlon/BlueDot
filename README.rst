@@ -49,7 +49,7 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 
 
 .. _Martin O'Hanlon: https://github.com/martinohanlon
-.. _stuffaboutco.de: https://stuffaboutco.de
+.. _stuffaboutco.de: http://stuffaboutco.de
 .. _@martinohanlon: https://twitter.com/martinohanlon
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _Install and usage: http://bluedot.readthedocs.io/en/latest/gettingstarted.html

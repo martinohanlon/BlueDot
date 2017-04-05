@@ -32,6 +32,13 @@ def get_mac(device_name):
     addr = adapter.Get(ADAPTER_INTERFACE, "Address")
     return addr
 
+def get_adapter_powered_status(device_name):
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
+    powered = adapter.Get(ADAPTER_INTERFACE, "Powered")
+    return True if powered else False
+
 def register_spp():
 
     service_record = """
