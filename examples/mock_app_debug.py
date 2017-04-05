@@ -17,15 +17,14 @@ dot.when_pressed = pressed
 dot.when_released = released
 dot.when_moved = moved
 dot.start()
-dot.mock_client_connected()
-dot.wait_for_connection()
+dot.launch_mock_app()
 
 try:
     while True:
-        dot.mock_blue_dot_pressed(1.0,1.0)
-        dot.mock_blue_dot_moved(0.5,1.0)
-        dot.mock_blue_dot_released(0.5,1.0)
-        sleep(0.1)
+        #dot.mock_blue_dot_pressed(1.0,1.0)
+        #dot.mock_blue_dot_moved(0.5,1.0)
+        #dot.mock_blue_dot_released(0.5,1.0)
+        sleep(1)
 finally:
     dot.mock_client_disconnected()
     dot.stop()
