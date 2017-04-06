@@ -178,7 +178,7 @@ class BluetoothServer():
             return
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
-        if str(bt_error) == "[Errno 110] Connection timed out"
+        if str(bt_error) == "[Errno 110] Connection timed out":
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
