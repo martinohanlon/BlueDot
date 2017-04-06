@@ -4,7 +4,7 @@ Getting started
 installation
 ------------
 
-The instructions below assume your Raspberry Pi is running the latest version of `Raspbian`_.
+These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
 
 app
 ~~~

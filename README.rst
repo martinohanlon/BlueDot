@@ -3,7 +3,7 @@ Blue Dot
 
 Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
 
-|bluedotapp|
+|bluedotfeature| |bluedotapp|
 
 Created by `Martin O'Hanlon`_, `@martinohanlon`_, `stuffaboutco.de`_.
 
@@ -40,13 +40,12 @@ One blue circle can do a lot.
 even more
 ---------
 
-The `online documentation`_ describes how to use Blue Dot and the `Python library`_, be sure to also check out the `recipes`_.
+The `online documentation`_ describes how to use Blue Dot and the `Python library`_; be sure to also check out the `recipes`_.
 
 status
 ------
 
-Alpha - it works, but expect rough edges and future changes which break compatability.
-
+Beta - it works well, the api is stable but errors maybe experienced for edge cases. Be sure to raise an `issue`_ if you experience problems.
 
 .. _Martin O'Hanlon: https://github.com/martinohanlon
 .. _stuffaboutco.de: http://stuffaboutco.de
@@ -58,9 +57,16 @@ Alpha - it works, but expect rough edges and future changes which break compatab
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
 .. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
+.. _issue: https://github.com/martinohanlon/bluedot/issues
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
    :height: 247 px
    :width: 144 px
    :scale: 100 %
    :alt: blue dot app
+
+.. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature.png
+   :height: 247 px
+   :width: 506 px
+   :scale: 100 %
+   :alt: blue dot feature
