@@ -93,11 +93,10 @@ Alternatively use ``LED.source`` and ``BlueDot.values``::
 
     pause()
 
-
 remote camera
 ~~~~~~~~~~~~~
 
-Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily create a remote camera ::
+Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily create a remote camera::
 
     from bluedot import BlueDot
     from picamera import PiCamera
@@ -121,7 +120,7 @@ The Blue Dot can also be used as a joystick when the middle, top, bottom, left o
 d pad
 ~~~~~
 
-Using the position the BlueDot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick ::
+Using the position the BlueDot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
 
     from bluedot import BlueDot
     from signal import pause
@@ -141,7 +140,7 @@ Using the position the BlueDot was pressed you can work out whether it was press
 
     pause()
 
-At the moment the dpad on registers a movement when it is pressed, to get it work when the position is moved you should add ::
+At the moment the dpad only registers when it is pressed, to get it work when the position is moved you should add::
 
     bd.when_moved = dpad
 
@@ -178,13 +177,13 @@ to come
 testing
 -------
 
-bluedot includes a MockBlueDot class to allow you to test and debug your programming without having to use bluetooth or a Blue Dot client.
+bluedot includes a MockBlueDot class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
 
 MockBlueDot inherits from BlueDot and is used in the same way, but you have the option of launching a mock app which you can click with a mouse or writing scripts to simulate the Blue Dot being used.
 
 |mockbluedot|
 
-The mock app uses pygame, which you may need to install ::
+The mock app uses pygame, which is installed with Raspbian, but you can install using::
 
     sudo apt-get install python3-pygame
 
@@ -195,7 +194,7 @@ Or if you are using Python 2 ::
 mock app
 ~~~~~~~~
 
-Launch the mock Blue Dot app to test by clicking the on-screen dot with the mouse ::
+Launch the mock Blue Dot app to test by clicking the on-screen dot with the mouse::
 
     from bluedot import MockBlueDot
 
@@ -210,7 +209,7 @@ Launch the mock Blue Dot app to test by clicking the on-screen dot with the mous
 scripted tests
 ~~~~~~~~~~~~~~
 
-Tests can also be scripted using MockBlueDot ::
+Tests can also be scripted using MockBlueDot::
 
     from bluedot import MockBlueDot
 

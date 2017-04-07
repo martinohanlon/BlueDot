@@ -4,6 +4,8 @@ Getting started
 installation
 ------------
 
+These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
+
 app
 ~~~
 
@@ -31,23 +33,25 @@ pair
 
 In order to connect the Blue Dot app you will need to pair the client (android phone) to the Raspberry Pi.
 
+On your Android phone
+
+1. Open Settings
+2. Select Bluetooth 
+3. This will make your phone Discoverable
+
 Using your Raspberry Pi
 
 1. Click the bluetooth icon on the taskbar
 2. Turn on Bluetooth (if its off)
 3. Click `Make Discoverable`
+4. Click Add Device
+5. Your phone will appear in the list, select it and click Pair
+6. Enter a PIN code
 
 On your Android phone
 
-1. Open Settings
-2. Select Bluetooth
-3. Your Raspberry Pi will appear in the `Available devices` list
-4. Select your Raspberry Pi, and click Pair
-
-Raspberry Pi
-
-1. Agree to the pairing request
-2. (You may receive and error  relating to no services being available - this can be ignored)
+1. Enter the same PIN code when prompter
+2. Click Ok
 
 Your Raspberry Pi and Android phone are now paired.
 
@@ -72,3 +76,4 @@ Start the `Blue Dot app`_, connect to your Raspberry Pi, press the blue dot.
 
 .. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
 .. _installation from unknown sources: https://www.applivery.com/docs/troubleshooting/android-unknown-sources
+.. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/

@@ -4,6 +4,13 @@ Changelog
 bluedot python library
 ----------------------
 
+0.1.0 - 2017-04-07
+~~~~~~~~~~~~~~~~
+
+ * Check Bluetooth adapter is powered
+ * Handle client connection timeouts 
+ * Docs & image updates
+
 0.0.6 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 

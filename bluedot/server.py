@@ -3,10 +3,10 @@ import sys
 from time import sleep
 
 from .threads import WrapThread
-from .utils import register_spp, get_mac
+from .utils import register_spp, get_mac, get_adapter_powered_status
 
 if sys.version_info[0] > 2:
-    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError)
+    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError, TimeoutError)
 else:
     BLUETOOTH_EXCEPTIONS = (IOError)
 
@@ -16,12 +16,12 @@ class BluetoothServer():
 
     def __init__(self, 
         data_received_callback, 
-		auto_start = True, 
-		device = "hci0", 
+        auto_start = True, 
+        device = "hci0", 
         port = 1,
-		when_client_connects = None, 
-		when_client_disconnects = None):
-        
+        when_client_connects = None, 
+        when_client_disconnects = None):
+
         self._data_received_callback = data_received_callback
         self._device = device
         self._port = port
@@ -36,6 +36,9 @@ class BluetoothServer():
         self._client_sock = None
         
         self._conn_thread = None
+
+        if not get_adapter_powered_status(self.device):
+            raise Exception("Bluetooth device {} is turned off".format(self.device))
 
         if auto_start:
             self.start()
@@ -169,6 +172,13 @@ class BluetoothServer():
             return
         #'connection reset' is caused when the client disconnects
         if str(bt_error) == "[Errno 104] Connection reset by peer":
+            self._client_connected = False
+            if self.when_client_disconnects:
+                self.when_client_disconnects()
+            return
+        #'conection timeout' is caused when the server can no longer connect to read from the client
+        # (perhaps the client has gone out of range)
+        if str(bt_error) == "[Errno 110] Connection timed out":
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
