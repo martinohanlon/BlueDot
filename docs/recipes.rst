@@ -140,7 +140,7 @@ Using the position the BlueDot was pressed you can work out whether it was press
 
     pause()
 
-At the moment the dpad on registers a movement when it is pressed, to get it work when the position is moved you should add::
+At the moment the dpad only registers when it is pressed, to get it work when the position is moved you should add::
 
     bd.when_moved = dpad
 
@@ -177,13 +177,13 @@ to come
 testing
 -------
 
-bluedot includes a MockBlueDot class to allow you to test and debug your programming without having to use bluetooth or a Blue Dot client.
+bluedot includes a MockBlueDot class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
 
 MockBlueDot inherits from BlueDot and is used in the same way, but you have the option of launching a mock app which you can click with a mouse or writing scripts to simulate the Blue Dot being used.
 
 |mockbluedot|
 
-The mock app uses pygame, which you may need to install::
+The mock app uses pygame, which is installed with Raspbian, but you can install using::
 
     sudo apt-get install python3-pygame
 
