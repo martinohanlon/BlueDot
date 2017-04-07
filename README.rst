@@ -65,7 +65,7 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
    :scale: 100 %
    :alt: blue dot app
 
-.. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature.png
+.. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature_small.png
    :height: 247 px
    :width: 506 px
    :scale: 100 %
