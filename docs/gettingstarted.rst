@@ -9,8 +9,8 @@ These instructions assume your Raspberry Pi is running the latest version of `Ra
 app
 ~~~
 
-After alpha the `Blue Dot app`_ will be available from the Google Play Store - until then you can download `here 
-<https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true>`_. You will have to enable `installation from unknown sources`_ in order to do so.
+The `Blue Dot app`_ is available from the Google Play Store `here 
+<https://play.google.com/apps/testing/com.stuffaboutcode.bluedot>`_.
 
 python library
 ~~~~~~~~~~~~~~
@@ -74,6 +74,5 @@ connect
 
 Start the `Blue Dot app`_, connect to your Raspberry Pi, press the blue dot. 
 
-.. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
-.. _installation from unknown sources: https://www.applivery.com/docs/troubleshooting/android-unknown-sources
+.. _Blue Dot app: https://play.google.com/apps/testing/com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/

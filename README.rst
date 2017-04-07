@@ -56,7 +56,7 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
 .. _Python library: http://bluedot.readthedocs.io/en/latest/code.html
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
-.. _Blue Dot app: https://github.com/martinohanlon/BlueDot/blob/master/clients/android/app/app-release.apk?raw=true
+.. _Blue Dot app: https://play.google.com/apps/testing/com.stuffaboutcode.bluedot
 .. _issue: https://github.com/martinohanlon/bluedot/issues
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
