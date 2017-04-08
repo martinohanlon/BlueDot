@@ -178,7 +178,65 @@ Using the Blue Dot and `gpiozero`_, we can create a bluetooth controlled robot w
 variable speed robot
 ~~~~~~~~~~~~~~~~~~~~
 
-to come
+By using ``pos.distance`` we can change the robot to use variable speeds, so the further towards the edge you press the Blue Dot, the faster the robot will go.  
+
+``distance`` returns how far from the centre the Blue Dot was pressed, which can be passed to the robot's functions to change its speed.
+
+    from bluedot import BlueDot
+    from gpiozero import Robot
+    from signal import pause
+
+    bd = BlueDot()
+    robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
+
+    def move(pos):
+        if pos.top:
+            robot.forward(pos.distance)
+        elif pos.bottom:
+            robot.backward(pos.distance)
+        elif pos.left:
+            robot.left(pos.distance)
+        elif pos.right:
+            robot.right(pos.distance)
+
+    def stop():
+        robot.stop()
+
+    bd.when_pressed = move
+    bd.when_moved = move
+    bd.when_released = stop
+
+    pause()
+
+Alternatively you can use a generator and yield results to Robot's source property (courtesy of `Ben Nuttall`_)::
+
+    from gpiozero import Robot
+    from bluedot import BlueDot
+    from signal import pause
+
+    def pos_to_values(x, y):
+        left = y if x > 0 else y + x
+        right = y if x < 0 else y - x
+        return (clamped(left), clamped(right))
+
+    def clamped(v):
+        return max(-1, min(1, v))
+
+    def drive():
+        while True:
+            if bd.is_pressed:
+                x, y = bd.position.x, bd.position.y
+                yield pos_to_values(x, y)
+            else:
+                yield (0, 0)
+
+    if __name__ == '__main__':
+        robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
+        bd = BlueDot()
+
+        robot.source = drive()
+
+        pause()
 
 slider
 ------
@@ -249,6 +307,7 @@ Tests can also be scripted using MockBlueDot::
 
 .. _gpiozero: https://gpiozero.readthedocs.io
 .. _picamera: https://picamera.readthedocs.io
+.. _Ben Nuttall: https://github.com/bennuttall
 
 .. |mockbluedot| image:: images/mockbluedot.png
    :alt: mock blue dot app
