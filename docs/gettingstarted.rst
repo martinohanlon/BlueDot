@@ -6,6 +6,8 @@ installation
 
 These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
 
+You will need a Raspberry Pi with built-in Bluetooth (such as the Pi 3 or Pi Zero W) or Raspberry Pi and a USB bluetooth dongle.
+
 app
 ~~~
 
@@ -50,7 +52,7 @@ Using your Raspberry Pi
 
 On your Android phone
 
-1. Enter the same PIN code when prompter
+1. Enter the same PIN code when prompted
 2. Click Ok
 
 Your Raspberry Pi and Android phone are now paired.
@@ -72,7 +74,7 @@ write code
 connect
 ~~~~~~~
 
-Start the `Blue Dot app`_, connect to your Raspberry Pi, press the blue dot. 
+Start the `Blue Dot app`_, select your Raspberry Pi from the list to connect, press the blue dot. 
 
 .. _Blue Dot app: https://play.google.com/apps/testing/com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
