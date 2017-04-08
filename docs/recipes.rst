@@ -147,7 +147,7 @@ At the moment the dpad only registers when it is pressed, to get it work when th
 robot
 ~~~~~
 
-Using the Blue Dot and `gpiozero`_, we can create a bluetooth controlled robot which moves when the dot is pressed and stops when it is released::
+Using the Blue Dot and `gpiozero`_, you can create a bluetooth controlled robot which moves when the dot is pressed and stops when it is released::
 
     from bluedot import BlueDot
     from gpiozero import Robot
@@ -178,9 +178,9 @@ Using the Blue Dot and `gpiozero`_, we can create a bluetooth controlled robot w
 variable speed robot
 ~~~~~~~~~~~~~~~~~~~~
 
-By using ``pos.distance`` we can change the robot to use variable speeds, so the further towards the edge you press the Blue Dot, the faster the robot will go.  
+You can change the robot to use variable speeds, so the further towards the edge you press the Blue Dot, the faster the robot will go.
 
-``distance`` returns how far from the centre the Blue Dot was pressed, which can be passed to the robot's functions to change its speed.
+``distance`` returns how far from the centre the Blue Dot was pressed, which can be passed to the robot's functions to change its speed::
 
     from bluedot import BlueDot
     from gpiozero import Robot
@@ -208,7 +208,7 @@ By using ``pos.distance`` we can change the robot to use variable speeds, so the
 
     pause()
 
-Alternatively you can use a generator and yield results to Robot's source property (courtesy of `Ben Nuttall`_)::
+Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's source property (courtesy of `Ben Nuttall`_)::
 
     from gpiozero import Robot
     from bluedot import BlueDot

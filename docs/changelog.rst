@@ -4,6 +4,11 @@ Changelog
 bluedot python library
 ----------------------
 
+0.1.1 - 2017-04-08
+~~~~~~~~~~~~~~~~~~
+
+ * clamped distance in BlueDotPosition
+
 0.1.0 - 2017-04-07
 ~~~~~~~~~~~~~~~~
 
@@ -36,14 +41,14 @@ Alpha - initial testing
 android app
 -----------
 
-0.0.2 - 2017-04-05
+1.0 (0.0.2) - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~
 
  * icon transparency
  * connection monitor
  * added info icon to bluedot.readthedocs.io
 
-0.0.1 - 2017-03-29
+0.0 (0.0.1) - 2017-03-29
 ~~~~~~~~~~~~~~~~~~
 
 Alpha - initial testing
