@@ -4,6 +4,11 @@ Changelog
 bluedot python library
 ----------------------
 
+in dev
+~~~~~~
+
+ * clamped distance in BlueDotPosition
+
 0.1.0 - 2017-04-07
 ~~~~~~~~~~~~~~~~
 

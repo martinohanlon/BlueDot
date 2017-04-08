@@ -208,7 +208,7 @@ By using ``pos.distance`` we can change the robot to use variable speeds, so the
 
     pause()
 
-Alternatively you can use a generator and yield results to Robot's source property (courtesy of `Ben Nuttall`_)::
+Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's source property (courtesy of `Ben Nuttall`_)::
 
     from gpiozero import Robot
     from bluedot import BlueDot

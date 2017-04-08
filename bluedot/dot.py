@@ -60,7 +60,7 @@ class BlueDotPosition():
         The radius of the Blue Dot is 1.
         """
         if self._distance == None:
-            self._distance = hypot(self.x, self.y)
+            self._distance = self._clamped(hypot(self.x, self.y))
         return self._distance
 
     @property
