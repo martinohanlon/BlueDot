@@ -69,7 +69,10 @@ write code
     bd.wait_for_press()
     print("You pressed the blue dot!")
 
-4. Run the program, click ``Run > Run Module`` or press ``F5``
+4. Save your program, click ``File > Save As`` and save as ``mydot.py``
+5. Run the program, click ``Run > Run Module`` or press ``F5``
+
+Note - do not save your program as ``bluedot.py`` as Python will try and import your program rather than the bluedot module and you will get the error ``ImportError: cannot import name BlueDot``.
 
 connect
 ~~~~~~~

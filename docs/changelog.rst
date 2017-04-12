@@ -10,14 +10,14 @@ bluedot python library
  * clamped distance in BlueDotPosition
 
 0.1.0 - 2017-04-07
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
  * Check Bluetooth adapter is powered
  * Handle client connection timeouts 
  * Docs & image updates
 
 0.0.6 - 2017-04-05
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
  * Added MockBlueDot for testing and debugging
  * more docs
@@ -42,13 +42,13 @@ android app
 -----------
 
 1.0 (0.0.2) - 2017-04-05
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
  * icon transparency
  * connection monitor
  * added info icon to bluedot.readthedocs.io
 
 0.0 (0.0.1) - 2017-03-29
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alpha - initial testing
