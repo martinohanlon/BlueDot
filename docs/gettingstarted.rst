@@ -12,7 +12,7 @@ app
 ~~~
 
 The `Blue Dot app`_ is available from the Google Play Store `here 
-<https://play.google.com/apps/testing/com.stuffaboutcode.bluedot>`_.
+<http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot>`_.
 
 python library
 ~~~~~~~~~~~~~~
@@ -72,12 +72,12 @@ write code
 4. Save your program, click ``File > Save As`` and save as ``mydot.py``
 5. Run the program, click ``Run > Run Module`` or press ``F5``
 
-Note - do not save your program as ``bluedot.py`` as Python will try and import your program rather than the bluedot module and you will get the error ``ImportError: cannot import name BlueDot``.
+Warning - do not save your program as ``bluedot.py`` as Python will try and import your program rather than the bluedot module and you will get the error ``ImportError: cannot import name BlueDot``.
 
 connect
 ~~~~~~~
 
 Start the `Blue Dot app`_, select your Raspberry Pi from the list to connect, press the blue dot. 
 
-.. _Blue Dot app: https://play.google.com/apps/testing/com.stuffaboutcode.bluedot
+.. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
