@@ -281,6 +281,7 @@ mock app
 Launch the mock Blue Dot app to test by clicking the on-screen dot with the mouse::
 
     from bluedot import MockBlueDot
+    from signal import pause
 
     def say_hello():
         print("Hello World")
@@ -289,6 +290,7 @@ Launch the mock Blue Dot app to test by clicking the on-screen dot with the mous
     bd.when_pressed = say_hello
 
     bd.launch_mock_app()
+    pause()
 
 scripted tests
 ~~~~~~~~~~~~~~
@@ -303,7 +305,7 @@ Tests can also be scripted using MockBlueDot::
     bd = MockBlueDot()
     bd.when_pressed = say_hello
 
-    bd.mock_blue_dot_pressed()
+    bd.mock_blue_dot_pressed(0,0)
 
 .. _gpiozero: https://gpiozero.readthedocs.io
 .. _picamera: https://picamera.readthedocs.io
