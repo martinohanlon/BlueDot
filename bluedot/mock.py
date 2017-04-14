@@ -156,6 +156,9 @@ class MockBlueDot(BlueDot):
         
         pygame.init()
         screen = pygame.display.set_mode((200,200))
+        pygame.display.set_caption("Blue Dot")
+        
+        clock = pygame.time.Clock()
 
         circle_centre = (100, 100)
         circle_radius = 100
@@ -165,6 +168,8 @@ class MockBlueDot(BlueDot):
 
         running = True
         while running:
+            clock.tick(50)
+        
             # get all events
             ev = pygame.event.get()
 
