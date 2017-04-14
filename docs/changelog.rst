@@ -4,7 +4,7 @@ Changelog
 bluedot python library
 ----------------------
 
-0.1.2 - in dev
+0.1.2 - 2017-04-14
 ~~~~~~~~~~~~~~~~~~
 
  * mock blue dot improvements
