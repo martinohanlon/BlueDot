@@ -39,6 +39,59 @@ def get_adapter_powered_status(device_name):
     powered = adapter.Get(ADAPTER_INTERFACE, "Powered")
     return True if powered else False
 
+def get_adapter_discoverable_status(device_name):
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
+    discoverable = adapter.Get(ADAPTER_INTERFACE, "Discoverable")
+    return True if discoverable else False
+
+def get_adapter_pairable_status(device_name):
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
+    pairable = adapter.Get(ADAPTER_INTERFACE, "Pairable")
+    return True if pairable else False
+
+def get_paired_devices(device_name):
+    paired_devices = []
+
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    om = dbus.Interface(bus.get_object(SERVICE_NAME, "/"), "org.freedesktop.DBus.ObjectManager")
+    objects = om.GetManagedObjects()
+
+    for path, interfaces in objects.items():
+        if DEVICE_INTERFACE not in interfaces:
+            continue
+        properties = interfaces[DEVICE_INTERFACE]
+        if properties["Adapter"] != adapter_path:
+            continue
+
+        paired_devices.append((str(properties["Address"]), str(properties["Alias"])))
+
+    return paired_devices
+
+def device_discoverable(device_name, discoverable):
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
+    if discoverable:
+        value = dbus.Boolean(1)
+    else:
+        value = dbus.Boolean(0)
+    adapter.Set(ADAPTER_INTERFACE, "Discoverable", value)
+
+def device_pairable(device_name, pairable):
+    bus = dbus.SystemBus()
+    adapter_path = find_adapter(device_name).object_path
+    adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
+    if pairable:
+        value = dbus.Boolean(1)
+    else:
+        value = dbus.Boolean(0)
+    adapter.Set(ADAPTER_INTERFACE, "Pairable", value)
+
 def register_spp():
 
     service_record = """

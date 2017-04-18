@@ -19,6 +19,7 @@ server = BluetoothServer(
 
 print("starting")
 server.start()
+print(server.server_address)
 print("waiting for connection")
 
 try:
