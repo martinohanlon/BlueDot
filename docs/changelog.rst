@@ -4,7 +4,7 @@ Changelog
 bluedot python library
 ----------------------
 
-0.2
+0.2.0
 ~~~~~~~~~~~~~~~~~~
 
  * added when_client_connects, when_client_disconnects
