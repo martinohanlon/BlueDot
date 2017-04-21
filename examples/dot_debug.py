@@ -12,6 +12,14 @@ def released():
 def moved(pos):
     print("Moved: x={} y={}".format(pos.x, pos.y))
 
+def client_connected()
+    print("client connected")
+
+def client_disconnected()
+    print("client disconnected")
+
+dot.when_client_connects = client_connected
+dot.when_client_disconnects = client_disconnected
 dot.when_pressed = pressed
 dot.when_released = released
 dot.when_moved = moved

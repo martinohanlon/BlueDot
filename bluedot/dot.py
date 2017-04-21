@@ -151,6 +151,8 @@ class BlueDot():
         self._when_pressed = None
         self._when_released = None
         self._when_moved = None
+        self._when_client_connects = None
+        self._when_client_disconnects = None
 
         self._position = None
 
@@ -176,7 +178,7 @@ class BlueDot():
     @property
     def server(self):
         """
-        The BluetoothServer instance that is being used to communicates
+        The BluetoothServer instance that is being used to communicate
         with clients.
         """
         return self._server
@@ -225,6 +227,13 @@ class BlueDot():
     @property
     def when_pressed(self):
         """
+        Returns the function which is called when the Blue Dot is pressed. 
+        """
+        return self._when_pressed
+
+    @when_pressed.setter
+    def when_pressed(self, value):
+        """
         When set to a function it will cause the function to be run when the Blue Dot is pressed.
         
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
@@ -251,14 +260,17 @@ class BlueDot():
             bd.when_pressed = dot_was_pressed
         
         """
-        return self._when_pressed
-
-    @when_pressed.setter
-    def when_pressed(self, value):
         self._when_pressed = value
 
     @property 
     def when_released(self):
+        """
+        Returns the function which is called when the Blue Dot is released. 
+        """
+        return self._when_released
+
+    @when_released.setter
+    def when_released(self, value):
         """
         When set to a function it will cause the function to be run when the Blue Dot is released.
         
@@ -266,14 +278,17 @@ class BlueDot():
         instance of BlueDotPosition will be returned representing where the Blue Dot was held 
         when it was released.
         """
-        return self._when_released
-
-    @when_released.setter
-    def when_released(self, value):
         self._when_released = value
 
     @property
     def when_moved(self):
+        """
+        Returns the function which is called when the position the Blue Dot is pressed is moved. 
+        """
+        return self._when_moved
+
+    @when_moved.setter
+    def when_moved(self, value):
         """
         When set to a function it will cause the function to be run when the position of where
         the Blue Dot is pressed changes.
@@ -282,11 +297,35 @@ class BlueDot():
         instance of BlueDotPosition will be returned representing the new position of where the 
         Blue Dot is held.
         """
-        return self._when_moved
-
-    @when_moved.setter
-    def when_moved(self, value):
         self._when_moved = value
+
+    @property 
+    def when_client_connects(self):
+        """
+        Returns the function which is called when a Blue Dot connects. 
+        """
+        return self._when_client_connects
+
+    @when_client_connects.setter
+    def when_client_connects(self, value):
+        """
+        When set to a function it will cause the function to be run when a Blue Dot connects.
+        """
+        self._when_client_connects = value
+
+    @property 
+    def when_client_disconnects(self):
+        """
+        Returns the function which is called when a Blue Dot disconnects. 
+        """
+        return self._when_client_disconnects
+
+    @when_client_disconnects.setter
+    def when_client_disconnects(self, value):
+        """
+        When set to a function it will cause the function to be run when a Blue Dot disconnects.
+        """
+        self._when_client_disconnects = value
 
     @property
     def print_messages(self):
@@ -377,11 +416,15 @@ class BlueDot():
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
+        if self.when_client_connects:
+            self.when_client_connects()
 
     def _client_disconnected(self):
         self._is_connected_event.clear()
         self._print_message("Client disconnected")
-
+        if self.when_client_disconnects:
+            self.when_client_disconnects()
+        
     def _data_received(self, data):
         #add the data received to the buffer
         self._data_buffer += data.decode('utf-8')

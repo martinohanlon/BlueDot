@@ -4,6 +4,13 @@ Changelog
 bluedot python library
 ----------------------
 
+0.2
+~~~~~~~~~~~~~~~~~~
+
+ * added when_client_connects, when_client_disconnects
+ * refactored Bluetooth comms 
+ * added BluetoothAdapter
+
 0.1.2 - 2017-04-14
 ~~~~~~~~~~~~~~~~~~
 
