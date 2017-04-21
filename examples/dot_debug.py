@@ -1,7 +1,9 @@
 from bluedot import BlueDot
+from bluedot.btcomm import BluetoothClient
 from time import sleep, time
 
 dot = BlueDot(auto_start_server = False)
+dot.allow_pairing()
 
 def pressed(pos):
     print("Pressed: x={} y={} angle={} distance={} middle={} top={} bottom={} left={} right={} time={}".format(pos.x, pos.y, pos.angle, pos.distance, pos.middle, pos.top, pos.bottom, pos.left, pos.right, time()))
@@ -12,10 +14,10 @@ def released():
 def moved(pos):
     print("Moved: x={} y={}".format(pos.x, pos.y))
 
-def client_connected()
+def client_connected():
     print("client connected")
 
-def client_disconnected()
+def client_disconnected():
     print("client disconnected")
 
 dot.when_client_connects = client_connected
@@ -24,7 +26,6 @@ dot.when_pressed = pressed
 dot.when_released = released
 dot.when_moved = moved
 dot.start()
-dot.wait_for_connection()
 
 try:
     while True:

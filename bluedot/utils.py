@@ -1,6 +1,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import dbus
 import time
+import sys
 
 SERVICE_NAME = "org.bluez"
 ADAPTER_INTERFACE = SERVICE_NAME + ".Adapter1"
@@ -136,3 +137,12 @@ def register_spp():
     }
 
     manager.RegisterProfile(path, uuid, opts)
+
+if sys.version_info[0] > 2:
+    def string_to_bytes(data, encoding):
+        return bytes(data, encoding=encoding)
+else:
+    def string_to_bytes(data, encoding):
+        data.encode(encoding)
+        return bytes(data)
+

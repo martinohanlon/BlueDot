@@ -4,7 +4,7 @@ from threading import Event
 from math import atan2, degrees, hypot
 from inspect import getargspec
 
-from .server import BluetoothServer
+from .btcomm import BluetoothServer
 
 class BlueDotPosition():
     """
@@ -127,6 +127,15 @@ class BlueDot():
         If ``True`` (the default), the bluetooth server will be automatically started
         on initialisation, if ``False``, the method ``start`` will need to use called
         before connections will be accepted.
+    
+    :param bool power_up_device:
+        If ``True``, the bluetooth device will be powered up (if required) when the 
+        server starts. The default is ``False``. 
+        
+        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        to unblock bluetooth to give permission to bluez to power on bluetooth::
+
+            sudo rfkill unblock bluetooth
 
     :param bool print_messages:
         If ``True`` (the default), server status messages will be printed stating
@@ -137,6 +146,7 @@ class BlueDot():
         device = "hci0", 
         port = 1,
         auto_start_server = True,
+        power_up_device = False,
         print_messages = True):
         
         self._data_buffer = ""
@@ -156,7 +166,7 @@ class BlueDot():
 
         self._position = None
 
-        self._server = None
+        self._create_server()
 
         if auto_start_server:
             self.start()
@@ -343,15 +353,10 @@ class BlueDot():
         """
         Start the BluetoothServer if it is not already running. By default the server is started at
         initialisation.
-        """
-        if self._server == None:
-            self._create_server()
-
-            self._print_message("Server started {}".format(self.server.server_address))
-            self._print_message("Waiting for connection")
-        else:
-            pass
-            #should i raise an error if the server is already running?
+        """            
+        self._server.start()
+        self._print_message("Server started {}".format(self.server.server_address))
+        self._print_message("Waiting for connection")
 
     def _create_server(self):
         self._server = BluetoothServer(
@@ -359,15 +364,14 @@ class BlueDot():
                 when_client_connects = self._client_connected,
                 when_client_disconnects = self._client_disconnected,
                 device = self.device,
-                port = self.port)
+                port = self.port,
+                auto_start = False)
 
     def stop(self):
         """
         Stop the bluetooth server.
         """
-        if self._server:
-            self._server.stop()
-            self._server = None
+        self._server.stop()
 
     def wait_for_connection(self, timeout = None):
         """
@@ -412,6 +416,17 @@ class BlueDot():
             it will wait indefinetly.
         """
         return self._is_moved_event.wait(timeout)
+
+    def allow_pairing(self, timeout = 60):
+        """
+        Allow a Bluetooth device to pair with your Raspberry Pi by Putting the adapter 
+        into discoverable and pairable mode.
+
+        :param int timeout:
+            The time in seconds the adapter will remain pairable. If set to ``None``
+            the device will be discoverable and pairable indefinetly. 
+        """
+        self.server.adapter.allow_pairing(timeout = timeout)
 
     def _client_connected(self):
         self._is_connected_event.set()
