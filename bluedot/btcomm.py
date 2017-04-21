@@ -54,7 +54,60 @@ class BluetoothAdapter():
     def paired_devices(self):
         return get_paired_devices(self._device)
 
+    def allow_pairing(self, timeout = 60):
+        pass
+
 class BluetoothServer():
+    """
+    Creates a Bluetooth server which will allow connection and accept incoming 
+    RFCOMM serial data.
+
+    When data is received by the server it is passed to a callback function
+    which must be specified at initiation.
+
+    The following example will create a bluetooth server which will wait for a 
+    connection and print any data it receives::
+    
+        from bluedot.btcomm import BluetoothServer
+        from signal import pause
+
+        def data_received(data):
+            print(data)
+
+        s = BluetoothServer(data_received)
+        pause()
+
+    :param data_received_callback:
+        A function reference should be passed, this function will be called when
+        data is received by the server.  The function should accept a single parameter
+        which when called will hold the data received.
+
+    :param bool auto_start:
+        If ``True`` (the default), the bluetooth server will be automatically started
+        on initialisation, if ``False``, the method ``start`` will need to use called
+        before connections will be accepted.
+
+    :param string device:
+        The bluetooth device the server should use, the default is ``hci0``, if
+        your device only has 1 bluetooth adapter this shouldn't need to be changhened.
+
+    :param int port:
+        The bluetooth port the server should use, the default is ``1``, and under 
+        normal use this should never need to change.
+
+    :param bool power_up_device:
+        If ``True`` (the default), the bluetooth device will be powered up (if 
+        required) when the server starts.
+
+    :param when_client_connects:
+        A function reference which will be called when a client connects. If ``None``
+        (the default), no notification will be given when a client connects
+
+    :param when_client_disconnects:
+        A function reference which will be called when a client disconnects. If ``None``
+        (the default), no notification will be given when a client disconnects
+
+    """
     def __init__(self, 
         data_received_callback, 
         auto_start = True, 
@@ -163,7 +216,7 @@ class BluetoothServer():
             #wait for client connection
             self._conn_thread = WrapThread(target=self._wait_for_connection)
             self._conn_thread.start()
-		
+
     def stop(self):
         if self._running:
             if self._conn_thread:
