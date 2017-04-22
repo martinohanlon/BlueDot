@@ -5,6 +5,7 @@ pythonhosted/
 *.vim
 *.swp
 tags
+.vscode
 
 # Packaging detritus
 *.egg
