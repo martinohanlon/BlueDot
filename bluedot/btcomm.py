@@ -18,6 +18,13 @@ class BluetoothAdapter():
     Creates a Bluetooth server which will allow connections and accept incoming 
     RFCOMM serial data.
 
+    The following example will get the bluetooth adapter, print its powered status
+    and any paired devices::
+
+        a = BluetoothAdapter()
+        print("Powered = {}".format(a.powered))
+        print(a.paired_devices)
+
     :param string device:
         The bluetooth device to be used, the default is ``hci0``, if your device 
         only has 1 bluetooth adapter this shouldn't need to be changed.
@@ -93,13 +100,14 @@ class BluetoothAdapter():
     def paired_devices(self):
         """
         Returns a list of devices paired with this adapater 
-        ((device_mac_address, device_name), (device_mac_address, device_name))::
+        ``((device_mac_address, device_name), (device_mac_address, device_name))``::
+        
+            a = BluetoothAdapter()
+            devices = a.paired_devices
+            for d in devices:
+                device_address = d[0]
+                device_name = d[1]
 
-        a = BluetoothAdapter()
-        devices = a.paired_devices
-        for d in devices:
-            device_address = d[0]
-            device_name = d[1]
         """
         return get_paired_devices(self._device)
 
@@ -166,6 +174,10 @@ class BluetoothServer():
     :param int port:
         The bluetooth port the server should use, the default is ``1``.
 
+    :param string encoding:
+        The encoding standard to be used when sending and receiving byte data. The default is 
+        ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
+
     :param bool power_up_device:
         If ``True``, the bluetooth device will be powered up (if required) when the 
         server starts. The default is ``False``. 
@@ -189,6 +201,7 @@ class BluetoothServer():
         auto_start = True, 
         device = "hci0", 
         port = 1,
+        encoding = "utf-8",
         power_up_device = False,
         when_client_connects = None, 
         when_client_disconnects = None):
@@ -198,6 +211,7 @@ class BluetoothServer():
 
         self._data_received_callback = data_received_callback
         self._port = port
+        self._encoding = encoding
         self._power_up_device = power_up_device
         self._when_client_connects = when_client_connects
         self._when_client_disconnects = when_client_disconnects
@@ -234,6 +248,13 @@ class BluetoothServer():
         The port the server is using. This defaults to 1.
         """
         return self._port
+
+    @property
+    def encoding(self):
+        """
+        The encoding standard the server is using. This defaults to ``utf-8``.
+        """
+        return self.encoding
 
     @property
     def running(self):
@@ -386,6 +407,8 @@ class BluetoothServer():
                 self._handle_bt_error(e)
             if len(data) > 0:
                 #print("received [%s]" % data)
+                if self._encoding:
+                    data = data.decode(self._encoding)
                 self.data_received_callback(data)
             sleep(BLUETOOTH_TIMEOUT)
 
@@ -421,22 +444,36 @@ class BluetoothClient():
     """
     Creates a Bluetooth client which can send data to a server using RFCOMM Serial Data.
 
+    The following example will create a bluetooth client which will connect to a paired 
+    device called ``raspberrypi`` and send ``helloworld``::
+    
+        from bluedot.btcomm import BluetoothClient
+        
+        c = BluetoothClient()
+        c.connect("raspberrypi")
+        c.send("helloworld")
+
     :param string device:
         The bluetooth device to be used, the default is ``hci0``, if your device 
         only has 1 bluetooth adapter this shouldn't need to be changed.
 
-    :param bool power_up_device:
-        If ``True`` (the default), the bluetooth device will be powered up (if 
-        required) when the client connects.
+        If ``True``, the bluetooth device will be powered up (if required) when the 
+        server starts. The default is ``False``. 
+        
+        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        to unblock bluetooth to give permission to bluez to power on bluetooth::
+
+            sudo rfkill unblock bluetooth
 
     :param string encoding:
-        The encoding standard to be used when send byte data. The default is ``utf-8``. 
+        The encoding standard to be used when sending and receiving byte data. The default is 
+        ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
 
     """
     def __init__(self, 
         device = "hci0", 
-        power_up_device = True,
-        encoding = "utf-8"):
+        encoding = "utf-8",
+        power_up_device = False):
 
         self._device = device
         self._power_up_device = power_up_device
@@ -465,8 +502,7 @@ class BluetoothClient():
     @property
     def encoding(self):
         """
-        The encoding standard the client is using when sending byte data. 
-        The default is ``utf-8``. 
+        The encoding standard the client is using. The default is ``utf-8``. 
         """
         return self._encoding
 
@@ -540,8 +576,10 @@ class BluetoothClient():
         :param string data:
             The data to be sent.
         """
-        bytes_data = string_to_bytes(data, self._encoding)
-        self._client_sock.send(bytes_data)
+        if self._encoding:
+            data = string_to_bytes(data, self._encoding)
+    
+        self._client_sock.send(data)
       
 #print(get_paired_devices("hci0"))
 #device_discoverable("hci0", True)

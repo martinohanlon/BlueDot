@@ -1,5 +1,5 @@
 from bluedot import MockBlueDot
-from time import sleep
+from time import sleep, time
 
 dot = MockBlueDot(auto_start_server = False)
 

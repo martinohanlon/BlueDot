@@ -8,9 +8,9 @@ bluedot python library
 ~~~~~~~~~~~~~~~~~~
 
  * added when_client_connects, when_client_disconnects
+ * added allow_pairing functions
  * refactored Bluetooth comms 
  * added BluetoothAdapter
- * added allow_pairing functions
 
 0.1.2 - 2017-04-14
 ~~~~~~~~~~~~~~~~~~

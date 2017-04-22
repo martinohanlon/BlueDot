@@ -8,6 +8,7 @@ Table of Contents
 
    gettingstarted
    recipes
-   code
+   dotapi
+   btcommapi
    protocol
    changelog

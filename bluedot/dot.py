@@ -103,7 +103,7 @@ class BlueDot():
     Interacts with a Blue Dot client application, communicating when and where it
     has been pressed, released or held.   
 
-    This class starts an instance of a bluetooth server (server.BluetoothServer) 
+    This class starts an instance of a bluetooth server (btcomm.BluetoothServer) 
     which manages the connection with the Blue Dot client.
 
     This class is intended for use with the Blue Dot client application.
@@ -442,7 +442,7 @@ class BlueDot():
         
     def _data_received(self, data):
         #add the data received to the buffer
-        self._data_buffer += data.decode('utf-8')
+        self._data_buffer += data
         
         #get any full commands ended by \n
         last_command = self._data_buffer.rfind("\n")
