@@ -372,6 +372,18 @@ class BluetoothServer():
                 self._conn_thread.stop()
                 self._conn_thread = None
 
+    def send(self, data):
+        """
+        Send data to a connected bluetooth client
+
+        :param string data:
+            The data to be sent.
+        """
+        if self._client_connected:
+            if self._encoding:
+                data = string_to_bytes(data, self._encoding)
+            self._client_sock.send(data)
+
     def _wait_for_connection(self):
         #keep going until the server is stopped
         while not self._conn_thread.stopping.is_set():
@@ -513,6 +525,8 @@ class BluetoothClient():
         self._connected = False
         self._client_sock = None
 
+        self._conn_thread = None
+
         if auto_connect:
             self.connect()
 
@@ -522,6 +536,21 @@ class BluetoothClient():
         The bluetooth device the client is using. This defaults to hci0.
         """
         return self.adapter.device
+
+    @property
+    def server(self):
+        """
+        The server name ("raspberrypi") or server mac address 
+        ("11:11:11:11:11:11") to connect too.
+        """
+        return self._server
+
+    @property
+    def port(self):
+        """
+        The port the client is using. This defaults to 1.
+        """
+        return self._port
 
     @property
     def adapter(self):
@@ -578,6 +607,9 @@ class BluetoothClient():
             self._client_sock.bind((self.adapter.address, self._port))
             self._client_sock.connect((server_mac, self._port))
 
+            self._conn_thread = WrapThread(target=self._read)
+            self._conn_thread.start()
+
             self._connected = True 
         
     def disconnect(self):
@@ -598,8 +630,39 @@ class BluetoothClient():
         :param string data:
             The data to be sent.
         """
-        if self._encoding:
-            data = string_to_bytes(data, self._encoding)
-    
-        self._client_sock.send(data)
-      
+        if self._connected:
+            if self._encoding:
+                data = string_to_bytes(data, self._encoding)
+            self._client_sock.send(data)
+
+    def _read(self):
+        #read until the client is stopped or the client disconnects
+        while not self._conn_thread.stopping.is_set() and self._connected:
+            #read data from bluetooth socket
+            data = ""
+            try:
+                data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
+            except BLUETOOTH_EXCEPTIONS as e:
+                self._handle_bt_error(e)
+            if len(data) > 0:
+                print("received [%s]" % data)
+                if self._encoding:
+                    data = data.decode(self._encoding)
+                #self.data_received_callback(data)
+            sleep(BLUETOOTH_TIMEOUT)
+
+    def _handle_bt_error(self, bt_error):
+        print(bterror)
+        #'resource unavailable' is when data cannot be read because there is nothing in the buffer
+        if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
+            return
+        #'connection reset' is caused when the client disconnects
+        if str(bt_error) == "[Errno 104] Connection reset by peer":
+            self._connected = False
+            return
+        #'conection timeout' is caused when the server can no longer connect to read from the client
+        # (perhaps the client has gone out of range)
+        if str(bt_error) == "[Errno 110] Connection timed out":
+            self._connected = False
+            return
+        raise bt_error

@@ -1,8 +1,9 @@
-from bluedot.server import BluetoothServer
+from bluedot.btcomm import BluetoothServer
 from time import sleep
 
 def data_received(data):
-    print(str(data))
+    print(data)
+    server.send("echo - " + data)
 
 def client_connected():
     print("client connected")

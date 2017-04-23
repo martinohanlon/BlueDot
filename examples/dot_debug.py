@@ -1,5 +1,4 @@
 from bluedot import BlueDot
-from bluedot.btcomm import BluetoothClient
 from time import sleep, time
 
 dot = BlueDot(auto_start_server = False)
