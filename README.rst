@@ -29,7 +29,7 @@ See the `getting started`_ guide to 'get started'!
 more
 ----
 
-The Blue Dot is a joystick as well as button, you can tell if the dot was pressed in the middle, on the top, bottom, left or right.
+The Blue Dot is a joystick as well as button, you can tell if the dot was pressed in the middle, on the top, bottom, left or right. Perhaps create a `BlueDot controlled Robot`_.
 
 Why be restricted by such vague positions like top and bottom though, you can get the exact x, y position or even the angle and distance from centre where the dot was pressed.
 
@@ -40,7 +40,7 @@ One blue circle can do a lot.
 even more
 ---------
 
-The `online documentation`_ describes how to use Blue Dot and the `Python library`_; be sure to also check out the `recipes`_.
+The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ ideas.
 
 status
 ------
@@ -53,11 +53,12 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _Install and usage: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 .. _online documentation: http://bluedot.readthedocs.io/en/latest/
-.. _Python library: http://bluedot.readthedocs.io/en/latest/code.html
+.. _Python library: http://bluedot.readthedocs.io/en/latest/dotapi.html
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
-.. _recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
+.. _Recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _issue: https://github.com/martinohanlon/bluedot/issues
+.. _BlueDot controlled Robot: https://youtu.be/eW9oEPySF58
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
    :height: 247 px

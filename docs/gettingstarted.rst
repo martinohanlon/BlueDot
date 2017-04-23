@@ -11,8 +11,7 @@ You will need a Raspberry Pi with built-in Bluetooth (such as the Pi 3 or Pi Zer
 app
 ~~~
 
-The `Blue Dot app`_ is available from the Google Play Store `here 
-<http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot>`_.
+The `Blue Dot app`_ is available from the Google Play Store.
 
 python library
 ~~~~~~~~~~~~~~
@@ -79,5 +78,12 @@ connect
 
 Start the `Blue Dot app`_, select your Raspberry Pi from the list to connect, press the blue dot. 
 
+where next
+----------
+
+Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bluedot.  
+
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
+.. _Recipes: recipes.html
+.. _API: dotapi.html
