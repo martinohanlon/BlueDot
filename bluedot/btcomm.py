@@ -124,18 +124,20 @@ class BluetoothAdapter():
             if self._pairing_thread.is_alive:
                 self._pairing_thread.stop()
         
-        #start the pairing thread
-        self._pairing_thread = WrapThread(target=self._allow_pairing, args=(timeout, ))
-        self._pairing_thread.start()
-
-    def _allow_pairing(self, timeout):
+        #make the adapter pairable
         self.pairable = True
         self.discoverable = True
+        
         if timeout != None:
-            #wait till the timeout or the thread is stopped
-            self._pairing_thread.stopping.wait(timeout)
-            self.discoverable = False
-            self.pairable = False
+            #start the pairing thread
+            self._pairing_thread = WrapThread(target=self._expire_pairing, args=(timeout, ))
+            self._pairing_thread.start()
+
+    def _expire_pairing(self, timeout):
+        #wait till the timeout or the thread is stopped
+        self._pairing_thread.stopping.wait(timeout)
+        self.discoverable = False
+        self.pairable = False
 
 class BluetoothServer():
     """
@@ -449,9 +451,17 @@ class BluetoothClient():
     
         from bluedot.btcomm import BluetoothClient
         
-        c = BluetoothClient()
-        c.connect("raspberrypi")
+        c = BluetoothClient("raspberrypi")
         c.send("helloworld")
+    
+    :param string server:
+        The server name ("raspberrypi") or server mac address 
+        ("11:11:11:11:11:11") to connect too.
+
+        The server must be a paired device.
+
+    :param int port:
+        The bluetooth port the client should use, the default is ``1``
 
     :param string device:
         The bluetooth device to be used, the default is ``hci0``, if your device 
@@ -469,13 +479,32 @@ class BluetoothClient():
         The encoding standard to be used when sending and receiving byte data. The default is 
         ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
 
+    :param bool power_up_device:
+        If ``True``, the bluetooth device will be powered up (if required) when the 
+        server starts. The default is ``False``. 
+        
+        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        to unblock bluetooth to give permission to bluez to power on bluetooth::
+
+            sudo rfkill unblock bluetooth
+
+    :param bool auto_connect:
+        If ``True`` (the default), the bluetooth client will automatically try to
+        connect to the server at initialisation, if ``False``, the method ``connect`` 
+        will need to be called.
+
     """
     def __init__(self, 
+        server,
+        port = 1,
         device = "hci0", 
         encoding = "utf-8",
-        power_up_device = False):
+        power_up_device = False,
+        auto_connect = True):
 
         self._device = device
+        self._server = server
+        self._port = port
         self._power_up_device = power_up_device
         self._encoding = encoding
 
@@ -483,6 +512,9 @@ class BluetoothClient():
 
         self._connected = False
         self._client_sock = None
+
+        if auto_connect:
+            self.connect()
 
     @property
     def device(self):
@@ -520,19 +552,9 @@ class BluetoothClient():
         """
         return self._connected
 
-    def connect(self, server, port = 1):
+    def connect(self):
         """
         Connect to a bluetooth server.
-
-        :param string server:
-            The server name ("raspberrypi") or server mac address 
-            ("11:11:11:11:11:11") to connect too.
-
-            The server must be a paired device.
-
-        :param int port:
-            The bluetooth port the client should use, the default is ``1``
-
         """
         if not self._connected:
 
@@ -545,16 +567,16 @@ class BluetoothClient():
             #try and find the server name or mac address in the paired devices list
             server_mac = None
             for device in self.adapter.paired_devices:
-                if server == device[0] or server == device[1]:
+                if self._server == device[0] or self._server == device[1]:
                     server_mac = device[0]
                     break
             if server_mac == None:
-                raise Exception("Server {} not found in paired devices".format(self.server))
+                raise Exception("Server {} not found in paired devices".format(self._server))
             
             #create a socket
             self._client_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
-            self._client_sock.bind((self.adapter.address, port))
-            self._client_sock.connect((server_mac, port))
+            self._client_sock.bind((self.adapter.address, self._port))
+            self._client_sock.connect((server_mac, self._port))
 
             self._connected = True 
         
@@ -581,34 +603,3 @@ class BluetoothClient():
     
         self._client_sock.send(data)
       
-#print(get_paired_devices("hci0"))
-#device_discoverable("hci0", True)
-#device_discoverable("hci0", False)
-#device_pairable("hci0", True)
-#device_pairable("hci0", False)
-
-#c = BluetoothClient()
-#print(c.adapter.discoverable)
-#print(c.adapter.powered)
-#print(c.adapter.pairable)
-#c.adapter.allow_pairing()
-#sleep(60)
-#pizerow
-#c.connect("B8:27:EB:CA:C7:71")
-#piscreen dongle
-#c.connect("00:15:83:15:A3:10")
-#pi3 ceed
-#c.connect("B8:27:EB:68:C2:85")
-#c.connect("devpi")
-
-#c.send("hi")
-
-#c.disconnect()
-
-#s = BluetoothServer(print)
-#s.stop()
-#errors
-# ConnectionRefusedError: [Errno 111] Connection refused
-
-# cant find connection
-# OSError: [Errno 113] No route to host
