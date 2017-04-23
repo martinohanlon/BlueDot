@@ -8,6 +8,7 @@ bluedot python library
 ~~~~~~~~~~~~~~~~~~
 
  * bug fix in MockBlueDot
+ * doc fixes
 
 0.2.0 - 2017-04-23
 ~~~~~~~~~~~~~~~~~~
