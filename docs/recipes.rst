@@ -147,7 +147,7 @@ At the moment the dpad only registers when it is pressed, to get it work when th
 robot
 ~~~~~
 
-Using the Blue Dot and `gpiozero`_, you can create a bluetooth controlled robot which moves when the dot is pressed and stops when it is released::
+Using the Blue Dot and `gpiozero`_, you can create a `bluetooth controlled robot`_ which moves when the dot is pressed and stops when it is released::
 
     from bluedot import BlueDot
     from gpiozero import Robot
@@ -265,7 +265,7 @@ You can interact with the Bluetooth adapter using BlueDot.
 pairing
 ~~~~~~~
 
-You can put your raspberry pi into pairing mode which will allow pairing from other devices for 60 seconds::
+You can put your Raspberry Pi into pairing mode which will allow pairing from other devices for 60 seconds::
 
     from bluedot import BlueDot
     from signal import pause
@@ -278,13 +278,13 @@ You can put your raspberry pi into pairing mode which will allow pairing from ot
 Or connect up a physical button up to start the pairing::
     
     from bluedot import BlueDot
-    from gpiozero import LED
+    from gpiozero import Button
     from signal import pause
 
     bd = BlueDot()
-    led = LED(pin)
+    button = Button(pin)
 
-    led.when_pressed = bd.allow_pairing
+    button.when_pressed = bd.allow_pairing
 
     pause()
 
@@ -353,6 +353,7 @@ Tests can also be scripted using MockBlueDot::
 .. _gpiozero: https://gpiozero.readthedocs.io
 .. _picamera: https://picamera.readthedocs.io
 .. _Ben Nuttall: https://github.com/bennuttall
+.. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
 
 .. |mockbluedot| image:: images/mockbluedot.png
    :alt: mock blue dot app

@@ -197,7 +197,7 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock blue dot was moved too  
         """
-        self._server.mock_client_sending_data("3,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("2,{},{}\n".format(x, y))
 
     def launch_mock_app(self):
         """
