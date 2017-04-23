@@ -15,8 +15,7 @@ BLUETOOTH_TIMEOUT = 0.01
 
 class BluetoothAdapter():
     """
-    Creates a Bluetooth server which will allow connections and accept incoming 
-    RFCOMM serial data.
+    Represents and allows interaction with a Bluetooth Adapter.
 
     The following example will get the bluetooth adapter, print its powered status
     and any paired devices::
@@ -148,13 +147,14 @@ class BluetoothServer():
     which must be specified at initiation.
 
     The following example will create a bluetooth server which will wait for a 
-    connection and print any data it receives::
+    connection and print any data it receives and send it back to the client::
     
         from bluedot.btcomm import BluetoothServer
         from signal import pause
 
         def data_received(data):
             print(data)
+            s.send(data)
 
         s = BluetoothServer(data_received)
         pause()
@@ -162,7 +162,8 @@ class BluetoothServer():
     :param data_received_callback:
         A function reference should be passed, this function will be called when
         data is received by the server.  The function should accept a single parameter
-        which when called will hold the data received.
+        which when called will hold the data received. Set to ``None`` if  received 
+        data is not required.
 
     :param bool auto_start:
         If ``True`` (the default), the bluetooth server will be automatically started
@@ -302,7 +303,7 @@ class BluetoothServer():
         """
         Set the function which will be called when data is received by the server.  
         The function should accept a single parameter which when called will hold
-        the data received.
+        the data received. Set to ``None`` if received data is not required.
         """
         self._data_received_callback = value
 
@@ -382,7 +383,10 @@ class BluetoothServer():
         if self._client_connected:
             if self._encoding:
                 data = string_to_bytes(data, self._encoding)
-            self._client_sock.send(data)
+            try:
+                self._client_sock.send(data)
+            except BLUETOOTH_EXCEPTIONS as e:
+                self._handle_bt_error(e)
 
     def _wait_for_connection(self):
         #keep going until the server is stopped
@@ -421,9 +425,10 @@ class BluetoothServer():
                 self._handle_bt_error(e)
             if len(data) > 0:
                 #print("received [%s]" % data)
-                if self._encoding:
-                    data = data.decode(self._encoding)
-                self.data_received_callback(data)
+                if self._data_received_callback:
+                    if self._encoding:
+                        data = data.decode(self._encoding)
+                    self.data_received_callback(data)
             sleep(BLUETOOTH_TIMEOUT)
 
         #close the client socket
@@ -459,12 +464,18 @@ class BluetoothClient():
     Creates a Bluetooth client which can send data to a server using RFCOMM Serial Data.
 
     The following example will create a bluetooth client which will connect to a paired 
-    device called ``raspberrypi`` and send ``helloworld``::
+    device called ``raspberrypi``, send ``helloworld`` and print any data is receives::
     
         from bluedot.btcomm import BluetoothClient
+        from signal import pause
         
-        c = BluetoothClient("raspberrypi")
+        def data_received(data):
+            print(data)
+
+        c = BluetoothClient("raspberrypi", data_received)
         c.send("helloworld")
+
+        pause()
     
     :param string server:
         The server name ("raspberrypi") or server mac address 
@@ -472,20 +483,18 @@ class BluetoothClient():
 
         The server must be a paired device.
 
+    :param data_received_callback:
+        A function reference should be passed, this function will be called when
+        data is received by the client.  The function should accept a single parameter
+        which when called will hold the data received. Set to ``None`` if data 
+        received is not required.
+
     :param int port:
         The bluetooth port the client should use, the default is ``1``
 
     :param string device:
         The bluetooth device to be used, the default is ``hci0``, if your device 
         only has 1 bluetooth adapter this shouldn't need to be changed.
-
-        If ``True``, the bluetooth device will be powered up (if required) when the 
-        server starts. The default is ``False``. 
-        
-        Depending on how bluetooth has been powered down, you may need to use rfkill 
-        to unblock bluetooth to give permission to bluez to power on bluetooth::
-
-            sudo rfkill unblock bluetooth
 
     :param string encoding:
         The encoding standard to be used when sending and receiving byte data. The default is 
@@ -508,6 +517,7 @@ class BluetoothClient():
     """
     def __init__(self, 
         server,
+        data_received_callback,
         port = 1,
         device = "hci0", 
         encoding = "utf-8",
@@ -516,6 +526,7 @@ class BluetoothClient():
 
         self._device = device
         self._server = server
+        self._data_received_callback = data_received_callback
         self._port = port
         self._power_up_device = power_up_device
         self._encoding = encoding
@@ -581,6 +592,22 @@ class BluetoothClient():
         """
         return self._connected
 
+    @property
+    def data_received_callback(self):
+        """
+        Returns the function which is called when data is received by the client. 
+        """
+        return self._data_received_callback
+
+    @data_received_callback.setter
+    def data_received_callback(self, value):
+        """
+        Set the function which will be called when data is received by the client.  
+        The function should accept a single parameter which when called will hold
+        the data received. Set to ``None`` if data received is not required.
+        """
+        self._data_received_callback = value
+
     def connect(self):
         """
         Connect to a bluetooth server.
@@ -606,12 +633,12 @@ class BluetoothClient():
             self._client_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             self._client_sock.bind((self.adapter.address, self._port))
             self._client_sock.connect((server_mac, self._port))
-
+        
+            self._connected = True 
+        
             self._conn_thread = WrapThread(target=self._read)
             self._conn_thread.start()
 
-            self._connected = True 
-        
     def disconnect(self):
         """
         Disconnect from a bluetooth server.
@@ -633,8 +660,11 @@ class BluetoothClient():
         if self._connected:
             if self._encoding:
                 data = string_to_bytes(data, self._encoding)
-            self._client_sock.send(data)
-
+            try:
+                self._client_sock.send(data)
+            except BLUETOOTH_EXCEPTIONS as e:
+                self._handle_bt_error(e)
+            
     def _read(self):
         #read until the client is stopped or the client disconnects
         while not self._conn_thread.stopping.is_set() and self._connected:
@@ -645,14 +675,14 @@ class BluetoothClient():
             except BLUETOOTH_EXCEPTIONS as e:
                 self._handle_bt_error(e)
             if len(data) > 0:
-                print("received [%s]" % data)
-                if self._encoding:
-                    data = data.decode(self._encoding)
-                #self.data_received_callback(data)
+                #print("received [%s]" % data)
+                if self._data_received_callback:
+                    if self._encoding:
+                        data = data.decode(self._encoding)
+                    self.data_received_callback(data)
             sleep(BLUETOOTH_TIMEOUT)
 
     def _handle_bt_error(self, bt_error):
-        print(bterror)
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
         if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
             return

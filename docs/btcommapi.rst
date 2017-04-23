@@ -1,5 +1,5 @@
 ========================
-Bluetooth API
+Bluetooth Comm API
 ========================
 
 Blue Dot also contains a useful API ``bluedot.btcomm`` for sending and receiving data over Bluetooth. 

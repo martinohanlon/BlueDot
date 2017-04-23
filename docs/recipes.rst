@@ -230,13 +230,12 @@ Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's s
             else:
                 yield (0, 0)
 
-    if __name__ == '__main__':
-        robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
-        bd = BlueDot()
+    robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
+    bd = BlueDot()
 
-        robot.source = drive()
+    robot.source = drive()
 
-        pause()
+    pause()
 
 slider
 ------
@@ -257,6 +256,50 @@ fade an led
 ~~~~~~~~~~~
 
 to come
+
+bluetooth
+---------
+
+You can interact with the Bluetooth adapter using BlueDot.
+
+pairing
+~~~~~~~
+
+You can put your raspberry pi into pairing mode which will allow pairing from other devices for 60 seconds::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    bd = BlueDot()
+    bd.allow_pairing()
+
+    pause()
+
+Or connect up a physical button up to start the pairing::
+    
+    from bluedot import BlueDot
+    from gpiozero import LED
+    from signal import pause
+
+    bd = BlueDot()
+    led = LED(pin)
+
+    led.when_pressed = bd.allow_pairing
+
+    pause()
+
+paired devices
+~~~~~~~~~~~~~~
+
+You can get the devices that your raspberry pi is paired too::
+
+    from bluedot import BlueDot
+    bd = BlueDot()
+    
+    devices = bd.adapter.paired_devices
+    for d in devices:
+        device_address = d[0]
+        device_name = d[1]
 
 testing
 -------
