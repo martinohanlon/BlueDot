@@ -4,7 +4,7 @@ from threading import Event
 from math import atan2, degrees, hypot
 from inspect import getargspec
 
-from .server import BluetoothServer
+from .btcomm import BluetoothServer
 
 class BlueDotPosition():
     """
@@ -103,7 +103,7 @@ class BlueDot():
     Interacts with a Blue Dot client application, communicating when and where it
     has been pressed, released or held.   
 
-    This class starts an instance of a bluetooth server (server.BluetoothServer) 
+    This class starts an instance of a bluetooth server (btcomm.BluetoothServer) 
     which manages the connection with the Blue Dot client.
 
     This class is intended for use with the Blue Dot client application.
@@ -127,6 +127,15 @@ class BlueDot():
         If ``True`` (the default), the bluetooth server will be automatically started
         on initialisation, if ``False``, the method ``start`` will need to use called
         before connections will be accepted.
+    
+    :param bool power_up_device:
+        If ``True``, the bluetooth device will be powered up (if required) when the 
+        server starts. The default is ``False``. 
+        
+        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        to unblock bluetooth to give permission to bluez to power on bluetooth::
+
+            sudo rfkill unblock bluetooth
 
     :param bool print_messages:
         If ``True`` (the default), server status messages will be printed stating
@@ -137,6 +146,7 @@ class BlueDot():
         device = "hci0", 
         port = 1,
         auto_start_server = True,
+        power_up_device = False,
         print_messages = True):
         
         self._data_buffer = ""
@@ -151,10 +161,12 @@ class BlueDot():
         self._when_pressed = None
         self._when_released = None
         self._when_moved = None
+        self._when_client_connects = None
+        self._when_client_disconnects = None
 
         self._position = None
 
-        self._server = None
+        self._create_server()
 
         if auto_start_server:
             self.start()
@@ -176,7 +188,7 @@ class BlueDot():
     @property
     def server(self):
         """
-        The BluetoothServer instance that is being used to communicates
+        The BluetoothServer instance that is being used to communicate
         with clients.
         """
         return self._server
@@ -225,6 +237,13 @@ class BlueDot():
     @property
     def when_pressed(self):
         """
+        Returns the function which is called when the Blue Dot is pressed. 
+        """
+        return self._when_pressed
+
+    @when_pressed.setter
+    def when_pressed(self, value):
+        """
         When set to a function it will cause the function to be run when the Blue Dot is pressed.
         
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
@@ -251,14 +270,17 @@ class BlueDot():
             bd.when_pressed = dot_was_pressed
         
         """
-        return self._when_pressed
-
-    @when_pressed.setter
-    def when_pressed(self, value):
         self._when_pressed = value
 
     @property 
     def when_released(self):
+        """
+        Returns the function which is called when the Blue Dot is released. 
+        """
+        return self._when_released
+
+    @when_released.setter
+    def when_released(self, value):
         """
         When set to a function it will cause the function to be run when the Blue Dot is released.
         
@@ -266,14 +288,17 @@ class BlueDot():
         instance of BlueDotPosition will be returned representing where the Blue Dot was held 
         when it was released.
         """
-        return self._when_released
-
-    @when_released.setter
-    def when_released(self, value):
         self._when_released = value
 
     @property
     def when_moved(self):
+        """
+        Returns the function which is called when the position the Blue Dot is pressed is moved. 
+        """
+        return self._when_moved
+
+    @when_moved.setter
+    def when_moved(self, value):
         """
         When set to a function it will cause the function to be run when the position of where
         the Blue Dot is pressed changes.
@@ -282,11 +307,35 @@ class BlueDot():
         instance of BlueDotPosition will be returned representing the new position of where the 
         Blue Dot is held.
         """
-        return self._when_moved
-
-    @when_moved.setter
-    def when_moved(self, value):
         self._when_moved = value
+
+    @property 
+    def when_client_connects(self):
+        """
+        Returns the function which is called when a Blue Dot connects. 
+        """
+        return self._when_client_connects
+
+    @when_client_connects.setter
+    def when_client_connects(self, value):
+        """
+        When set to a function it will cause the function to be run when a Blue Dot connects.
+        """
+        self._when_client_connects = value
+
+    @property 
+    def when_client_disconnects(self):
+        """
+        Returns the function which is called when a Blue Dot disconnects. 
+        """
+        return self._when_client_disconnects
+
+    @when_client_disconnects.setter
+    def when_client_disconnects(self, value):
+        """
+        When set to a function it will cause the function to be run when a Blue Dot disconnects.
+        """
+        self._when_client_disconnects = value
 
     @property
     def print_messages(self):
@@ -304,15 +353,10 @@ class BlueDot():
         """
         Start the BluetoothServer if it is not already running. By default the server is started at
         initialisation.
-        """
-        if self._server == None:
-            self._create_server()
-
-            self._print_message("Server started {}".format(self.server.server_address))
-            self._print_message("Waiting for connection")
-        else:
-            pass
-            #should i raise an error if the server is already running?
+        """            
+        self._server.start()
+        self._print_message("Server started {}".format(self.server.server_address))
+        self._print_message("Waiting for connection")
 
     def _create_server(self):
         self._server = BluetoothServer(
@@ -320,15 +364,14 @@ class BlueDot():
                 when_client_connects = self._client_connected,
                 when_client_disconnects = self._client_disconnected,
                 device = self.device,
-                port = self.port)
+                port = self.port,
+                auto_start = False)
 
     def stop(self):
         """
         Stop the bluetooth server.
         """
-        if self._server:
-            self._server.stop()
-            self._server = None
+        self._server.stop()
 
     def wait_for_connection(self, timeout = None):
         """
@@ -374,17 +417,32 @@ class BlueDot():
         """
         return self._is_moved_event.wait(timeout)
 
+    def allow_pairing(self, timeout = 60):
+        """
+        Allow a Bluetooth device to pair with your Raspberry Pi by Putting the adapter 
+        into discoverable and pairable mode.
+
+        :param int timeout:
+            The time in seconds the adapter will remain pairable. If set to ``None``
+            the device will be discoverable and pairable indefinetly. 
+        """
+        self.server.adapter.allow_pairing(timeout = timeout)
+
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
+        if self.when_client_connects:
+            self.when_client_connects()
 
     def _client_disconnected(self):
         self._is_connected_event.clear()
         self._print_message("Client disconnected")
-
+        if self.when_client_disconnects:
+            self.when_client_disconnects()
+        
     def _data_received(self, data):
         #add the data received to the buffer
-        self._data_buffer += data.decode('utf-8')
+        self._data_buffer += data
         
         #get any full commands ended by \n
         last_command = self._data_buffer.rfind("\n")

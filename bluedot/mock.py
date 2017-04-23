@@ -1,14 +1,71 @@
-import sys
-from .server import BluetoothServer
+from .btcomm import BluetoothServer
 from .dot import BlueDot
 from .threads import WrapThread
 
-if sys.version_info[0] > 2:
-    def string_to_bytes(data):
-        return bytes(data, encoding="ascii")
-else:
-    def string_to_bytes(data):
-        return bytes(data)
+class MockBluetoothAdapter():
+    def __init__(self, device = "mock0"):
+        self._device = device
+        self._address = "00:00:00:00:00:00"
+        self._powered = True
+        self._discoverable = False
+        self._pairable = False
+        self._pairing_thread = None
+
+    @property
+    def device(self):
+        return self._device
+    
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def powered(self):
+        return self._powered
+
+    @powered.setter
+    def powered(self, value):
+        self._powered = value
+
+    @property
+    def discoverable(self):
+        return self._discoverable
+
+    @discoverable.setter
+    def discoverable(self, value):
+        self._discoverable = value
+
+    @property
+    def pairable(self):
+        return self._pairable
+
+    @pairable.setter
+    def pairable(self, value):
+        self._pairable = value
+
+    @property
+    def paired_devices(self):
+        return [["01:01:01:01:01:01", "mock_device_1"], ["02:02:02:02:02:02", "mock_device_2"]]
+
+    def allow_pairing(self, timeout = 60):
+        #if a pairing thread is already running, stop it and restart
+        if self._pairing_thread:
+            if self._pairing_thread.is_alive:
+                self._pairing_thread.stop()
+        
+        #start the pairing thread
+        self._pairing_thread = WrapThread(target=self._allow_pairing, args=(timeout, ))
+        self._pairing_thread.start()
+
+    def _allow_pairing(self, timeout):
+        self.pairable = True
+        self.discoverable = True
+        if timeout != None:
+            #wait till the timeout or the thread is stopped
+            self._pairing_thread.stopping.wait(timeout)
+            self.discoverable = False
+            self.pairable = False
+
 
 class MockBluetoothServer(BluetoothServer):
     """
@@ -17,22 +74,29 @@ class MockBluetoothServer(BluetoothServer):
     """
     def __init__(self, 
         data_received_callback, 
-		auto_start = True, 
-		device = "mock0", 
+        auto_start = True, 
+        device = "mock0", 
         port = 1,
-		when_client_connects = None, 
-		when_client_disconnects = None):
-        
-        self._data_received_callback = data_received_callback
+        encoding = "utf-8",
+        power_up_device = False,
+        when_client_connects = None, 
+        when_client_disconnects = None):
+    
         self._device = device
+        self._adapter = MockBluetoothAdapter(self._device)
+
+        self._data_received_callback = data_received_callback
         self._port = port
+        self._encoding = encoding
+        self._power_up_device = power_up_device
         self._when_client_connects = when_client_connects
         self._when_client_disconnects = when_client_disconnects
-        
+
         self._running = False
-        self._server_address = "00:00:00:00:00:00"
         self._client_connected = False
+        self._server_sock = None
         self._client_info = None
+        self._client_sock = None
             
     def start(self):
         self._running = True
@@ -109,7 +173,7 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock blue dot was pressed    
         """
-        self._server.mock_client_sending_data(string_to_bytes("1,{},{}\n".format(x, y)))
+        self._server.mock_client_sending_data("1,{},{}\n".format(x, y))
 
     def mock_blue_dot_released(self, x, y):
         """
@@ -121,7 +185,7 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock blue dot was released   
         """
-        self._server.mock_client_sending_data(string_to_bytes("0,{},{}\n".format(x, y)))
+        self._server.mock_client_sending_data("0,{},{}\n".format(x, y))
 
     def mock_blue_dot_moved(self, x, y):
         """
@@ -133,7 +197,7 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock blue dot was moved too  
         """
-        self._server.mock_client_sending_data(string_to_bytes("3,{},{}\n".format(x, y)))
+        self._server.mock_client_sending_data("3,{},{}\n".format(x, y))
 
     def launch_mock_app(self):
         """

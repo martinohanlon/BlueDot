@@ -1,8 +1,10 @@
-from bluedot.server import BluetoothServer
+from bluedot.btcomm import BluetoothServer
 from time import sleep
+from signal import pause
 
 def data_received(data):
-    print(str(data))
+    print("recv - {}".format(data))
+    server.send(data)
 
 def client_connected():
     print("client connected")
@@ -19,11 +21,11 @@ server = BluetoothServer(
 
 print("starting")
 server.start()
+print(server.server_address)
 print("waiting for connection")
 
 try:
-    while True:
-        sleep(0.1)
+    pause()
 except KeyboardInterrupt as e:
     print("cancelled by user")
 finally:
