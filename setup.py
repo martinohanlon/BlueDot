@@ -2,7 +2,7 @@ from setuptools import setup
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'

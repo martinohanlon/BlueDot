@@ -644,6 +644,13 @@ class BluetoothClient():
         Disconnect from a bluetooth server.
         """
         if self._connected:
+            
+            #stop the connection thread
+            if self._conn_thread:
+                self._conn_thread.stop()
+                self._conn_thread = None
+
+            #close the socket
             try:
                 self._client_sock.close()
             finally:
