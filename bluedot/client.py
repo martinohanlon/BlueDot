@@ -1,20 +1,20 @@
 from argparse import ArgumentParser
 import pygame
 import sys
-from .btcomm import BluetoothAdapter, BluetoothClient
+from bluedot.btcomm import BluetoothAdapter, BluetoothClient
 
+#colours
 BLUE = (0, 0, 255)
 DARKBLUE = (0, 0, 200)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
-SIZE = (240, 240)
-BUFFER = 7
-CLOSERECT = (220, 5, 15, 15)
-TITLEPOS = (BUFFER, BUFFER)
+
+
+#SIZE = (240, 240)
+SIZE = (700, 500)
+BORDER = 7
 FONT = "monospace"
-FONTSIZE = 14
-LINESPACE = 16
-CHARSPERLINE = 26
+FONTSIZE = 18
 
 class BlueDotClient():
     def __init__(self, device, server, fullscreen):
@@ -49,73 +49,113 @@ class BlueDotClient():
 
         pygame.quit()
 
-
 class BlueDotScreen(object):
     def __init__(self, screen, font):
         self.screen = screen
         self.font = font
+
+        #setup screen attributes
+        self.frame_rect = pygame.Rect(BORDER, BORDER, SIZE[0] - (BORDER * 2), SIZE[1] - (BORDER * 2))
+        self.close_rect = pygame.Rect(SIZE[0] - FONTSIZE - BORDER, BORDER, FONTSIZE, FONTSIZE)
+
         self.draw_screen()
     
     def draw_screen(self):
         #set the screen background
         self.screen.fill(GREY)
 
+        self.draw_close_button()
+        
+    def draw_close_button(self):
         #draw close button
-        self.close_rect = pygame.draw.rect(self.screen, BLUE, CLOSERECT, 2)
+        pygame.draw.rect(self.screen, BLUE, self.close_rect, 2)
         pygame.draw.line(self.screen, BLUE,
-                        (CLOSERECT[0], CLOSERECT[1]), (CLOSERECT[0] + CLOSERECT[2], CLOSERECT[1] + CLOSERECT[3]),
+                        (self.close_rect[0], self.close_rect[1]),
+                        (self.close_rect[0] + self.close_rect[2], self.close_rect[1] + self.close_rect[3]),
                         1)
         pygame.draw.line(self.screen, BLUE,
-                        (CLOSERECT[0], CLOSERECT[1] + CLOSERECT[3]), (CLOSERECT[0] + CLOSERECT[2], CLOSERECT[1]),
+                        (self.close_rect[0], self.close_rect[1] + self.close_rect[3]),
+                        (self.close_rect[0] + self.close_rect[2], self.close_rect[1]),
                         1)
-
+        
     def draw_error(self, e):
-        text = "Error:\n{}".format(e)
-        print(text)
-        self.draw_text(text)
+        message = "Error: {}".format(e)
+        print(message)
+        self.draw_status_message(message, colour = RED)
 
-    def draw_text(self, text):
-        self.draw_screen()
-        current_pos = [BUFFER, BUFFER]
-        lines = text.split("\n")
-        for line in lines:
-            #will this line fit on the screen? if not split it
-            for l in [line[i:i+CHARSPERLINE] for i in range(0, len(line), CHARSPERLINE)]:
-                l_render = self.font.render(l, 1, RED)
-                self.screen.blit(l_render, current_pos)
-                current_pos[1] += LINESPACE + BUFFER
-                
+    def draw_status_message(self, message, colour = BLUE):
+        self.screen.fill(GREY, self.frame_rect)
+        self.draw_close_button()
+        self.draw_text(message, colour, self.frame_rect.height / 2, border = True, border_pad = 3)
+        pygame.display.update()
 
+    def draw_text(self, text, colour, start_y, antiaalias=False, background=None, border=False, border_width=1, border_pad=0):
+        rect = pygame.Rect(self.frame_rect)
+        y = rect.top + start_y + border_pad
+        lineSpacing = -2
+
+        # get the height of the font
+        fontHeight = self.font.size("Tg")[1]
+
+        while text:
+            i = 1
+
+            # determine if the row of text will be outside our area
+            if y + fontHeight > rect.bottom:
+                break
+
+            # determine maximum width of line
+            while self.font.size(text[:i])[0] < (rect.width - (border_pad * 2)) and i < len(text):
+                i += 1
+
+            # if we've wrapped the text, then adjust the wrap to the last word      
+            if i < len(text): 
+                i = text.rfind(" ", 0, i) + 1
+
+            # render the line and blit it to the surface
+            if background:
+                image = self.font.render(text[:i], 1, colour, background)
+                image.set_colorkey(background)
+            else:
+                image = self.font.render(text[:i], antiaalias, colour)
+
+            self.screen.blit(image, (rect.left + border_pad, y))
+            y += fontHeight + lineSpacing + border_pad
+
+            # remove the text we just blitted
+            text = text[i:]
+
+        #return the rect the text was drawn in
+        rect.top = rect.top + start_y
+        rect.height = y - start_y
+    
+        if border:
+            pygame.draw.rect(self.screen, colour, rect, border_width)
+
+        return rect
 
 class DevicesScreen(BlueDotScreen):
     def __init__(self, screen, font, device):
         self.bt_adapter = BluetoothAdapter(device = device)
 
         super(DevicesScreen, self).__init__(screen, font)
-        self.draw_screen()
+        #self.draw_screen()
 
     def draw_screen(self):
         self.device_rects = []
 
         super(DevicesScreen, self).draw_screen()
 
-        #title 
-        title = self.font.render("Connect", 1, BLUE)
-        self.screen.blit(title, TITLEPOS)
+        #title
+        title_rect = self.draw_text("Connect", RED, 0)
 
-        #show bluetooth adapters
-        y = BUFFER + LINESPACE + BUFFER
+        y = title_rect.bottom
         for d in self.bt_adapter.paired_devices:
-            #draw a box
-            device_rect = (BUFFER, y, 230, 20)
-            pygame.draw.rect(self.screen, BLUE, device_rect, 2)
-
-            #draw the name
-            device_name = self.font.render(d[1], 1, BLUE)
-            self.screen.blit(device_name, (device_rect[0] + BUFFER, device_rect[1], device_rect[2], device_rect[3]))
+            device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE, y, border = True, border_pad = 5)
+    
             self.device_rects.append(pygame.Rect(device_rect))
 
-            y += LINESPACE + BUFFER
+            y = device_rect.bottom
 
     def run(self):
         clock = pygame.time.Clock()
@@ -134,6 +174,7 @@ class DevicesScreen(BlueDotScreen):
                     for d in range(len(self.device_rects)):
                         if self.device_rects[d].collidepoint(pos):
                             # show the button
+                            self.draw_status_message("Connecting")
                             button_screen = ButtonScreen(self.screen, self.font, self.bt_adapter.device, self.bt_adapter.paired_devices[d][0])
                             button_screen.run()
 
@@ -166,8 +207,14 @@ class ButtonScreen(BlueDotScreen):
 
     def _draw_circle(self, colour):
         #draw the circle
-        self.circle_centre = (int(SIZE[0] / 2), int(SIZE[1] / 2))
-        self.circle_radius = (int(SIZE[0] / 2)) - (BUFFER * 2)
+        #self.circle_centre = (int(SIZE[0] / 2), int(SIZE[1] / 2))
+        #self.circle_radius = (int(SIZE[0] / 2)) - (BORDER * 2)
+        self.circle_centre = (int(self.frame_rect.top + (self.frame_rect.width / 2)), int(self.frame_rect.left + (self.frame_rect.height / 2)))
+        if self.frame_rect.width > self.frame_rect.height:
+            self.circle_radius = int(self.frame_rect.height / 2)
+        else:
+            self.circle_radius = int(self.frame_rect.width / 2)
+        
         self.circle_rect = pygame.draw.circle(self.screen, colour, self.circle_centre, self.circle_radius, 0)
 
     def _send_message(self, op, pos):
