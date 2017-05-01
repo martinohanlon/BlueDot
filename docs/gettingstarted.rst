@@ -66,6 +66,7 @@ connect
 ~~~~~~~
 
 Start-up the `Blue Dot app`_ on your Android phone or run the `Blue Dot python app`_ on your 2nd Raspberry Pi:
+
  1. Select your Raspberry Pi from the list
  2. Press the blue dot
  
