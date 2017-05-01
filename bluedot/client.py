@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import pygame
 import sys
-from bluedot.btcomm import BluetoothAdapter, BluetoothClient
+from .btcomm import BluetoothAdapter, BluetoothClient
 
 #colours
 BLUE = (0, 0, 255)
@@ -9,19 +9,13 @@ DARKBLUE = (0, 0, 200)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
 
-
-#SIZE = (240, 240)
-SIZE = (700, 500)
+DEFAULTSIZE = (320, 240)
 BORDER = 7
 FONT = "monospace"
 FONTSIZE = 18
 
 class BlueDotClient():
-    def __init__(self, device, server, fullscreen):
-        self.device = device
-        if self.device == None: self.device = "hci0"
-        
-        self.server = server
+    def __init__(self, device, server, fullscreen, width, height):
 
         #init pygame
         pygame.init()
@@ -35,28 +29,40 @@ class BlueDotClient():
 
         #create the screen
         screenflags = 0
-        if fullscreen: screenflags = pygame.FULLSCREEN
-        screen = pygame.display.set_mode(SIZE, screenflags)
+        
+        if fullscreen:
+            screenflags = pygame.FULLSCREEN
+            if width == None and height == None:
+                display_info = pygame.display.Info()
+                width = display_info.current_w
+                height = display_info.current_h
+
+        if width == None: width = DEFAULTSIZE[0]
+        if height == None: height = DEFAULTSIZE[1]
+        
+        screen = pygame.display.set_mode((width, height), screenflags)
 
         #has a server been specified?  If so connected directly
         if server:
-            button_screen = ButtonScreen(screen, font, device, server)
+            button_screen = ButtonScreen(screen, font, device, server, width, height)
             button_screen.run()
         else:
             #start the devices screen
-            devices_screen = DevicesScreen(screen, font, device)
+            devices_screen = DevicesScreen(screen, font, device, width, height)
             devices_screen.run()
 
         pygame.quit()
 
 class BlueDotScreen(object):
-    def __init__(self, screen, font):
+    def __init__(self, screen, font, width, height):
         self.screen = screen
         self.font = font
+        self.width = width
+        self.height = height
 
         #setup screen attributes
-        self.frame_rect = pygame.Rect(BORDER, BORDER, SIZE[0] - (BORDER * 2), SIZE[1] - (BORDER * 2))
-        self.close_rect = pygame.Rect(SIZE[0] - FONTSIZE - BORDER, BORDER, FONTSIZE, FONTSIZE)
+        self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2), self.height - (BORDER * 2))
+        self.close_rect = pygame.Rect(self.width - FONTSIZE - BORDER, BORDER, FONTSIZE, FONTSIZE)
 
         self.draw_screen()
     
@@ -135,10 +141,10 @@ class BlueDotScreen(object):
         return rect
 
 class DevicesScreen(BlueDotScreen):
-    def __init__(self, screen, font, device):
+    def __init__(self, screen, font, device, width, height):
         self.bt_adapter = BluetoothAdapter(device = device)
 
-        super(DevicesScreen, self).__init__(screen, font)
+        super(DevicesScreen, self).__init__(screen, font, width, height)
         #self.draw_screen()
 
     def draw_screen(self):
@@ -175,7 +181,7 @@ class DevicesScreen(BlueDotScreen):
                         if self.device_rects[d].collidepoint(pos):
                             # show the button
                             self.draw_status_message("Connecting")
-                            button_screen = ButtonScreen(self.screen, self.font, self.bt_adapter.device, self.bt_adapter.paired_devices[d][0])
+                            button_screen = ButtonScreen(self.screen, self.font, self.bt_adapter.device, self.bt_adapter.paired_devices[d][0], self.width, self.height)
                             button_screen.run()
 
                             #redraw the screen
@@ -194,8 +200,8 @@ class DevicesScreen(BlueDotScreen):
             pygame.display.update()
 
 class ButtonScreen(BlueDotScreen):
-    def __init__(self, screen, font, device, server):
-        super(ButtonScreen, self).__init__(screen, font)
+    def __init__(self, screen, font, device, server, width, height):
+        super(ButtonScreen, self).__init__(screen, font, width, height)
 
         self.device = device
         self.server = server
@@ -207,8 +213,6 @@ class ButtonScreen(BlueDotScreen):
 
     def _draw_circle(self, colour):
         #draw the circle
-        #self.circle_centre = (int(SIZE[0] / 2), int(SIZE[1] / 2))
-        #self.circle_radius = (int(SIZE[0] / 2)) - (BORDER * 2)
         self.circle_centre = (int(self.frame_rect.top + (self.frame_rect.width / 2)), int(self.frame_rect.left + (self.frame_rect.height / 2)))
         if self.frame_rect.width > self.frame_rect.height:
             self.circle_radius = int(self.frame_rect.height / 2)
@@ -219,8 +223,8 @@ class ButtonScreen(BlueDotScreen):
 
     def _send_message(self, op, pos):
         if self.bt_client.connected:
-            x = (pos[0] - self.circle_centre[0]) / self.circle_radius
-            y = ((pos[1] - self.circle_centre[1]) / self.circle_radius) * -1
+            x = (pos[0] - self.circle_centre[0]) / float(self.circle_radius)
+            y = ((pos[1] - self.circle_centre[1]) / float(self.circle_radius)) * -1
             message = "{},{},{}\n".format(op, x, y)
             try:
                 self.bt_client.send(message)
@@ -292,9 +296,11 @@ if __name__ == "__main__":
     parser.add_argument("--device", help="The name of the bluetooth device to use (default is hci0)")
     parser.add_argument("--server", help="The name or mac address of the bluedot server")
     parser.add_argument("--fullscreen", help="Fullscreen app", action="store_true")
+    parser.add_argument("--width", type=int, help="A custom screen width (default is {})".format(DEFAULTSIZE[0]))
+    parser.add_argument("--height", type=int, help="A customer screen height (default is {})".format(DEFAULTSIZE[1]))
     args = parser.parse_args()
 
     #start the blue dot client
-    blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen)
+    blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
 
 
