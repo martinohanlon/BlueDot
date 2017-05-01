@@ -13,6 +13,7 @@ DEFAULTSIZE = (320, 240)
 BORDER = 7
 FONT = "monospace"
 FONTSIZE = 18
+FONTPAD = 3
 
 class BlueDotClient():
     def __init__(self, device, server, fullscreen, width, height):
@@ -62,7 +63,7 @@ class BlueDotScreen(object):
 
         #setup screen attributes
         self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2), self.height - (BORDER * 2))
-        self.close_rect = pygame.Rect(self.width - FONTSIZE - BORDER, BORDER, FONTSIZE, FONTSIZE)
+        self.close_rect = pygame.Rect(self.width - FONTSIZE - FONTPAD - BORDER, BORDER, FONTSIZE + FONTPAD, FONTSIZE + FONTPAD)
 
         self.draw_screen()
     
@@ -92,7 +93,7 @@ class BlueDotScreen(object):
     def draw_status_message(self, message, colour = BLUE):
         self.screen.fill(GREY, self.frame_rect)
         self.draw_close_button()
-        self.draw_text(message, colour, self.frame_rect.height / 2, border = True, border_pad = 3)
+        self.draw_text(message, colour, self.frame_rect.height / 2, border = True, border_pad = FONTPAD)
         pygame.display.update()
 
     def draw_text(self, text, colour, start_y, antiaalias=False, background=None, border=False, border_width=1, border_pad=0):
@@ -157,7 +158,7 @@ class DevicesScreen(BlueDotScreen):
 
         y = title_rect.bottom
         for d in self.bt_adapter.paired_devices:
-            device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE, y, border = True, border_pad = 5)
+            device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE, y, border = True, border_pad = FONTPAD)
     
             self.device_rects.append(pygame.Rect(device_rect))
 
