@@ -40,7 +40,7 @@ One blue circle can do a lot.
 even more
 ---------
 
-The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ ideas.
+The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ and ideas.
 
 status
 ------

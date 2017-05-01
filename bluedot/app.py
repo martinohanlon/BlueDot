@@ -293,7 +293,7 @@ class ButtonScreen(BlueDotScreen):
 
 if __name__ == "__main__":
     #read command line options
-    parser = ArgumentParser(description="Blue Dot Python Client")
+    parser = ArgumentParser(description="Blue Dot Python App")
     parser.add_argument("--device", help="The name of the bluetooth device to use (default is hci0)")
     parser.add_argument("--server", help="The name or mac address of the bluedot server")
     parser.add_argument("--fullscreen", help="Fullscreen app", action="store_true")

@@ -1,0 +1,1 @@
+.. include:: ../clients/python/README.rst

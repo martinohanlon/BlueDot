@@ -245,17 +245,58 @@ By holding down the Blue Dot and moving the position you can use it as an analog
 center out
 ~~~~~~~~~~
 
-to come
+Using the ``distance`` property of the `BlueDotPosition`_ which is returned when the position is moved you can create a slide which goes from the centre out in any direction::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def show_percentage(pos):
+        percentage = round(pos.distance * 100, 2)
+        print("{}%".format(percentage))
+
+    bd = BlueDot()
+    bd.when_moved = show_percentage
+
+    pause()
 
 left to right
 ~~~~~~~~~~~~~
 
-to come
+The ``x`` property of the `BlueDotPosition`_ returns a value from -1 (far left) to 1 (far right), using this value you can create slider which goes horizontally through the middle::
 
-fade an led
-~~~~~~~~~~~
+    from bluedot import BlueDot
+    from signal import pause
 
-to come
+    def show_percentage(pos):
+        horizontal = ((pos.x + 1) / 2)
+        percentage = round(horizontal * 100, 2)
+        print("{}%".format(percentage))
+
+    bd = BlueDot()
+    bd.when_moved = show_percentage
+
+    pause()
+
+To make a vertical slider you would change the code above to use the ``y`` property instead of the ``x``.
+
+dimmer switch
+~~~~~~~~~~~~~
+
+Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can create a wireless dimmer switch::
+
+    from bluedot import BlueDot
+    from gpiozero import PWMLED
+    from signal import pause
+
+    def set_brightness(pos):
+        brightness = ((pos.y + 1) / 2)
+        led.value = brightness
+
+    bd = BlueDot()
+    bd.when_moved = set_brightness
+    led = PWMLED(pin)
+
+    pause()
 
 bluetooth
 ---------
@@ -310,14 +351,6 @@ MockBlueDot inherits from BlueDot and is used in the same way, but you have the 
 
 |mockbluedot|
 
-The mock app uses pygame, which is installed with Raspbian, but you can install using::
-
-    sudo apt-get install python3-pygame
-
-Or if you are using Python 2 ::
-
-    sudo apt-get install python-pygame
-
 mock app
 ~~~~~~~~
 
@@ -354,6 +387,7 @@ Tests can also be scripted using MockBlueDot::
 .. _picamera: https://picamera.readthedocs.io
 .. _Ben Nuttall: https://github.com/bennuttall
 .. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
+.. _BlueDotPosition: dotapi.html#bluedotposition
 
 .. |mockbluedot| image:: images/mockbluedot.png
    :alt: mock blue dot app
