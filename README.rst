@@ -12,8 +12,8 @@ start
 
 `Install and usage`_ is really simple:
 
-1. Download the `Blue Dot app`_
-2. Pair your Raspberry Pi to your Bluetooth device
+1. Get a Blue Dot app
+2. Pair your Raspberry Pi
 3. Install the Python library
 4. Write some code::
 
