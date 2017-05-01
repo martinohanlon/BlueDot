@@ -4,6 +4,12 @@ Changelog
 bluedot python library
 ----------------------
 
+0.3.0 - 2017-05-01
+~~~~~~~~~~~~~~~~~~
+
+ * Python Blue Dot app
+ * minor bug fix in BluetoothClient
+
 0.2.1 - 2017-04-23
 ~~~~~~~~~~~~~~~~~~
 

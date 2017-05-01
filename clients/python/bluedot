@@ -1,0 +1,2 @@
+#run the bluedot python client
+python3 -m bluedot.client

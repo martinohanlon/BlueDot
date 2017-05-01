@@ -1,17 +1,28 @@
 Getting started
 ===============
 
+what
+----
+
+In order to use Blue Dot you will need:
+
+* a Raspberry Pi
+
+  * with built-in Bluetooth (such as the Pi 3 or Pi Zero W)
+  * or a USB Bluetooth dongle
+
+* an Android phone or 2nd Raspberry Pi for the remote
+* an internet connection (for the install)
+
 installation
 ------------
 
 These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
 
-You will need a Raspberry Pi with built-in Bluetooth (such as the Pi 3 or Pi Zero W) or Raspberry Pi and a USB bluetooth dongle.
+android app
+~~~~~~~~~~~
 
-app
-~~~
-
-The `Blue Dot app`_ is available from the Google Play Store.
+If using an Android phone, the `Blue Dot app`_ can be installed from the Google Play Store.
 
 python library
 ~~~~~~~~~~~~~~
@@ -32,29 +43,7 @@ usage
 pair
 ~~~~
 
-In order to connect the Blue Dot app you will need to pair the client (android phone) to the Raspberry Pi.
-
-On your Android phone
-
-1. Open Settings
-2. Select Bluetooth 
-3. This will make your phone Discoverable
-
-Using your Raspberry Pi
-
-1. Click the bluetooth icon on the taskbar
-2. Turn on Bluetooth (if its off)
-3. Click `Make Discoverable`
-4. Click Add Device
-5. Your phone will appear in the list, select it and click Pair
-6. Enter a PIN code
-
-On your Android phone
-
-1. Enter the same PIN code when prompted
-2. Click Ok
-
-Your Raspberry Pi and Android phone are now paired.
+In order to use Blue Dot you will need to pair the Raspberry Pi to the remote (`Android phone`_ or `2nd Raspberry Pi`_).
 
 write code
 ~~~~~~~~~~
@@ -76,8 +65,11 @@ Warning - do not save your program as ``bluedot.py`` as Python will try and impo
 connect
 ~~~~~~~
 
-Start the `Blue Dot app`_, select your Raspberry Pi from the list to connect, press the blue dot. 
+Start-up the `Blue Dot app`_ on your Android phone or run the `Blue Dot python app`_ on your 2nd Raspberry Pi:
 
+ 1. Select your Raspberry Pi from the list
+ 2. Press the blue dot
+ 
 where next
 ----------
 
@@ -87,3 +79,6 @@ Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bl
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
 .. _Recipes: recipes.html
 .. _API: dotapi.html
+.. _2nd Raspberry Pi: pairpipi.html
+.. _Android phone: pairpiandroid.html
+.. _Blue Dot python app: bluedotpythonapp.html
