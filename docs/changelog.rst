@@ -7,6 +7,8 @@ bluedot python library
 in dev
 ~~~~~~~~~~~~~~~~~~
 
+ * added swipes and interactions
+ * doc updates
  * bug fix in BlueDot.when_moved
 
 0.3.0 - 2017-05-01

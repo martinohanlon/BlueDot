@@ -484,7 +484,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is pressed. 
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotPosition will be returned representing where the Blue Dot was pressed.
+        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was pressed.
         
         The following example will print a message to the screen when the button is pressed::
         
@@ -519,7 +519,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is released. 
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotPosition will be returned representing where the Blue Dot was held 
+        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was held 
         when it was released.
         """
         return self._when_released
@@ -534,7 +534,7 @@ class BlueDot():
         Sets or returns the function which is called when the position the Blue Dot is pressed is moved. 
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotPosition will be returned representing the new position of where the 
+        instance of ``BlueDotPosition`` will be returned representing the new position of where the 
         Blue Dot is held.
         """
         return self._when_moved
@@ -549,7 +549,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is swiped. 
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotSwipe will be returned representing the how the Blue Dot was
+        instance of ``BlueDotSwipe`` will be returned representing the how the Blue Dot was
         swiped.
         """
         return self._when_swiped

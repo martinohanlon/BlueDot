@@ -302,6 +302,76 @@ Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can
 
     pause()
 
+swiping
+-------
+
+You can interact with the Blue Dot by swiping across it, like you would to move between pages in a mobile app.
+
+single
+~~~~~~
+
+Detecting a single swipe is easy using ``wait_for_swipe``::
+    
+    from bluedot import BlueDot
+    bd = BlueDot()
+    bd.wait_for_swipe()
+    print("Blue Dot swiped")
+
+Alternatively you can also use ``when_swiped`` to call a function::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped():
+        print("Blue Dot swiped")
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
+direction
+~~~~~~~~~
+
+You can tell what direction the Blue Dot is swiped by using the `BlueDotSwipe`_ object returned by ``when_swiped``::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped(swipe):
+        if swipe.up:
+            print("up")
+        elif swipe.down:
+            print("down")
+        elif swipe.left:
+            print("left")
+        elif swipe.right:
+            print("right")
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
+speed, angle, distance
+~~~~~~~~~~~~~~~~~~~~~~
+
+`BlueDotSwipe`_ returns more information other than the direction including the speed of the swipe (in Blue Dot radius per second), the angle of the swipe and the distance between the start and end position of the swipe::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped(swipe):
+        print("Swiped")
+        print("speed={}".format(swipe.speed))
+        print("angle={}".format(swipe.angle))
+        print("distance={}".format(swipe.distance))
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
 bluetooth
 ---------
 
@@ -394,6 +464,8 @@ Tests can also be scripted using MockBlueDot::
 .. _BlueDot API: http://bluedot.readthedocs.io/en/latest/dotapi.html
 .. _BlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#bluedot
 .. _BlueDotPosition: dotapi.html#bluedotposition
+.. _BlueDotInteraction: dotapi.html#bluedotinteraction
+.. _BlueDotSwipe: dotapi.html#bluedotswipe
 .. _MockBlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#mockbluedot
 
 .. |mockbluedot| image:: images/mockbluedot.png
