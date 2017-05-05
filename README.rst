@@ -35,7 +35,7 @@ Why be restricted by such vague positions like top and bottom though, you can ge
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
-One blue circle can do a lot.
+You can press it, slide it, swipe it - one blue circle can do a lot.
 
 even more
 ---------

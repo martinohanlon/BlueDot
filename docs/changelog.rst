@@ -4,7 +4,7 @@ Changelog
 bluedot python library
 ----------------------
 
-in dev
+0.4.0 - 2017-05-05
 ~~~~~~~~~~~~~~~~~~
 
  * added swipes and interactions
