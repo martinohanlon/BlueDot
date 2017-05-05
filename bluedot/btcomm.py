@@ -50,49 +50,39 @@ class BluetoothAdapter():
     @property
     def powered(self):
         """
-        Returns ``True`` if the bluetooth adapter is powered up.
-        """
-        return get_adapter_powered_status(self._device)
-
-    @powered.setter
-    def powered(self, value):
-        """
         Set to ``True`` to power on the bluetooth adapter.
 
         Depending on how bluetooth has been powered down, you may need to use 
         rfkill to unblock bluetooth to give permission to bluez to power on bluetooth::
 
             sudo rfkill unblock bluetooth
-
         """
+        return get_adapter_powered_status(self._device)
+
+    @powered.setter
+    def powered(self, value):
         device_powered(self._device, value)
 
     @property
     def discoverable(self):
         """
-        Returns ``True`` if the bluetooth adapter is discoverable
+        Set to ``True`` to make the bluetooth adapter discoverable.
         """
         return get_adapter_discoverable_status(self._device)
 
     @discoverable.setter
     def discoverable(self, value):
-        """
-        Set to ``True`` to make the bluetooth adapter discoverable.
-        """
         device_discoverable(self._device, value)
 
     @property
     def pairable(self):
         """
-        Returns ``True`` if the bluetooth adapter is pairable
+        Set to ``True`` to make the bluetooth adapter pairable.
         """
         return get_adapter_pairable_status(self._device)
 
     @pairable.setter
     def pairable(self, value):
-        """
-        Set to ``True`` to make the bluetooth adapter pairable.
-        """
         device_pairable(self._device, value)
 
     @property
@@ -294,45 +284,37 @@ class BluetoothServer():
     @property
     def data_received_callback(self):
         """
-        Returns the function which is called when data is received by the server. 
+        Sets or returns the function which is called when data is received by the server. 
+
+        The function should accept a single parameter which when called will hold
+        the data received. Set to ``None`` if received data is not required.
         """
         return self._data_received_callback
 
     @data_received_callback.setter
     def data_received_callback(self, value):
-        """
-        Set the function which will be called when data is received by the server.  
-        The function should accept a single parameter which when called will hold
-        the data received. Set to ``None`` if received data is not required.
-        """
         self._data_received_callback = value
 
     @property
     def when_client_connects(self):
         """
-        Returns the function which is called when a client connects. 
+        Sets or returns the function which is called when a client connects. 
         """
         return self._when_client_connects
 
     @when_client_connects.setter
     def when_client_connects(self, value):
-        """
-        When set to a function it will cause the function to be run when a client connects.
-        """
         self._when_client_connects = value
 
     @property
     def when_client_disconnects(self):
         """
-        Returns the function which is called when a client disconnects. 
+        Sets or returns the function which is called when a client disconnects. 
         """
         return self._when_client_disconnects
 
     @when_client_disconnects.setter
     def when_client_disconnects(self, value):
-        """
-        When set to a function it will cause the function to be run when a client disconnects.
-        """
         self._when_client_disconnects = value
 
     def start(self):
@@ -595,17 +577,15 @@ class BluetoothClient():
     @property
     def data_received_callback(self):
         """
-        Returns the function which is called when data is received by the client. 
+        Sets or returns the function which is called when data is received by the client. 
+        
+        The function should accept a single parameter which when called will hold
+        the data received. Set to ``None`` if data received is not required.
         """
         return self._data_received_callback
 
     @data_received_callback.setter
     def data_received_callback(self, value):
-        """
-        Set the function which will be called when data is received by the client.  
-        The function should accept a single parameter which when called will hold
-        the data received. Set to ``None`` if data received is not required.
-        """
         self._data_received_callback = value
 
     def connect(self):

@@ -481,15 +481,8 @@ class BlueDot():
     @property
     def when_pressed(self):
         """
-        Returns the function which is called when the Blue Dot is pressed. 
-        """
-        return self._when_pressed
+        Sets or returns the function which is called when the Blue Dot is pressed. 
 
-    @when_pressed.setter
-    def when_pressed(self, value):
-        """
-        When set to a function it will cause the function to be run when the Blue Dot is pressed.
-        
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
         instance of BlueDotPosition will be returned representing where the Blue Dot was pressed.
         
@@ -512,92 +505,79 @@ class BlueDot():
                 
             bd = BlueDot()
             bd.when_pressed = dot_was_pressed
-        
+
         """
+        return self._when_pressed
+
+    @when_pressed.setter
+    def when_pressed(self, value):
         self._when_pressed = value
 
     @property 
     def when_released(self):
         """
-        Returns the function which is called when the Blue Dot is released. 
+        Sets or returns the function which is called when the Blue Dot is released. 
+
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of BlueDotPosition will be returned representing where the Blue Dot was held 
+        when it was released.
         """
         return self._when_released
 
     @when_released.setter
     def when_released(self, value):
-        """
-        When set to a function it will cause the function to be run when the Blue Dot is released.
-        
-        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotPosition will be returned representing where the Blue Dot was held 
-        when it was released.
-        """
         self._when_released = value
 
     @property
     def when_moved(self):
         """
-        Returns the function which is called when the position the Blue Dot is pressed is moved. 
+        Sets or returns the function which is called when the position the Blue Dot is pressed is moved. 
+
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of BlueDotPosition will be returned representing the new position of where the 
+        Blue Dot is held.
         """
         return self._when_moved
 
     @when_moved.setter
     def when_moved(self, value):
-        """
-        When set to a function it will cause the function to be run when the position of where
-        the Blue Dot is pressed changes.
-        
-        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotPosition will be returned representing the new position of where the 
-        Blue Dot is held.
-        """
         self._when_moved = value
 
     @property
     def when_swiped(self):
         """
-        Returns the function which is called when the Blue Dot is swiped. 
+        Sets or returns the function which is called when the Blue Dot is swiped. 
+
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of BlueDotSwipe will be returned representing the how the Blue Dot was
+        swiped.
         """
         return self._when_swiped
 
     @when_swiped.setter
     def when_swiped(self, value):
-        """
-        When set to a function it will cause the function to be run when the Blue Dot is
-        swiped.
-        
-        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of BlueDotSwipe will be returned representing the how the Blue Dot was
-        swiped.
-        """
         self._when_swiped = value
 
     @property 
     def when_client_connects(self):
         """
-        Returns the function which is called when a Blue Dot connects. 
+        Sets or returns the function which is called when a Blue Dot connects. 
         """
         return self._when_client_connects
 
     @when_client_connects.setter
     def when_client_connects(self, value):
-        """
-        When set to a function it will cause the function to be run when a Blue Dot connects.
-        """
         self._when_client_connects = value
 
     @property 
     def when_client_disconnects(self):
         """
-        Returns the function which is called when a Blue Dot disconnects. 
+        Sets or returns the function which is called when a Blue Dot disconnects. 
         """
         return self._when_client_disconnects
 
     @when_client_disconnects.setter
     def when_client_disconnects(self, value):
-        """
-        When set to a function it will cause the function to be run when a Blue Dot disconnects.
-        """
         self._when_client_disconnects = value
 
     @property
