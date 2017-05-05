@@ -4,6 +4,11 @@ Changelog
 bluedot python library
 ----------------------
 
+in dev
+~~~~~~~~~~~~~~~~~~
+
+ * bug fix in BlueDot.when_moved
+
 0.3.0 - 2017-05-01
 ~~~~~~~~~~~~~~~~~~
 

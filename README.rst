@@ -29,7 +29,7 @@ See the `getting started`_ guide to 'get started'!
 more
 ----
 
-The Blue Dot is a joystick as well as button, you can tell if the dot was pressed in the middle, on the top, bottom, left or right. Perhaps create a `BlueDot controlled Robot`_.
+The Blue Dot is a `joystick`_ as well as `button`_, you can tell if the dot was pressed in the middle, on the top, bottom, left or right. Perhaps create a `BlueDot controlled Robot`_.
 
 Why be restricted by such vague positions like top and bottom though, you can get the exact x, y position or even the angle and distance from centre where the dot was pressed.
 
@@ -59,6 +59,8 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _issue: https://github.com/martinohanlon/bluedot/issues
 .. _BlueDot controlled Robot: https://youtu.be/eW9oEPySF58
+.. _joystick: http://bluedot.readthedocs.io/en/latest/recipes.html#joystick
+.. _button: http://bluedot.readthedocs.io/en/latest/recipes.html#button
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
    :height: 247 px

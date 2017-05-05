@@ -2,6 +2,8 @@
 Recipes
 =======
 
+The recipes provide examples of how you can use Blue Dot, dont be restricted by these ideas and be sure to have a look at the `BlueDot API`_ as there is more to be discovered.
+
 button
 ------
 
@@ -10,7 +12,7 @@ The simplest way to use the Blue Dot is as a wireless button.
 hello world
 ~~~~~~~~~~~
 
-When the Blue Dot is pressed, lets say Hello World::
+Let's say Hello World by creating the `BlueDot`_ object then waiting for the Blue Dot app to connect and be pressed::
 
     from bluedot import BlueDot
     bd = BlueDot()
@@ -120,7 +122,7 @@ The Blue Dot can also be used as a joystick when the middle, top, bottom, left o
 d pad
 ~~~~~
 
-Using the position the BlueDot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
+Using the position the Blue Dot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
 
     from bluedot import BlueDot
     from signal import pause
@@ -134,6 +136,8 @@ Using the position the BlueDot was pressed you can work out whether it was press
             print("left")
         elif pos.right:
             print("right")
+        elif pos.middle:
+            print("fire")
 
     bd = BlueDot()
     bd.when_pressed = dpad
@@ -301,7 +305,7 @@ Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can
 bluetooth
 ---------
 
-You can interact with the Bluetooth adapter using BlueDot.
+You can interact with the Bluetooth adapter using `BlueDot`_.
 
 pairing
 ~~~~~~~
@@ -345,7 +349,7 @@ You can get the devices that your raspberry pi is paired too::
 testing
 -------
 
-bluedot includes a MockBlueDot class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
+bluedot includes a `MockBlueDot`_ class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
 
 MockBlueDot inherits from BlueDot and is used in the same way, but you have the option of launching a mock app which you can click with a mouse or writing scripts to simulate the Blue Dot being used.
 
@@ -387,7 +391,10 @@ Tests can also be scripted using MockBlueDot::
 .. _picamera: https://picamera.readthedocs.io
 .. _Ben Nuttall: https://github.com/bennuttall
 .. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
+.. _BlueDot API: http://bluedot.readthedocs.io/en/latest/dotapi.html
+.. _BlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#bluedot
 .. _BlueDotPosition: dotapi.html#bluedotposition
+.. _MockBlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#mockbluedot
 
 .. |mockbluedot| image:: images/mockbluedot.png
    :alt: mock blue dot app

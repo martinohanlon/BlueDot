@@ -13,17 +13,21 @@ def released():
 def moved(pos):
     print("Moved: x={} y={}".format(pos.x, pos.y))
 
+def swiped(swipe):
+    print("Swiped: up={} down={} left={} right={} speed={}".format(swipe.up, swipe.down, swipe.left, swipe.right, swipe.speed))
+
 def client_connected():
-    print("client connected")
+    print("connected callback")
 
 def client_disconnected():
-    print("client disconnected")
+    print("disconnected callback")
 
 dot.when_client_connects = client_connected
 dot.when_client_disconnects = client_disconnected
 dot.when_pressed = pressed
 dot.when_released = released
 dot.when_moved = moved
+dot.when_swiped = swiped
 dot.start()
 
 try:

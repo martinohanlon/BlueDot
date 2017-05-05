@@ -1,5 +1,5 @@
 import atexit
-from time import sleep
+from time import sleep, time
 from threading import Event
 from math import atan2, degrees, hypot
 from inspect import getargspec
@@ -11,14 +11,15 @@ class BlueDotPosition():
     Represents a position of where the blue for is pressed, released or held.
 
     :param float x:
-        The x position of the Blue Dot, 0 being centre, -1 being far left and 1 
-        being far right. 
+        The x position of the Blue Dot, 0 being centre, ``-1`` being far left 
+        and ``1`` being far right. 
 
     :param float y:
-        The y position of the Blue Dot, 0 being centre, -1 being at the bottom 
-        and 1 being at the top. 
+        The y position of the Blue Dot, 0 being centre, ``-1`` being at the 
+        bottom and ``1`` being at the top. 
     """
     def __init__(self, x, y):
+        self._time = time()
         self._x = self._clamped(float(x))
         self._y = self._clamped(float(y))
         self._angle = None
@@ -26,20 +27,20 @@ class BlueDotPosition():
         
     def _clamped(self, v):                                                                 
         return max(-1, min(1, v))
-        
+    
     @property
     def x(self):
         """
-        The x position of the Blue Dot, 0 being centre, -1 being far left and 1 
-        being far right. 
+        The x position of the Blue Dot, ``0`` being centre, ``-1`` being far 
+        left and ``1`` being far right. 
         """
         return self._x
 
     @property
     def y(self):
         """
-        The y position of the Blue Dot, 0 being centre, -1 being at the bottom 
-        and 1 being at the top. 
+        The y position of the Blue Dot, ``0`` being centre, ``-1`` being at 
+        the bottom and ``1`` being at the top. 
         """
         return self._y
 
@@ -57,7 +58,7 @@ class BlueDotPosition():
     def distance(self):
         """
         The distance from centre of where the Blue Dot is pressed, held or released.
-        The radius of the Blue Dot is 1.
+        The radius of the Blue Dot is ``1``.
         """
         if self._distance == None:
             self._distance = self._clamped(hypot(self.x, self.y))
@@ -66,37 +67,261 @@ class BlueDotPosition():
     @property
     def middle(self):
         """
-        Returns ``True`` if the BlueDot is pressed, held or released in the middle.
+        Returns ``True`` if the Blue Dot is pressed, held or released in the middle.
         """
         return True if self.distance <= 0.5 else False
 
     @property
     def top(self):
         """
-        Returns ``True`` if the BlueDot is pressed, held or released at the top.
+        Returns ``True`` if the Blue Dot is pressed, held or released at the top.
         """
         return True if self.distance > 0.5 and self.angle > -45 and self.angle <= 45 else False
     
     @property
     def right(self):
         """
-        Returns ``True`` if the BlueDot is pressed, held or released on the right.
+        Returns ``True`` if the Blue Dot is pressed, held or released on the right.
         """
         return True if self.distance > 0.5 and self.angle > 45 and self.angle <= 135 else False
 
     @property
     def bottom(self):
         """
-        Returns ``True`` if the BlueDot is pressed, held or released at the bottom.
+        Returns ``True`` if the Blue Dot is pressed, held or released at the bottom.
         """        
         return True if self.distance > 0.5 and (self.angle > 135 or self.angle <= -135) else False
 
     @property
     def left(self):
         """
-        Returns ``True`` if the BlueDot is pressed, held or released on the left.
+        Returns ``True`` if the Blue Dot is pressed, held or released on the left.
         """        
         return True if self.distance > 0.5 and self.angle > -135 and self.angle <= -45 else False
+
+    @property
+    def time(self):
+        """
+        The time the blue dot was at this position.
+
+        Note - this is the time the message was received from the Blue Dot app, 
+        not the time it was sent.
+        """
+        return self._time
+
+class BlueDotInteraction():
+    """
+    Represents an interaction with the Blue Dot, from when it was pressed to 
+    when it was released.
+
+    A ``BlueDotInteraction`` can be active or inactive, i.e. it is active 
+    because the Blue Dot has not been released, or inactive because the Blue 
+    Dot was released and the interaction finished.
+
+    :param BlueDotPosition pressed_position:
+        The BlueDotPosition when the Blue Dot was pressed.
+    """
+    def __init__(self, pressed_position):
+        self._active = False
+        self._positions = []
+        self._positions.append(pressed_position)
+
+    @property
+    def active(self):
+        """
+        Returns ``True`` if the interaction is still active, i.e. the Blue Dot 
+        hasnt been released.
+        """
+        return self._active
+
+    @property
+    def positions(self):
+        """
+        A list of ``BlueDotPositions`` for all the positions which make up this
+        interaction.
+
+        The first position is where the Blue Dot was pressed, the last is where
+        the Blue Dot was released, all position in between are where the position
+        Blue Dot changed (i.e. moved) when it was held down.
+        """
+        return self._positions
+
+    @property
+    def pressed_position(self):
+        """
+        Returns the position when the Blue Dot was pressed i.e. where the 
+        interaction started.
+        """
+        return self._positions[0]
+
+    @property
+    def released_position(self):
+        """
+        Returns the position when the Blue Dot was released i.e. where the 
+        interaction ended.
+
+        If the interaction is still active it returns ``None``.
+        """
+        if not self.active:
+            return self._positions[-1]
+        else:
+            return None
+
+    @property
+    def current_position(self):
+        """
+        Returns the current position for the interaction.
+
+        If the interaction is inactive, it will return the position when the
+        Blue Dot was released
+        """
+        return self._positions[-1]
+
+    @property
+    def duration(self):
+        """
+        Returns the duration in seconds of the interaction, i.e. the amount time 
+        between when the Blue Dot was pressed and now or when it was released.
+        """
+        if self.active:
+            return time() - self.pressed_position.time
+        else:
+            return self.released_position.time - self.pressed_position.time
+
+    @property
+    def distance(self):
+        """
+        Returns the total distance of the Blue Dot interaction
+        """
+        dist = 0
+        for i in range(1, len(self._positions)):
+            p1 = self._positions[i-1]
+            p2 = self._positions[i]
+            dist += hypot(p2.x - p1.x, p2.y - p1.y)
+
+        return dist
+
+    def moved(self, moved_position):
+        """
+        Adds an additional position to the interaction, called when the position 
+        the Blue Dot is pressed moves.
+        """
+        if self._active:
+            self._positions.append(moved_position)
+            
+    def released(self, released_position):
+        """
+        Called when the Blue Dot is released and completes a Blue Dot interaction
+
+        :param BlueDotPosition released_position:
+            The BlueDotPosition when the Blue Dot was released.
+        """
+        self._active = False
+        self._positions.append(released_position)
+
+class BlueDotSwipe():
+    """
+    Represents a Blue Dot swipe interaction.
+
+    A ``BlueDotSwipe`` can be valid or invalid based on whether the Blue Dot 
+    interaction was a swipe or not.
+
+    :param BlueDotInteraction interaction:
+        The BlueDotInteraction object to be used to determine whether the interaction
+        was a swipe.
+    """
+    def __init__(self, interaction):
+        self._interaction = interaction
+        self._speed_threshold = 2
+        self._angle = None
+        self._distance = None
+        self._valid = self._is_valid_swipe()
+    
+    def _is_valid_swipe(self):
+        #the validity of a swipe is based on the speed of the interaction, 
+        # so a short fast swipe is valid as well as a long slow swipe 
+        #self._speed = self.distance / self.interaction.duration
+        self._speed = self.distance / self.interaction.duration
+        if not self.interaction.active and self._speed > self._speed_threshold:
+            return True
+        else:
+            return False
+
+    @property
+    def interaction(self):
+        """
+        The ``BlueDotInteraction`` object relating to this swipe.
+        """
+        return self._interaction
+    
+    @property
+    def valid(self):
+        """
+        Returns ``True`` if the Blue Dot interaction is a swipe.
+        """
+        return self._valid
+
+    @property
+    def distance(self):
+        """
+        Returns the distance of the swipe (i.e. the distance between the pressed
+        and released positions)
+        """
+        #should this be the total lenght of the swipe. All the points? It might be slow to calculate
+        if self._distance == None:
+            self._distance = hypot(
+                self.interaction.released_position.x - self.interaction.pressed_position.x, 
+                self.interaction.released_position.y - self.interaction.pressed_position.y)
+        
+        return self._distance
+
+    @property
+    def angle(self):
+        """
+        Returns the angle of the swipe (i.e. the angle between the pressed
+        and released positions)
+        """
+        if self._angle == None:
+            self._angle = degrees(atan2(
+                self.interaction.released_position.x - self.interaction.pressed_position.x, 
+                self.interaction.released_position.y - self.interaction.pressed_position.y))
+
+        return self._angle
+
+    @property
+    def speed(self):
+        """
+        Returns the speed of the swipe in Blue Dot radius / second.
+        """
+        return self._speed
+    
+    @property
+    def up(self):
+        """
+        Returns ``True`` if the Blue Dot was swiped up.
+        """
+        return True if self.valid and self.angle > -45 and self.angle <= 45 else False
+
+    @property
+    def down(self):
+        """
+        Returns ``True`` if the Blue Dot was swiped down.
+        """        
+        return True if self.valid and (self.angle > 135 or self.angle <= -135) else False
+
+    @property
+    def left(self):
+        """
+        Returns ``True`` if the Blue Dot was swiped left.
+        """        
+        return True if self.valid and self.angle > -135 and self.angle <= -45 else False
+
+    @property
+    def right(self):
+        """
+        Returns ``True`` if the Blue Dot was swiped right.
+        """
+        return True if self.valid and self.angle > 45 and self.angle <= 135 else False
 
 class BlueDot():
     """
@@ -158,13 +383,17 @@ class BlueDot():
         self._is_pressed_event = Event()
         self._is_released_event = Event()
         self._is_moved_event = Event()
+        self._is_swiped_event = Event()
+
         self._when_pressed = None
         self._when_released = None
         self._when_moved = None
+        self._when_swiped = None
         self._when_client_connects = None
         self._when_client_disconnects = None
 
         self._position = None
+        self._interaction = None
 
         self._create_server()
 
@@ -174,21 +403,21 @@ class BlueDot():
     @property
     def device(self):
         """
-        The bluetooth device the server is using. This defaults to hci0.
+        The bluetooth device the server is using. This defaults to ``hci0``.
         """
         return self._device
     
     @property
     def port(self):
         """
-        The port the server is using. This defaults to 1.
+        The port the server is using. This defaults to ``1``.
         """
         return self._port
 
     @property
     def server(self):
         """
-        The BluetoothServer instance that is being used to communicate
+        The ``btcomm.BluetoothServer`` instance that is being used to communicate
         with clients.
         """
         return self._server
@@ -210,7 +439,7 @@ class BlueDot():
     @property
     def value(self):
         """
-        Returns a 1 if the Blue Dot is pressed, 0 if released.
+        Returns a ``1`` if the Blue Dot is pressed, ``0`` if released.
         """
         return 1 if self.is_pressed else 0
         
@@ -225,14 +454,29 @@ class BlueDot():
     @property
     def position(self):
         """
-        Returns an instance of BlueDotPosition representing the last 
-        position the Blue Dot was pressed or released. 
+        Returns an instance of ``BlueDotPosition`` representing the 
+        current or last position the Blue Dot was pressed, held or 
+        released. 
         
-        Note - if the Blue Dot is released (and inactive), the position 
-        will continue to hold the position when it was released, until
-        it is pressed again.
+        Note - if the Blue Dot is released (and inactive), ``position`` 
+        will return position when it was released, until it is pressed 
+        again. If the Blue Dot has never been pressed ``position`` will
+        return ``None``.
         """
         return self._position
+
+    @property
+    def interaction(self):
+        """
+        Returns an instance of ``BlueDotInteraction`` representing the 
+        current or last interaction with the Blue Dot. 
+        
+        Note - if the Blue Dot is released (and inactive), ``interaction`` 
+        will return the interaction when it was released, until it is 
+        pressed again. If the Blue Dot has never been pressed ``interaction`` 
+        will return ``None``.
+        """
+        return self._interaction
 
     @property
     def when_pressed(self):
@@ -308,6 +552,25 @@ class BlueDot():
         Blue Dot is held.
         """
         self._when_moved = value
+
+    @property
+    def when_swiped(self):
+        """
+        Returns the function which is called when the Blue Dot is swiped. 
+        """
+        return self._when_swiped
+
+    @when_swiped.setter
+    def when_swiped(self, value):
+        """
+        When set to a function it will cause the function to be run when the Blue Dot is
+        swiped.
+        
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of BlueDotSwipe will be returned representing the how the Blue Dot was
+        swiped.
+        """
+        self._when_swiped = value
 
     @property 
     def when_client_connects(self):
@@ -390,8 +653,8 @@ class BlueDot():
         Returns ``True`` if the Blue Dot was pressed. 
 
         :param float timeout:
-            Number of seconds to wait for a Blue Dot to be pressed, if ``None`` (the default), 
-            it will wait indefinetly.
+            Number of seconds to wait for a Blue Dot to be pressed, if ``None``
+            (the default), it will wait indefinetly.
         """
         return self._is_pressed_event.wait(timeout)
 
@@ -401,8 +664,8 @@ class BlueDot():
         Returns ``True`` if the Blue Dot was released. 
 
         :param float timeout:
-            Number of seconds to wait for a Blue Dot to be released, if ``None`` (the default), 
-            it will wait indefinetly.
+            Number of seconds to wait for a Blue Dot to be released, if ``None`` 
+            (the default), it will wait indefinetly.
         """
         return self._is_released_event.wait(timeout)
 
@@ -412,10 +675,21 @@ class BlueDot():
         Returns ``True`` if the position pressed on the Blue Dot was moved. 
 
         :param float timeout:
-            Number of seconds to wait for the position that the Blue Dot is pressed to move, if ``None`` (the default), 
-            it will wait indefinetly.
+            Number of seconds to wait for the position that the Blue Dot 
+            is pressed to move, if ``None`` (the default), it will wait indefinetly.
         """
         return self._is_moved_event.wait(timeout)
+
+    def wait_for_swipe(self, timeout = None):
+        """
+        Waits until the Blue Dot is swiped. 
+        Returns ``True`` if the Blue Dot was swiped. 
+
+        :param float timeout:
+            Number of seconds to wait for the Blue Dot to be swiped, if ``None``
+            (the default), it will wait indefinetly.
+        """
+        return self._is_swiped_event.wait(timeout)
 
     def allow_pairing(self, timeout = 60):
         """
@@ -453,40 +727,72 @@ class BlueDot():
             self._data_buffer = self._data_buffer[last_command + 1:]
 
     def _process_commands(self, commands):
-        
         for command in commands:
             operation, x, y = command.split(",")
             self._position = BlueDotPosition(x, y)
         
             #dot released
             if operation == "0":
-                self._is_pressed_event.clear()
-                self._is_released_event.set()
-                self._is_moved_event.clear()
-                if self.when_released:
-                    if len(getargspec(self.when_released).args) == 0:
-                        self.when_released()
-                    else:
-                        self.when_released(self._position)
+                self._released()
     
             #dot pressed
             elif operation == "1":
-                self._is_pressed_event.set()
-                self._is_released_event.clear()
-                self._is_moved_event.clear()
-                if self.when_pressed:
-                    if len(getargspec(self.when_pressed).args) == 0:
-                        self.when_pressed()
-                    else:
-                        self.when_pressed(self._position)
+                self._pressed()
 
             #dot pressed position moved
             elif operation == "2":
-                self._is_moved_event.set()
-                if self.when_moved:
-                    self.when_moved(self._position)
-                self._is_moved_event.clear()
-                
+                self._moved()
+
+    def _pressed(self):
+        self._is_pressed_event.set()
+        self._is_released_event.clear()
+        self._is_moved_event.clear()
+
+        self._interaction = BlueDotInteraction(self._position)
+
+        self._process_callback(self.when_pressed)
+
+    def _released(self):
+        self._is_pressed_event.clear()
+        self._is_released_event.set()
+        self._is_moved_event.clear()
+
+        self._interaction.released(self._position)
+
+        self._process_callback(self.when_released)
+
+        self._process_interaction()
+
+    def _moved(self):
+        self._is_moved_event.set()
+
+        self._interaction.moved(self._position)
+
+        self._process_callback(self.when_moved)
+    
+        self._is_moved_event.clear()
+    
+    def _process_callback(self, callback):
+        if callback:
+            if len(getargspec(callback).args) == 0:
+                callback()
+            else:
+                callback(self._position)
+
+    def _process_interaction(self):
+        #was the Blue Dot swiped?
+        swipe = BlueDotSwipe(self._interaction)
+        if swipe.valid:
+            self._is_swiped_event.set()
+            if self.when_swiped:
+                if swipe.valid:
+                    if len(getargspec(self.when_swiped).args) == 0:
+                        self.when_swiped()
+                    else:
+                        self.when_swiped(swipe)
+
+            self._is_swiped_event.clear()
+
     def _print_message(self, message):
         if self.print_messages:
             print(message)
