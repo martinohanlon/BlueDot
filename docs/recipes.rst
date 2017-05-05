@@ -2,6 +2,8 @@
 Recipes
 =======
 
+The recipes provide examples of how you can use Blue Dot, dont be restricted by these ideas and be sure to have a look at the `BlueDot API`_ as there is more to be discovered.
+
 button
 ------
 
@@ -10,7 +12,7 @@ The simplest way to use the Blue Dot is as a wireless button.
 hello world
 ~~~~~~~~~~~
 
-When the Blue Dot is pressed, lets say Hello World::
+Let's say Hello World by creating the `BlueDot`_ object then waiting for the Blue Dot app to connect and be pressed::
 
     from bluedot import BlueDot
     bd = BlueDot()
@@ -120,7 +122,7 @@ The Blue Dot can also be used as a joystick when the middle, top, bottom, left o
 d pad
 ~~~~~
 
-Using the position the BlueDot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
+Using the position the Blue Dot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
 
     from bluedot import BlueDot
     from signal import pause
@@ -134,6 +136,8 @@ Using the position the BlueDot was pressed you can work out whether it was press
             print("left")
         elif pos.right:
             print("right")
+        elif pos.middle:
+            print("fire")
 
     bd = BlueDot()
     bd.when_pressed = dpad
@@ -298,10 +302,80 @@ Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can
 
     pause()
 
+swiping
+-------
+
+You can interact with the Blue Dot by swiping across it, like you would to move between pages in a mobile app.
+
+single
+~~~~~~
+
+Detecting a single swipe is easy using ``wait_for_swipe``::
+    
+    from bluedot import BlueDot
+    bd = BlueDot()
+    bd.wait_for_swipe()
+    print("Blue Dot swiped")
+
+Alternatively you can also use ``when_swiped`` to call a function::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped():
+        print("Blue Dot swiped")
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
+direction
+~~~~~~~~~
+
+You can tell what direction the Blue Dot is swiped by using the `BlueDotSwipe`_ object returned by ``when_swiped``::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped(swipe):
+        if swipe.up:
+            print("up")
+        elif swipe.down:
+            print("down")
+        elif swipe.left:
+            print("left")
+        elif swipe.right:
+            print("right")
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
+speed, angle, distance
+~~~~~~~~~~~~~~~~~~~~~~
+
+`BlueDotSwipe`_ returns more information other than the direction including the speed of the swipe (in Blue Dot radius per second), the angle of the swipe and the distance between the start and end position of the swipe::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def swiped(swipe):
+        print("Swiped")
+        print("speed={}".format(swipe.speed))
+        print("angle={}".format(swipe.angle))
+        print("distance={}".format(swipe.distance))
+
+    bd = BlueDot()
+    bd.when_swiped = swiped
+
+    pause()
+
 bluetooth
 ---------
 
-You can interact with the Bluetooth adapter using BlueDot.
+You can interact with the Bluetooth adapter using `BlueDot`_.
 
 pairing
 ~~~~~~~
@@ -345,7 +419,7 @@ You can get the devices that your raspberry pi is paired too::
 testing
 -------
 
-bluedot includes a MockBlueDot class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
+bluedot includes a `MockBlueDot`_ class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
 
 MockBlueDot inherits from BlueDot and is used in the same way, but you have the option of launching a mock app which you can click with a mouse or writing scripts to simulate the Blue Dot being used.
 
@@ -387,7 +461,12 @@ Tests can also be scripted using MockBlueDot::
 .. _picamera: https://picamera.readthedocs.io
 .. _Ben Nuttall: https://github.com/bennuttall
 .. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
+.. _BlueDot API: http://bluedot.readthedocs.io/en/latest/dotapi.html
+.. _BlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#bluedot
 .. _BlueDotPosition: dotapi.html#bluedotposition
+.. _BlueDotInteraction: dotapi.html#bluedotinteraction
+.. _BlueDotSwipe: dotapi.html#bluedotswipe
+.. _MockBlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#mockbluedot
 
 .. |mockbluedot| image:: images/mockbluedot.png
    :alt: mock blue dot app

@@ -4,6 +4,13 @@ Changelog
 bluedot python library
 ----------------------
 
+0.4.0 - 2017-05-05
+~~~~~~~~~~~~~~~~~~
+
+ * added swipes and interactions
+ * doc updates
+ * bug fix in BlueDot.when_moved
+
 0.3.0 - 2017-05-01
 ~~~~~~~~~~~~~~~~~~
 

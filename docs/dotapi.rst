@@ -15,7 +15,19 @@ BlueDotPosition
 
 .. autoclass:: BlueDotPosition
     :members:
-    
+
+BlueDotInteraction
+==================
+
+.. autoclass:: BlueDotInteraction
+    :members:
+
+BlueDotSwipe
+============
+
+.. autoclass:: BlueDotSwipe
+    :members:
+
 MockBlueDot
 ===========
 
