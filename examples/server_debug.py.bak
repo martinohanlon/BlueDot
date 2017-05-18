@@ -3,7 +3,7 @@ from time import sleep
 from signal import pause
 
 def data_received(data):
-    print(("recv - {}".format(data)))
+    print("recv - {}".format(data))
     server.send(data)
 
 def client_connected():
@@ -21,7 +21,7 @@ server = BluetoothServer(
 
 print("starting")
 server.start()
-print((server.server_address))
+print(server.server_address)
 print("waiting for connection")
 
 try:

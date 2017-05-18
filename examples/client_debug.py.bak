@@ -4,7 +4,7 @@ from time import sleep
 from signal import pause
 
 def data_received(data):
-    print(("recv - {}".format(data)))
+    print("recv - {}".format(data))
 
 print("Connecting")
 c = BluetoothClient("devpi", data_received)
