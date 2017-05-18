@@ -1,4 +1,4 @@
-
+from __future__ import absolute_import, print_function, unicode_literals
 import dbus
 import time
 import sys
@@ -18,7 +18,7 @@ def find_adapter(pattern=None):
 
 def find_adapter_in_objects(objects, pattern=None):
     bus = dbus.SystemBus()
-    for path, ifaces in list(objects.items()):
+    for path, ifaces in objects.items():
         adapter = ifaces.get(ADAPTER_INTERFACE)
         if adapter is None:
             continue
@@ -56,7 +56,7 @@ def get_paired_devices(device_name):
     om = dbus.Interface(bus.get_object(SERVICE_NAME, "/"), "org.freedesktop.DBus.ObjectManager")
     objects = om.GetManagedObjects()
 
-    for path, interfaces in list(objects.items()):
+    for path, interfaces in objects.items():
         if DEVICE_INTERFACE not in interfaces:
             continue
         properties = interfaces[DEVICE_INTERFACE]
