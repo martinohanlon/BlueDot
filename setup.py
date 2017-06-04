@@ -2,7 +2,7 @@ from setuptools import setup
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '0.4.0'
+__version__ = '1.0.0'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'
@@ -11,8 +11,8 @@ __requires__ = ['pydbus',]
 
 __classifiers__ = [
 #    "Development Status :: 3 - Alpha",
-    "Development Status :: 4 - Beta",
-#    "Development Status :: 5 - Production/Stable",
+#    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Education",
     "Intended Audience :: Developers",
     "Topic :: Education",

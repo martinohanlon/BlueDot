@@ -37,6 +37,10 @@ If you want to use bluedot with Python 2 (there really is no need though!)::
     sudo apt-get install python-dbus
     sudo pip install bluedot
 
+To upgrade to the latest version::
+
+    sudo pip3 install bluedot --upgrade
+
 usage
 -----
 

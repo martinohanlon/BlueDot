@@ -384,8 +384,10 @@ class BlueDot():
         self._is_released_event = Event()
         self._is_moved_event = Event()
         self._is_swiped_event = Event()
+        self._is_double_pressed_event = Event()
 
         self._when_pressed = None
+        self._when_double_pressed = None
         self._when_released = None
         self._when_moved = None
         self._when_swiped = None
@@ -394,6 +396,7 @@ class BlueDot():
 
         self._position = None
         self._interaction = None
+        self._double_press_time = 0.3
 
         self._create_server()
 
@@ -512,6 +515,35 @@ class BlueDot():
     @when_pressed.setter
     def when_pressed(self, value):
         self._when_pressed = value
+
+    @property
+    def when_double_pressed(self):
+        """
+        Sets or returns the function which is called when the Blue Dot is double pressed. 
+
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was 
+        pressed the second time.
+
+        Note - the double press event is fired before the 2nd press event e.g. events would be 
+        appear in the order, pressed, released, double pressed, pressed.
+        """
+        return self._when_double_pressed
+
+    @when_double_pressed.setter
+    def when_double_pressed(self, value):
+        self._when_double_pressed = value
+
+    @property 
+    def double_press_time(self):
+        """
+        Sets or returns the time threshold in seconds for a double press. Defaults to ``0.3``.
+        """
+        return self._double_press_time
+
+    @double_press_time.setter
+    def double_press_time(self, value):
+        self._double_press_time = value
 
     @property 
     def when_released(self):
@@ -638,6 +670,17 @@ class BlueDot():
         """
         return self._is_pressed_event.wait(timeout)
 
+    def wait_for_double_press(self, timeout = None):
+        """
+        Waits until a Blue Dot is double pressed. 
+        Returns ``True`` if the Blue Dot was double pressed. 
+
+        :param float timeout:
+            Number of seconds to wait for a Blue Dot to be double pressed, if ``None``
+            (the default), it will wait indefinetly.
+        """
+        return self._is_pressed_event.wait(timeout)
+
     def wait_for_release(self, timeout = None):
         """
         Waits until a Blue Dot is released. 
@@ -728,9 +771,25 @@ class BlueDot():
         self._is_released_event.clear()
         self._is_moved_event.clear()
 
+        self._double_pressed()
+
+        #create new interaction
         self._interaction = BlueDotInteraction(self._position)
 
         self._process_callback(self.when_pressed)
+
+    def _double_pressed(self):
+        #was there a previous interaction
+        if self._interaction:
+            #was it less than the time threshold (0.3 seconds)
+            if self._interaction.duration < self._double_press_time:
+                #was the dot pressed again in less than the threshold
+                if time() - self._interaction.released_position.time < self._double_press_time:
+                    self._is_double_pressed_event.set()
+
+                    self._process_callback(self.when_double_pressed)
+
+                    self._is_double_pressed_event.clear()
 
     def _released(self):
         self._is_pressed_event.clear()

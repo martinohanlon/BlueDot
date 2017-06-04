@@ -337,7 +337,12 @@ class BluetoothServer():
             #open the bluetooth socket
             self._server_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             self._server_sock.settimeout(BLUETOOTH_TIMEOUT)
-            self._server_sock.bind((self.server_address, self.port))
+            try:
+                self._server_sock.bind((self.server_address, self.port))
+            except (socket.error, OSError) as e:
+                if str(e) == "[Errno 98] Address already in use":
+                    print("Bluetooth address {} is already in use - is the server already running?".format(self.server_address))
+                raise e
             self._server_sock.listen(1)
 
             #wait for client connection
