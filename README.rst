@@ -1,6 +1,8 @@
 Blue Dot
 ========
 
+|pypibadge| |docsbadge|
+
 Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
 
 |bluedotfeature| |bluedotapp|
@@ -73,3 +75,11 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
    :width: 506 px
    :scale: 100 %
    :alt: blue dot feature
+
+.. |pypibadge| image:: https://badge.fury.io/py/bluedot.svg
+   :target: https://badge.fury.io/py/bluedot
+   :alt: Latest Version
+
+.. |docsbadge| image:: http://bluedot.readthedocs.io/en/latest/?badge=latest
+   :target: https://readthedocs.org/projects/bluedot/
+   :alt: Docs

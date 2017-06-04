@@ -16,6 +16,9 @@ def moved(pos):
 def swiped(swipe):
     print("Swiped: up={} down={} left={} right={} speed={}".format(swipe.up, swipe.down, swipe.left, swipe.right, swipe.speed))
 
+def double_presed(pos):
+    print("Double pressed: x={} y={}".format(pos.x, pos.y))
+
 def client_connected():
     print("connected callback")
 
@@ -28,6 +31,7 @@ dot.when_pressed = pressed
 dot.when_released = released
 dot.when_moved = moved
 dot.when_swiped = swiped
+dot.when_double_pressed = double_presed
 dot.start()
 
 try:
