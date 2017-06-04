@@ -47,7 +47,7 @@ The `online documentation`_ describes how to use Blue Dot and the `Python librar
 status
 ------
 
-Beta - it works well, the api is stable but errors maybe experienced for edge cases. Be sure to raise an `issue`_ if you experience problems.
+Production - under active development. Be sure to raise an `issue`_ if you have a feature request or experience problems.
 
 .. _Martin O'Hanlon: https://github.com/martinohanlon
 .. _stuffaboutco.de: http://stuffaboutco.de
