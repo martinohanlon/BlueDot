@@ -80,6 +80,6 @@ Beta - it works well, the api is stable but errors maybe experienced for edge ca
    :target: https://badge.fury.io/py/bluedot
    :alt: Latest Version
 
-.. |docsbadge| image:: http://bluedot.readthedocs.io/en/latest/?badge=latest
+.. |docsbadge| image:: https://readthedocs.org/projects/bluedot/badge/
    :target: https://readthedocs.org/projects/bluedot/
    :alt: Docs
