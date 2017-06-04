@@ -4,6 +4,14 @@ Changelog
 bluedot python library
 ----------------------
 
+1.0.0 - 2017-06-04
+~~~~~~~~~~~~~~~~~~
+
+ * production release!
+ * added double click
+ * doc updates
+ * minor changes
+
 0.4.0 - 2017-05-05
 ~~~~~~~~~~~~~~~~~~
 

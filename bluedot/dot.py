@@ -524,6 +524,9 @@ class BlueDot():
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
         instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was 
         pressed the second time.
+
+        Note - the double press event is fired before the 2nd press event e.g. events would be 
+        appear in the order, pressed, released, double pressed, pressed.
         """
         return self._when_double_pressed
 
