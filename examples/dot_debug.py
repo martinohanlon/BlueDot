@@ -32,7 +32,19 @@ dot.when_released = released
 dot.when_moved = moved
 dot.when_swiped = swiped
 dot.when_double_pressed = double_presed
+
 dot.start()
+
+dot.wait_for_press()
+print("wait for press")
+dot.wait_for_move()
+print("wait for move")
+dot.wait_for_release()
+print("wait for release")
+dot.wait_for_double_press()
+print("wait for double press")
+dot.wait_for_swipe()
+print("wait for swipe")
 
 try:
     while True:

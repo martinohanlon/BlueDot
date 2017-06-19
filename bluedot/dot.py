@@ -377,6 +377,7 @@ class BlueDot():
         self._data_buffer = ""
         self._device = device
         self._port = port
+        self._power_up_device = power_up_device
         self._print_messages = print_messages
 
         self._is_connected_event = Event()
@@ -640,6 +641,7 @@ class BlueDot():
                 when_client_disconnects = self._client_disconnected,
                 device = self.device,
                 port = self.port,
+                power_up_device = self._power_up_device,
                 auto_start = False)
 
     def stop(self):
@@ -679,7 +681,7 @@ class BlueDot():
             Number of seconds to wait for a Blue Dot to be double pressed, if ``None``
             (the default), it will wait indefinetly.
         """
-        return self._is_pressed_event.wait(timeout)
+        return self._is_double_pressed_event.wait(timeout)
 
     def wait_for_release(self, timeout = None):
         """
