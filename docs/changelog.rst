@@ -1,8 +1,13 @@
 Changelog
 =========
 
-bluedot python library
+Bluedot python library
 ----------------------
+
+1.0.1 - 2017-06-19
+~~~~~~~~~~~~~~~~~~
+
+ * bug fixes
 
 1.0.0 - 2017-06-04
 ~~~~~~~~~~~~~~~~~~

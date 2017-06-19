@@ -1,7 +1,7 @@
 Getting started
 ===============
 
-what
+What
 ----
 
 In order to use Blue Dot you will need:
@@ -14,7 +14,7 @@ In order to use Blue Dot you will need:
 * an Android phone or 2nd Raspberry Pi for the remote
 * an internet connection (for the install)
 
-installation
+Installation
 ------------
 
 These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
@@ -41,7 +41,7 @@ To upgrade to the latest version::
 
     sudo pip3 install bluedot --upgrade
 
-usage
+Usage
 -----
 
 pair
@@ -74,7 +74,7 @@ Start-up the `Blue Dot app`_ on your Android phone or run the `Blue Dot python a
  1. Select your Raspberry Pi from the list
  2. Press the blue dot
  
-where next
+Where next
 ----------
 
 Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bluedot.  

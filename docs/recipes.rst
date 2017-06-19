@@ -4,7 +4,7 @@ Recipes
 
 The recipes provide examples of how you can use Blue Dot, dont be restricted by these ideas and be sure to have a look at the `BlueDot API`_ as there is more to be discovered.
 
-button
+Button
 ------
 
 The simplest way to use the Blue Dot is as a wireless button.
@@ -114,7 +114,7 @@ Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily crea
 
     pause()
 
-joystick
+Joystick
 --------
 
 The Blue Dot can also be used as a joystick when the middle, top, bottom, left or right areas of the dot are used.
@@ -241,7 +241,7 @@ Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's s
 
     pause()
 
-slider
+Slider
 ------
 
 By holding down the Blue Dot and moving the position you can use it as an analogue slider.
@@ -302,7 +302,7 @@ Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can
 
     pause()
 
-swiping
+Swiping
 -------
 
 You can interact with the Blue Dot by swiping across it, like you would to move between pages in a mobile app.
@@ -372,7 +372,7 @@ speed, angle, distance
 
     pause()
 
-bluetooth
+Bluetooth
 ---------
 
 You can interact with the Bluetooth adapter using `BlueDot`_.
@@ -416,7 +416,7 @@ You can get the devices that your raspberry pi is paired too::
         device_address = d[0]
         device_name = d[1]
 
-testing
+Testing
 -------
 
 bluedot includes a `MockBlueDot`_ class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
@@ -455,6 +455,7 @@ Tests can also be scripted using MockBlueDot::
     bd = MockBlueDot()
     bd.when_pressed = say_hello
 
+    bd.mock_client_connected()
     bd.mock_blue_dot_pressed(0,0)
 
 .. _gpiozero: https://gpiozero.readthedocs.io

@@ -9,7 +9,7 @@ Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a blu
 
 Created by `Martin O'Hanlon`_, `@martinohanlon`_, `stuffaboutco.de`_.
 
-start
+Start
 -----
 
 `Install and usage`_ is really simple:
@@ -28,7 +28,7 @@ start
 
 See the `getting started`_ guide to 'get started'!
 
-more
+More
 ----
 
 The Blue Dot is a `joystick`_ as well as `button`_, you can tell if the dot was pressed in the middle, on the top, bottom, left or right. Perhaps create a `BlueDot controlled Robot`_.
@@ -39,12 +39,12 @@ Its not all about when the button was pressed either - pressed, released or move
 
 You can press it, slide it, swipe it - one blue circle can do a lot.
 
-even more
+Even more
 ---------
 
 The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ and ideas.
 
-status
+Status
 ------
 
 Production - under active development. Be sure to raise an `issue`_ if you have a feature request or experience problems.

@@ -5,12 +5,12 @@ Blue Dot uses a client/server model, the bluedot Python library starts a bluetoo
 
 The detail below can be used to create new applications (clients) - if you do please send a pull request :)
 
-bluetooth
+Bluetooth
 ---------
 
 Communication over Bluetooth is made using a RFCOMM serial port profile, on port 1, using UUID "00001101-0000-1000-8000-00805f9b34fb".
 
-protocol
+Protocol
 --------
 
 The transmission is a 1 way stream between client and server, the server sends no acknowledgements or data to the client.

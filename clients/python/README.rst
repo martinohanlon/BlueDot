@@ -5,7 +5,7 @@ Blue Dot Python app allows you to use another Raspberry Pi (or linux based compu
 
 |bluedotpython| |bluedotpythondevices|
 
-start
+Start
 -----
 
 The app is included in the bluedot Python library:
@@ -15,7 +15,7 @@ The app is included in the bluedot Python library:
 
     python3 -m bluedot.app
 
-options
+Options
 -------
 
 To get help with the Blue Dot app options::
