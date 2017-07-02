@@ -24,6 +24,8 @@ On your Android phone:
 1. Enter the same PIN code when prompted
 2. Click Ok
 
+Note - You may receive errors relating to services not being able available or being unable to connect, these can be ignored.
+
 Using the Command Line
 -------------------------
 

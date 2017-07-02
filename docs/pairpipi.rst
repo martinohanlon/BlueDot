@@ -24,7 +24,7 @@ On Raspberry Pi 1:
 
 1. Accept the pairing request
 
-You may receive errors relating to services not being able available or being unable to connect, these can be ignored.
+Note - You may receive errors relating to services not being able available or being unable to connect, these can be ignored.
 
 Using the Command Line
 -------------------------
