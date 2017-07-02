@@ -49,6 +49,19 @@ Alternatively you can also use ``when_pressed`` to call a function::
 
     pause()
 
+Double presses can also be used with ``wait_for_double_press()`` and ``when_double_pressed``::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    def shout_hello():
+        print("HELLO")
+
+    bd = BlueDot()
+    bd.when_double_pressed = shout_hello
+
+    pause()
+
 flash an led
 ~~~~~~~~~~~~
 
