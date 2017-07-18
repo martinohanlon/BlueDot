@@ -42,7 +42,8 @@ public class Devices extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
 
             //finish apk
-            finish();
+            this.finish();
+            System.exit(0);
 
         } else if(!myBluetooth.isEnabled()) {
             //Ask to the user turn the bluetooth on
