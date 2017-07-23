@@ -2,7 +2,7 @@ import atexit
 from time import sleep, time
 from threading import Event
 from math import atan2, degrees, hypot
-from inspect import getargspec
+from inspect import getfullargspec
 
 from .btcomm import BluetoothServer
 
@@ -815,7 +815,7 @@ class BlueDot():
     
     def _process_callback(self, callback):
         if callback:
-            if len(getargspec(callback).args) == 0:
+            if len(getfullargspec(callback).args) == 0:
                 callback()
             else:
                 callback(self._position)
@@ -827,7 +827,7 @@ class BlueDot():
             self._is_swiped_event.set()
             if self.when_swiped:
                 if swipe.valid:
-                    if len(getargspec(self.when_swiped).args) == 0:
+                    if len(getfullargspec(self.when_swiped).args) == 0:
                         self.when_swiped()
                     else:
                         self.when_swiped(swipe)
