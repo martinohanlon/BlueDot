@@ -1,8 +1,13 @@
 import atexit
+import sys
 from time import sleep, time
 from threading import Event
 from math import atan2, degrees, hypot
-from inspect import getfullargspec
+
+if sys.version_info[0] > 2:
+    from inspect import getfullargspec
+else:
+    from inspect import getargspec as getfullargspec
 
 from .btcomm import BluetoothServer
 
