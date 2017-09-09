@@ -125,7 +125,6 @@ def register_spp(port):
       </attribute>
     </record>
     """.format(port)
-    print(service_record)
 
     bus = dbus.SystemBus()
 
@@ -138,13 +137,13 @@ def register_spp(port):
         "ServiceRecord" : service_record
     }
 
-    manager.RegisterProfile(path, uuid, opts)
-    #try:
-    #    manager.RegisterProfile(path, uuid, opts)
-    #except dbus.exceptions.DBusException as e:
-    #    #the spp profile has already been registered, ignore
-    #    if str(e) != "org.bluez.Error.AlreadyExists: Already Exists":
-    #        raise(e)
+    #manager.RegisterProfile(path, uuid, opts)
+    try:
+        manager.RegisterProfile(path, uuid, opts)
+    except dbus.exceptions.DBusException as e:
+        #the spp profile has already been registered, ignore
+        if str(e) != "org.bluez.Error.AlreadyExists: Already Exists":
+            raise(e)
 
 if sys.version_info[0] > 2:
     def string_to_bytes(data, encoding):
