@@ -97,7 +97,7 @@ def device_powered(device_name, powered):
         value = dbus.Boolean(0)
     adapter.Set(ADAPTER_INTERFACE, "Powered", value)
 
-def register_spp():
+def register_spp(port):
 
     service_record = """
     <?xml version="1.0" encoding="UTF-8" ?>
@@ -115,7 +115,7 @@ def register_spp():
           </sequence>
           <sequence>
             <uuid value="0x0003"/>
-            <uint8 value="1" name="channel"/>
+            <uint8 value="{}" name="channel"/>
           </sequence>
         </sequence>
       </attribute>
@@ -124,19 +124,27 @@ def register_spp():
         <text value="Serial Port" name="name"/>
       </attribute>
     </record>
-    """
+    """.format(port)
+    print(service_record)
 
     bus = dbus.SystemBus()
+
     manager = dbus.Interface(bus.get_object(SERVICE_NAME, "/org/bluez"), PROFILE_MANAGER)
 
     path = "/bluez"
     uuid = "00001101-0000-1000-8000-00805f9b34fb"
     opts = {
-        "AutoConnect" : True,
+#        "AutoConnect" : True,
         "ServiceRecord" : service_record
     }
 
     manager.RegisterProfile(path, uuid, opts)
+    #try:
+    #    manager.RegisterProfile(path, uuid, opts)
+    #except dbus.exceptions.DBusException as e:
+    #    #the spp profile has already been registered, ignore
+    #    if str(e) != "org.bluez.Error.AlreadyExists: Already Exists":
+    #        raise(e)
 
 if sys.version_info[0] > 2:
     def string_to_bytes(data, encoding):
