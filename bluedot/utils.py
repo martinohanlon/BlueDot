@@ -136,8 +136,7 @@ def register_spp(port):
 #        "AutoConnect" : True,
         "ServiceRecord" : service_record
     }
-
-    #manager.RegisterProfile(path, uuid, opts)
+    
     try:
         manager.RegisterProfile(path, uuid, opts)
     except dbus.exceptions.DBusException as e:

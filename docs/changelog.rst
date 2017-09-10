@@ -4,10 +4,11 @@ Changelog
 Bluedot python library
 ----------------------
 
-1.0.4 - in dev
+1.0.4 - 2017-09-10
 ~~~~~~~~~~~~~~~~~~
 
  * serial port profile port fix 
+ * launching multiple blue dots fix
 
 1.0.3 - 2017-07-28
 ~~~~~~~~~~~~~~~~~~
