@@ -331,7 +331,7 @@ class BluetoothServer():
                 raise Exception("Bluetooth device {} is turned off".format(self.adapter.device))
 
             #register the serial port profile with bluetooth
-            register_spp()
+            register_spp(self._port)
 
             #start bluetooth server
             #open the bluetooth socket
