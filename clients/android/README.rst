@@ -10,7 +10,7 @@ Please leave a rating and review if you find Blue Dot useful :)
 Start
 -----
 
-1. Download the `Blue Dot app` from the Google Play store.
+1. Download the `Blue Dot app`_ from the Google Play store.
 2. If you havent already done so, pair your raspberry pi as described in the `getting started`_ guide
 3. Run the Blue Dot app
 
