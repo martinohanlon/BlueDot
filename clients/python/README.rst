@@ -15,6 +15,14 @@ The app is included in the bluedot Python library:
 
     python3 -m bluedot.app
 
+4. Select your Raspberry Pi from the paired devices list
+
+|bluedotpythondevices|
+
+5. Press the Dot 
+
+|bluedotpython|
+
 Options
 -------
 

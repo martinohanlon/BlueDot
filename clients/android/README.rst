@@ -16,6 +16,14 @@ Start
 
 |bluedotappicon|
 
+4. Select your Raspberry Pi from the paired devices list
+
+|bluedotappdevices|
+
+5. Press the Dot 
+
+|bluedotapp|
+
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _getting started: http://bluedot.readthedocs.io/en/latest/gettingstarted.html
 
@@ -29,7 +37,7 @@ Start
    :height: 246 px
    :width: 144 px
    :scale: 100 %
-   :alt: blue dot app
+   :alt: blue dot app devices list
 
 .. |bluedotappicon| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroidicon.png
    :height: 190 px
