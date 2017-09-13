@@ -40,7 +40,7 @@ Start
    :alt: blue dot app devices list
 
 .. |bluedotappicon| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroidicon.png
-   :height: 190 px
-   :width: 169 px
+   :height: 143 px
+   :width: 127 px
    :scale: 100 %
    :alt: blue dot icon
