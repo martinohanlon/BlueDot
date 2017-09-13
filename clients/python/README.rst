@@ -10,7 +10,7 @@ Start
 
 The app is included in the bluedot Python library:
 
-1. If you havent already done so, install the Python library as described in the `getting started`_ guide
+1. If you havent already done so, pair your raspberry pi and install the Python library as described in the `getting started`_ guide
 2. Run the Blue Dot app::
 
     python3 -m bluedot.app

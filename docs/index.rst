@@ -8,6 +8,8 @@ Table of Contents
 
    gettingstarted
    recipes
+   bluedotandroidapp
+   bluedotpythonapp
    dotapi
    btcommapi
    protocol
