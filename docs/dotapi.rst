@@ -1,5 +1,5 @@
 ===========
-BlueDot API
+Blue Dot API
 ===========
 
 .. automodule:: bluedot
