@@ -73,9 +73,9 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
    :alt: blue dot app
 
 .. |bluedotpython| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotpython.png
-   :height: 274 px
-   :width: 324 px
-   :scale: 100 %
+   :height: 247 px
+   :width: 294 px
+   :scale: 100 %    
    :alt: blue dot python app
 
 .. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature_small.png
