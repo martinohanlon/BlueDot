@@ -1,4 +1,3 @@
-import atexit
 import sys
 from time import sleep, time
 from threading import Event
@@ -10,6 +9,7 @@ else:
     from inspect import getargspec as getfullargspec
 
 from .btcomm import BluetoothServer
+from .threads import WrapThread
 
 class BlueDotPosition():
     """
@@ -759,33 +759,35 @@ class BlueDot():
     def _process_commands(self, commands):
         for command in commands:
             operation, x, y = command.split(",")
-            self._position = BlueDotPosition(x, y)
+            position = BlueDotPosition(x,y)
+            #update the current position
+            self._position = position
         
             #dot released
             if operation == "0":
-                self._released()
-    
+                self._released(position)
+
             #dot pressed
             elif operation == "1":
-                self._pressed()
+                self._pressed(position)
 
             #dot pressed position moved
             elif operation == "2":
-                self._moved()
+                self._moved(position)
 
-    def _pressed(self):
+    def _pressed(self, position):
         self._is_pressed_event.set()
         self._is_released_event.clear()
         self._is_moved_event.clear()
 
-        self._double_pressed()
+        self._double_pressed(position)
 
         #create new interaction
-        self._interaction = BlueDotInteraction(self._position)
+        self._interaction = BlueDotInteraction(position)
 
-        self._process_callback(self.when_pressed)
+        self._process_callback(self.when_pressed, position)
 
-    def _double_pressed(self):
+    def _double_pressed(self, position):
         #was there a previous interaction
         if self._interaction:
             #was it less than the time threshold (0.3 seconds)
@@ -794,36 +796,37 @@ class BlueDot():
                 if time() - self._interaction.released_position.time < self._double_press_time:
                     self._is_double_pressed_event.set()
 
-                    self._process_callback(self.when_double_pressed)
+                    self._process_callback(self.when_double_pressed, position)
 
                     self._is_double_pressed_event.clear()
 
-    def _released(self):
+    def _released(self, position):
         self._is_pressed_event.clear()
         self._is_released_event.set()
         self._is_moved_event.clear()
 
-        self._interaction.released(self._position)
+        self._interaction.released(position)
 
-        self._process_callback(self.when_released)
+        self._process_callback(self.when_released, position)
 
         self._process_interaction()
 
-    def _moved(self):
+    def _moved(self, position):
         self._is_moved_event.set()
 
-        self._interaction.moved(self._position)
+        self._interaction.moved(position)
 
-        self._process_callback(self.when_moved)
+        self._process_callback(self.when_moved, position)
     
         self._is_moved_event.clear()
     
-    def _process_callback(self, callback):
+    def _process_callback(self, callback, position):
         if callback:
             if len(getfullargspec(callback).args) == 0:
-                callback()
+                call_back_t = WrapThread(target=callback)    
             else:
-                callback(self._position)
+                call_back_t = WrapThread(target=callback, args=(position, ))
+            call_back_t.start()
 
     def _process_interaction(self):
         #was the Blue Dot swiped?
