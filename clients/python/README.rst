@@ -1,4 +1,4 @@
-Blue Dot Python app
+Blue Dot Python App
 ===================
 
 Blue Dot Python app allows you to use another Raspberry Pi (or linux based computer) as the Blue Dot remote.
