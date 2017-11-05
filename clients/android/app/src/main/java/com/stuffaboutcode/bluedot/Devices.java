@@ -42,7 +42,8 @@ public class Devices extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
 
             //finish apk
-            finish();
+            this.finish();
+            System.exit(0);
 
         } else if(!myBluetooth.isEnabled()) {
             //Ask to the user turn the bluetooth on
@@ -52,7 +53,7 @@ public class Devices extends AppCompatActivity {
 
         infoButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Uri uri = Uri.parse("http://bluedot.readthedocs.io");
+                Uri uri = Uri.parse("https://bluedot.readthedocs.io");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }

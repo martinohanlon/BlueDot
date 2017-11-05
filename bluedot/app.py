@@ -207,6 +207,9 @@ class ButtonScreen(BlueDotScreen):
         self.device = device
         self.server = server
 
+        self.last_x = 0
+        self.last_y = 0
+
     def draw_screen(self):
         super(ButtonScreen, self).draw_screen()
 
@@ -222,19 +225,30 @@ class ButtonScreen(BlueDotScreen):
         
         self.circle_rect = pygame.draw.circle(self.screen, colour, self.circle_centre, self.circle_radius, 0)
 
-    def _send_message(self, op, pos):
+    def _process(self, op, pos):
         if self.bt_client.connected:
             x = (pos[0] - self.circle_centre[0]) / float(self.circle_radius)
+            x = round(x, 4)
             y = ((pos[1] - self.circle_centre[1]) / float(self.circle_radius)) * -1
+            y = round(y, 4)
             message = "{},{},{}\n".format(op, x, y)
-            try:
-                self.bt_client.send(message)
-            except:
-                e = str(sys.exc_info()[1])
-                self.draw_error(e)
+            if message == 2:
+                if x != self.last_x or y != self.last_y:
+                    self._send_message(message)
+            else:
+                self._send_message(message)
+            self.last_x = x
+            self.last_y = y
         else:
             self.draw_error("Blue Dot not connected")
-            
+
+    def _send_message(self, message):
+        try:
+            self.bt_client.send(message)
+        except:
+            e = str(sys.exc_info()[1])
+            self.draw_error(e)
+        
     def run(self):
         
         self.bt_client = BluetoothClient(self.server, None, device = self.device, auto_connect = False)
@@ -249,6 +263,7 @@ class ButtonScreen(BlueDotScreen):
         
         mouse_pressed = False
         running = True
+        
         while running:
             clock.tick(50)
 
@@ -266,15 +281,15 @@ class ButtonScreen(BlueDotScreen):
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             mouse_pressed = True
                             self._draw_circle(DARKBLUE)
-                            self._send_message(1, pos)
+                            self._process(1, pos)
                             
                         elif event.type == pygame.MOUSEBUTTONUP:
                             mouse_pressed = False
                             self._draw_circle(BLUE)
-                            self._send_message(0, pos)
+                            self._process(0, pos)
                         
                         elif event.type == pygame.MOUSEMOTION:
-                            self._send_message(2, pos)
+                            self._process(2, pos)
                 
                     #close clicked?
                     if self.close_rect.collidepoint(pos):

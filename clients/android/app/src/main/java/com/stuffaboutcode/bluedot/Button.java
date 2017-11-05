@@ -28,6 +28,8 @@ public class Button extends AppCompatActivity {
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private ProgressDialog progress;
+    private double last_x = 0;
+    private double last_y = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +54,13 @@ public class Button extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    send(buildMessage("1", roundButton, event));
+                    pressed(roundButton, event);
 
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    send(buildMessage("0", roundButton, event));
+                    released(roundButton, event);
 
                 } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    send(buildMessage("2", roundButton, event));
+                    moved(roundButton, event);
                 }
                 return false;
             }
@@ -66,9 +68,46 @@ public class Button extends AppCompatActivity {
 
     }
 
-    private String buildMessage(String operation, View roundButton, MotionEvent event) {
+    private void pressed(View roundButton, MotionEvent event) {
+        double x = calcX(roundButton, event);
+        double y = calcY(roundButton, event);
+        send(buildMessage("1", x, y));
+        last_x = x;
+        last_y = y;
+    }
+
+    private void released(View roundButton, MotionEvent event) {
+        double x = calcX(roundButton, event);
+        double y = calcY(roundButton, event);
+        send(buildMessage("0", x, y));
+        last_x = x;
+        last_y = y;
+    }
+
+    private void moved(View roundButton, MotionEvent event) {
+        double x = calcX(roundButton, event);
+        double y = calcY(roundButton, event);
+        //has x or y changed?
+        if ((x != last_x) || (y != last_y)) {
+            send(buildMessage("2", x, y));
+            last_x = x;
+            last_y = y;
+        }
+    }
+
+    private double calcX(View roundButton, MotionEvent event) {
         double x = (event.getX() - (roundButton.getWidth() / 2)) / (roundButton.getWidth() / 2);
+        x = (double)Math.round(x * 10000d) / 10000d;
+        return x;
+    }
+
+    private double calcY(View roundButton, MotionEvent event) {
         double y = (event.getY() - (roundButton.getHeight() / 2)) / (roundButton.getHeight() /2) * -1;
+        y = (double)Math.round(y * 10000d) / 10000d;
+        return y;
+    }
+
+    private String buildMessage(String operation, double x, double y) {
         return (operation + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
     }
 
@@ -108,7 +147,7 @@ public class Button extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progress = ProgressDialog.show(Button.this, "Connecting...", "Please wait!!!");  //show a progress dialog
+            progress = ProgressDialog.show(Button.this, "Connecting", "Please wait...");  //show a progress dialog
         }
 
         @Override
