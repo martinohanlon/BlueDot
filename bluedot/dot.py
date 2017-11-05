@@ -403,6 +403,7 @@ class BlueDot():
         self._position = None
         self._interaction = None
         self._double_press_time = 0.3
+        self._moved_threshold = 0.01
 
         self._create_server()
 

@@ -1,8 +1,14 @@
-Changelog
-=========
+Change log
+=========+
 
-Bluedot python library
+Bluedot Python library
 ----------------------
+
+1.1.0 - 2017-11-05
+~~~~~~~~~~~~~~~~~~
+
+ * threaded callbacks
+ * python app rounded x,y performance improvements
 
 1.0.4 - 2017-09-10
 ~~~~~~~~~~~~~~~~~~
@@ -100,17 +106,26 @@ Updates after alpha feedback
 
 Alpha - initial testing
 
-android app
+Android app
 -----------
 
-1.0 (0.0.2) - 2017-04-05
+2 (1.1) - 2017-11-05
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * better responsive layout
+ * fixed issues with small screen devices
+ * rounded x,y values increasing performance
+ * new help icon
+ * link to https://bluedot.readthedocs.io not http 
+
+1 (0.0.2) - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
  * icon transparency
  * connection monitor
  * added info icon to bluedot.readthedocs.io
 
-0.0 (0.0.1) - 2017-03-29
+0 (0.0.1) - 2017-03-29
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Alpha - initial testing
+ * alpha - initial testing

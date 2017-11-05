@@ -6,6 +6,7 @@ pythonhosted/
 *.swp
 tags
 .vscode
+.idea
 
 # Packaging detritus
 *.egg
