@@ -1,5 +1,5 @@
 Change log
-=========+
+==========
 
 Bluedot Python library
 ----------------------
