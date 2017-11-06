@@ -26,7 +26,7 @@ Install pytest::
 Run tests::
 
     cd BlueDot/tests
-    pytest
+    pytest -v
 
 Deploy
 ~~~~~~
