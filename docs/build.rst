@@ -12,9 +12,21 @@ Setup
 Clone repo and install for dev::
 
     git clone https://github.com/martinohanlon/BlueDot
-    cd bluedot
+    cd BlueDot/bluedot
     git checkout dev
     sudo python3 setup.py develop
+
+Test
+~~~~
+
+Install pytest::
+
+    sudo pip3 install -U pytest
+
+Run tests::
+
+    cd BlueDot/tests
+    pytest
 
 Deploy
 ~~~~~~
