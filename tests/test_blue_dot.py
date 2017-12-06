@@ -1,4 +1,4 @@
-from bluedot import MockBlueDot
+from bluedot import MockBlueDot, BlueDotSwipe
 from time import sleep
 from threading import Event
 
@@ -6,7 +6,7 @@ def test_default_values():
     mbd = MockBlueDot()
     assert mbd.device == "hci0"
     assert mbd.port == 1
-    assert mbd.server.running 
+    assert mbd.running 
     
     assert mbd.print_messages
     mbd.print_messages = False
@@ -28,7 +28,7 @@ def test_modify_values():
     mbd = MockBlueDot(device = "hci1", port = 2, auto_start_server = False, print_messages = False)
     assert mbd.device == "hci1"
     assert mbd.port == 2
-    assert not mbd.server.running 
+    assert not mbd.running 
 
     assert not mbd.print_messages 
     mbd.print_messages = True
@@ -39,11 +39,11 @@ def test_modify_values():
 
 def test_start_stop():
     mbd = MockBlueDot(auto_start_server = False)
-    assert not mbd.server.running
+    assert not mbd.running
     mbd.start()
-    assert mbd.server.running
+    assert mbd.running
     mbd.stop()
-    assert not mbd.server.running
+    assert not mbd.running
 
 def test_connect_disconnect():
     mbd = MockBlueDot()
@@ -126,7 +126,7 @@ def test_when_pressed_moved_released():
     assert not event_moved.is_set()
     mbd.mock_blue_dot_moved(1,1)
     assert event_moved.is_set()
-    
+
     assert not event_released.is_set()
     mbd.mock_blue_dot_released(0,0)
     assert event_released.is_set()
@@ -140,22 +140,39 @@ def test_position():
     mbd.mock_client_connected()
 
     mbd.mock_blue_dot_pressed(0,0)
+    assert not mbd.position.top
     assert mbd.position.middle
+    assert not mbd.position.bottom
+    assert not mbd.position.left
+    assert not mbd.position.right
 
     mbd.mock_blue_dot_moved(1,0)
+    assert not mbd.position.top
+    assert not mbd.position.middle
+    assert not mbd.position.bottom
+    assert not mbd.position.left
     assert mbd.position.right
 
-    mbd.mock_blue_dot_moved(1,0)
-    assert mbd.position.right
-    
     mbd.mock_blue_dot_moved(-1,0)
+    assert not mbd.position.top
+    assert not mbd.position.middle
+    assert not mbd.position.bottom
     assert mbd.position.left
-    
+    assert not mbd.position.right
+
     mbd.mock_blue_dot_moved(0,1)
     assert mbd.position.top
-    
+    assert not mbd.position.middle
+    assert not mbd.position.bottom
+    assert not mbd.position.left
+    assert not mbd.position.right
+
     mbd.mock_blue_dot_moved(0,-1)
+    assert not mbd.position.top
+    assert not mbd.position.middle
     assert mbd.position.bottom
+    assert not mbd.position.left
+    assert not mbd.position.right
     
     mbd.mock_blue_dot_moved(0.1234, -0.4567)
     assert mbd.position.x == 0.1234
@@ -165,12 +182,70 @@ def test_position():
     assert mbd.position.distance == 1
     assert mbd.position.angle == 90
 
+def test_swipe():
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+
+    #when_swiped
+    event_swiped = Event()
+    mbd.when_swiped = lambda: event_swiped.set()
+    assert not event_swiped.is_set()
+    
+    #simulate swipe left to right
+    mbd.mock_blue_dot_pressed(-1,0)
+    mbd.mock_blue_dot_moved(0,0)
+    mbd.mock_blue_dot_released(1,0)
+    #check event
+    assert event_swiped.is_set()   
+    #get the swipe
+    swipe = BlueDotSwipe(mbd.interaction)
+    assert swipe.right
+    assert not swipe.left
+    assert not swipe.up
+    assert not swipe.down
+    
+    #right to left
+    event_swiped.clear()
+    mbd.mock_blue_dot_pressed(1,0)
+    mbd.mock_blue_dot_moved(0,0)
+    mbd.mock_blue_dot_released(-1,0)
+    assert event_swiped.is_set()  
+    swipe = BlueDotSwipe(mbd.interaction)
+    assert not swipe.right
+    assert swipe.left
+    assert not swipe.up
+    assert not swipe.down
+    
+    #bottom to top
+    event_swiped.clear()
+    mbd.mock_blue_dot_pressed(0,-1)
+    mbd.mock_blue_dot_moved(0,0)
+    mbd.mock_blue_dot_released(0,1)
+    assert event_swiped.is_set()  
+    swipe = BlueDotSwipe(mbd.interaction)
+    assert not swipe.right
+    assert not swipe.left
+    assert swipe.up
+    assert not swipe.down
+    
+    #top to bottom
+    event_swiped.clear()
+    mbd.mock_blue_dot_pressed(0,1)
+    mbd.mock_blue_dot_moved(0,0)
+    mbd.mock_blue_dot_released(0,-1)
+    assert event_swiped.is_set()  
+    swipe = BlueDotSwipe(mbd.interaction)
+    assert not swipe.right
+    assert not swipe.left
+    assert not swipe.up
+    assert swipe.down 
+
 def test_allow_pairing():
     mbd = MockBlueDot()
-    assert not mbd.server.adapter.discoverable
-    assert not mbd.server.adapter.pairable
+    assert not mbd.adapter.discoverable
+    assert not mbd.adapter.pairable
 
     mbd.allow_pairing()
-    assert mbd.server.adapter.discoverable
-    assert mbd.server.adapter.pairable
+    assert mbd.adapter.discoverable
+    assert mbd.adapter.pairable
     

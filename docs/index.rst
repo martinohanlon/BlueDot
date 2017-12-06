@@ -13,4 +13,5 @@ Table of Contents
    dotapi
    btcommapi
    protocol
+   build
    changelog

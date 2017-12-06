@@ -424,7 +424,7 @@ You can get the devices that your raspberry pi is paired too::
     from bluedot import BlueDot
     bd = BlueDot()
     
-    devices = bd.server.adapter.paired_devices
+    devices = bd.paired_devices
     for d in devices:
         device_address = d[0]
         device_name = d[1]

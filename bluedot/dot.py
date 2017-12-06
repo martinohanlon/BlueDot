@@ -421,7 +421,7 @@ class BlueDot():
     def port(self):
         """
         The port the server is using. This defaults to ``1``.
-        """
+            """
         return self._port
 
     @property
@@ -431,6 +431,27 @@ class BlueDot():
         with clients.
         """
         return self._server
+
+    @property
+    def adapter(self):
+        """
+        The ``btcomm.BluetoothAdapter`` instance that is being used.
+        """
+        return self._server.adapter
+
+    @property
+    def paired_devices(self):
+        """
+        Returns a list of devices paired with this adapater 
+        ``((device_mac_address, device_name), (device_mac_address, device_name))``::
+        
+            bd = BlueDot()
+            devices = bd.paired_devices
+            for d in devices:
+                device_address = d[0]
+                device_name = d[1]
+        """
+        return self._server.adapter.paired_devices
 
     @property
     def is_connected(self):
@@ -630,6 +651,13 @@ class BlueDot():
     @print_messages.setter
     def print_messages(self, value):
         self._print_messages = value
+
+    @property
+    def running(self):
+        """
+        Returns a ``True`` if the server is running.
+        """
+        return self._server.running
 
     def start(self):
         """

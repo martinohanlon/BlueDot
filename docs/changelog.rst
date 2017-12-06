@@ -4,6 +4,12 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.1.1 - 
+~~~~~~~~~~~~~~~~~~
+
+ * exposed new properties (adapter, running, paired_devices)
+ * automated tests
+
 1.1.0 - 2017-11-05
 ~~~~~~~~~~~~~~~~~~
 
