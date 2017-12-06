@@ -1,9 +1,9 @@
-Build instructions
+Build
 ==================
 
 These are instructions for how to develop, build and deploy Blue Dot.
 
-bluedot python library
+bluedot Python library
 ----------------------
 
 Setup

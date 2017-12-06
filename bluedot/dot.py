@@ -403,8 +403,7 @@ class BlueDot():
         self._position = None
         self._interaction = None
         self._double_press_time = 0.3
-        self._moved_threshold = 0.01
-
+        
         self._create_server()
 
         if auto_start_server:
@@ -838,7 +837,7 @@ class BlueDot():
 
         self._process_callback(self.when_released, position)
 
-        self._process_interaction()
+        self._process_swipe()
 
     def _moved(self, position):
         self._is_moved_event.set()
@@ -857,17 +856,16 @@ class BlueDot():
                 call_back_t = WrapThread(target=callback, args=(position, ))
             call_back_t.start()
 
-    def _process_interaction(self):
+    def _process_swipe(self):
         #was the Blue Dot swiped?
         swipe = BlueDotSwipe(self._interaction)
         if swipe.valid:
             self._is_swiped_event.set()
             if self.when_swiped:
-                if swipe.valid:
-                    if len(getfullargspec(self.when_swiped).args) == 0:
-                        self.when_swiped()
-                    else:
-                        self.when_swiped(swipe)
+                if len(getfullargspec(self.when_swiped).args) == 0:
+                    self.when_swiped()
+                else:
+                    self.when_swiped(swipe)
 
             self._is_swiped_event.clear()
 
