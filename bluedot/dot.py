@@ -127,7 +127,7 @@ class BlueDotInteraction():
         The BlueDotPosition when the Blue Dot was pressed.
     """
     def __init__(self, pressed_position):
-        self._active = False
+        self._active = True
         self._positions = []
         self._positions.append(pressed_position)
 

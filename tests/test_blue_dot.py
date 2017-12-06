@@ -182,6 +182,41 @@ def test_position():
     assert mbd.position.distance == 1
     assert mbd.position.angle == 90
 
+def test_interaction():
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+    assert mbd.interaction == None
+    
+    mbd.mock_blue_dot_pressed(-1,0)
+    assert mbd.interaction.active
+    assert len(mbd.interaction.positions) == 1
+    assert mbd.interaction.distance == 0
+    assert mbd.interaction.pressed_position.x == -1
+    assert mbd.interaction.pressed_position.y == 0
+    assert mbd.interaction.current_position.x == -1
+    assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.released_position == None
+    
+    mbd.mock_blue_dot_moved(0,0)
+    assert len(mbd.interaction.positions) == 2
+    assert mbd.interaction.distance == 1
+    assert mbd.interaction.pressed_position.x == -1
+    assert mbd.interaction.pressed_position.y == 0
+    assert mbd.interaction.current_position.x == 0
+    assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.released_position == None
+    
+    mbd.mock_blue_dot_released(1,0)
+    assert not mbd.interaction.active
+    assert len(mbd.interaction.positions) == 3
+    assert mbd.interaction.distance == 2
+    assert mbd.interaction.pressed_position.x == -1
+    assert mbd.interaction.pressed_position.y == 0
+    assert mbd.interaction.current_position.x == 1
+    assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.released_position.x == 1
+    assert mbd.interaction.released_position.y == 0
+
 def test_swipe():
     mbd = MockBlueDot()
     mbd.mock_client_connected()

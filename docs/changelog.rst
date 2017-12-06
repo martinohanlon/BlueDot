@@ -9,6 +9,7 @@ Bluedot Python library
 
  * exposed new properties (adapter, running, paired_devices)
  * automated tests
+ * fixed active bug in interaction
 
 1.1.0 - 2017-11-05
 ~~~~~~~~~~~~~~~~~~
