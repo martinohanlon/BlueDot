@@ -12,7 +12,7 @@ Setup
 Clone repo and install for dev::
 
     git clone https://github.com/martinohanlon/BlueDot
-    cd BlueDot/bluedot
+    cd BlueDot
     git checkout dev
     sudo python3 setup.py develop
 
