@@ -1,4 +1,4 @@
-from bluedot import MockBlueDot, BlueDotSwipe
+from bluedot import MockBlueDot, BlueDotSwipe, BlueDotRotation
 from time import sleep
 from threading import Event
 
@@ -9,13 +9,9 @@ def test_default_values():
     assert mbd.running 
     
     assert mbd.print_messages
-    mbd.print_messages = False
-    assert not mbd.print_messages
-    
     assert mbd.double_press_time == 0.3
-    mbd.double_press_time = 0.4
-    assert mbd.double_press_time == 0.4
-
+    assert mbd.rotation_segments == 8
+    
     assert mbd.when_client_connects == None
     assert mbd.when_client_disconnects == None
     assert mbd.when_pressed == None
@@ -34,8 +30,13 @@ def test_modify_values():
     mbd.print_messages = True
     assert mbd.print_messages
     
+    assert mbd.double_press_time == 0.3
     mbd.double_press_time = 0.4
     assert mbd.double_press_time == 0.4
+
+    assert mbd.rotation_segments == 8
+    mbd.rotation_segments = 16
+    assert mbd.rotation_segments == 16
 
 def test_start_stop():
     mbd = MockBlueDot(auto_start_server = False)
@@ -195,15 +196,19 @@ def test_interaction():
     assert mbd.interaction.pressed_position.y == 0
     assert mbd.interaction.current_position.x == -1
     assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.previous_position == None
     assert mbd.interaction.released_position == None
-    
+
     mbd.mock_blue_dot_moved(0,0)
+    assert mbd.interaction.active
     assert len(mbd.interaction.positions) == 2
     assert mbd.interaction.distance == 1
     assert mbd.interaction.pressed_position.x == -1
     assert mbd.interaction.pressed_position.y == 0
     assert mbd.interaction.current_position.x == 0
     assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.previous_position.x == -1
+    assert mbd.interaction.previous_position.y == 0
     assert mbd.interaction.released_position == None
     
     mbd.mock_blue_dot_released(1,0)
@@ -214,6 +219,8 @@ def test_interaction():
     assert mbd.interaction.pressed_position.y == 0
     assert mbd.interaction.current_position.x == 1
     assert mbd.interaction.current_position.y == 0
+    assert mbd.interaction.previous_position.x == 0
+    assert mbd.interaction.previous_position.y == 0
     assert mbd.interaction.released_position.x == 1
     assert mbd.interaction.released_position.y == 0
 
@@ -273,7 +280,44 @@ def test_swipe():
     assert not swipe.right
     assert not swipe.left
     assert not swipe.up
-    assert swipe.down 
+    assert swipe.down
+
+def test_rotation():
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+
+    event_rotated = Event()
+    mbd.when_rotated = lambda: event_rotated.set()
+    assert not event_rotated.is_set()
+
+    #press the blue dot, no rotation
+    mbd.mock_blue_dot_pressed(-0.1,1)
+    assert not event_rotated.is_set()
+    r = BlueDotRotation(mbd.interaction, mbd.rotation_segments)
+    assert not r.valid
+    assert r.value == 0
+    assert not r.clockwise
+    assert not r.anti_clockwise
+
+    #rotate clockwise
+    event_rotated.clear()
+    mbd.mock_blue_dot_moved(0.1,1)
+    assert event_rotated.is_set()
+    r = BlueDotRotation(mbd.interaction, mbd.rotation_segments)
+    assert r.value == 1
+    assert r.valid
+    assert r.clockwise
+    assert not r.anti_clockwise
+    
+    #rotate anti-clockwise
+    event_rotated.clear()
+    mbd.mock_blue_dot_moved(-0.1,1)
+    assert event_rotated.is_set()
+    r = BlueDotRotation(mbd.interaction, mbd.rotation_segments)
+    assert r.value == -1
+    assert r.valid
+    assert not r.clockwise
+    assert r.anti_clockwise
 
 def test_allow_pairing():
     mbd = MockBlueDot()

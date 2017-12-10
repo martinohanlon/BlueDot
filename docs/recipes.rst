@@ -385,6 +385,33 @@ speed, angle, distance
 
     pause()
 
+Rotating
+--------
+
+You can use Blue Dot like a rotary encoder or iPod classic click wheel, rotating around the outer edge of the Blue Dot will cause it to 'tick'.
+
+counter
+~~~~~~~
+
+Using the `when_rotated` callback you can create a counter which increments / decrements when the Blue Dot is rotated clockwise / anti-clockwise,  `BlueDotRotation`_ object
+is returned to the callback, the `.value` property will be `-1` if rotated anti-clockwise and `1` if rotated clockwise::
+
+    from bluedot import BlueDot
+    from signal import pause
+
+    count = 0
+
+    def rotated(rotation):
+        global count
+        count += rotation.value
+
+        print("{} {} {}".format(count, rotation.clockwise, rotation.anti_clockwise))
+        
+    bd = BlueDot()
+    bd.when_rotated = rotated
+
+    pause()
+
 Bluetooth
 ---------
 
@@ -480,6 +507,7 @@ Tests can also be scripted using MockBlueDot::
 .. _BlueDotPosition: dotapi.html#bluedotposition
 .. _BlueDotInteraction: dotapi.html#bluedotinteraction
 .. _BlueDotSwipe: dotapi.html#bluedotswipe
+.. _BlueDotRotation: dotapi.html#bluedotrotation
 .. _MockBlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#mockbluedot
 
 .. |mockbluedot| image:: images/mockbluedot.png
