@@ -28,6 +28,12 @@ BlueDotSwipe
 .. autoclass:: BlueDotSwipe
     :members:
 
+BlueDotRotation
+===============
+
+.. autoclass:: BlueDotRotation
+    :members:
+
 MockBlueDot
 ===========
 

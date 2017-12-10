@@ -246,7 +246,9 @@ class MockBlueDot(BlueDot):
                     
                     if circle_rect.collidepoint(pos):
                         x = (pos[0] - circle_centre[0]) / circle_radius
+                        x = round(x, 4)
                         y = ((pos[1] - circle_centre[1]) / circle_radius) * -1
+                        y = round(y, 4)
 
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             self.mock_blue_dot_pressed(x,y)

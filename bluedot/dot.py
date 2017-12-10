@@ -127,7 +127,7 @@ class BlueDotInteraction():
         The BlueDotPosition when the Blue Dot was pressed.
     """
     def __init__(self, pressed_position):
-        self._active = False
+        self._active = True
         self._positions = []
         self._positions.append(pressed_position)
 
@@ -167,11 +167,8 @@ class BlueDotInteraction():
 
         If the interaction is still active it returns ``None``.
         """
-        if not self.active:
-            return self._positions[-1]
-        else:
-            return None
-
+        return self._positions[-1] if not self.active else None
+        
     @property
     def current_position(self):
         """
@@ -181,6 +178,15 @@ class BlueDotInteraction():
         Blue Dot was released
         """
         return self._positions[-1]
+
+    @property
+    def previous_position(self):
+        """
+        Returns the previous position for the interaction.
+
+        If the interaction contains only 1 position, None will be returned.
+        """
+        return self._positions[-2] if len(self._positions) > 1 else None
 
     @property
     def duration(self):
@@ -328,6 +334,80 @@ class BlueDotSwipe():
         """
         return True if self.valid and self.angle > 45 and self.angle <= 135 else False
 
+class BlueDotRotation():
+    def __init__(self, interaction, no_of_segments):
+        """
+        Represents a Blue Dot rotation.
+
+        A ``BlueDotRotation`` can be valid or invalid based on whether the Blue Dot 
+        interaction was a rotation or not.
+
+        :param BlueDotInteraction interaction:
+            The BlueDotInteraction object to be used to determine whether the interaction
+            was a rotation.
+        """
+        self._value = 0
+        self._clockwise = False
+        self._anti_clockwise = False
+        self._previous_segment = 0
+        self._current_segment = 0
+        
+        prev_pos = interaction.previous_position
+        pos = interaction.current_position
+
+        # was there a previous position (i.e. the interaction has more than 2 positions)
+        if prev_pos != None:
+        
+            # were both positions in the 'outer circle'
+            if prev_pos.distance > 0.5 and pos.distance > 0.5:
+
+                # what segments are the positions in
+                deg_per_seg = (360 / no_of_segments)
+                self._previous_segment = int((prev_pos.angle + 180) / deg_per_seg) + 1
+                self._current_segment = int((pos.angle + 180) / deg_per_seg) + 1
+
+                # were the positions in different segments
+                if self._previous_segment != self._current_segment:
+                    # calculate the rotation
+                    diff = self._previous_segment - self._current_segment
+                    if diff != 0:
+                        if diff == -1:
+                            self._value = 1
+                        elif diff == 1:
+                            self._value = -1
+                        elif diff == (no_of_segments - 1):
+                            self._value = 1
+                        elif diff == (1 - no_of_segments):
+                            self._value = -1
+
+    @property
+    def valid(self):
+        """
+        Returns ``True`` if the Blue Dot was rotated.
+        """
+        return True if self._value != 0 else False
+
+    @property
+    def value(self):
+        """
+        Returns ``0`` if the Blue Dot wasn't rotated, ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise.
+        """
+        return self._value
+
+    @property
+    def anti_clockwise(self):
+        """
+        Returns ``True`` if the Blue Dot was rotated anti-clockwise.
+        """
+        return True if self._value == -1 else False
+
+    @property
+    def clockwise(self):
+        """
+        Returns ``True`` if the Blue Dot was rotated clockwise.
+        """
+        return True if self._value == 1 else False
+
 class BlueDot():
     """
     Interacts with a Blue Dot client application, communicating when and where it
@@ -397,14 +477,15 @@ class BlueDot():
         self._when_released = None
         self._when_moved = None
         self._when_swiped = None
+        self._when_rotated = None
         self._when_client_connects = None
         self._when_client_disconnects = None
 
         self._position = None
         self._interaction = None
         self._double_press_time = 0.3
-        self._moved_threshold = 0.01
-
+        self._rotation_segments = 8
+        
         self._create_server()
 
         if auto_start_server:
@@ -421,7 +502,7 @@ class BlueDot():
     def port(self):
         """
         The port the server is using. This defaults to ``1``.
-        """
+            """
         return self._port
 
     @property
@@ -431,6 +512,27 @@ class BlueDot():
         with clients.
         """
         return self._server
+
+    @property
+    def adapter(self):
+        """
+        The ``btcomm.BluetoothAdapter`` instance that is being used.
+        """
+        return self._server.adapter
+
+    @property
+    def paired_devices(self):
+        """
+        Returns a list of devices paired with this adapater 
+        ``((device_mac_address, device_name), (device_mac_address, device_name))``::
+        
+            bd = BlueDot()
+            devices = bd.paired_devices
+            for d in devices:
+                device_address = d[0]
+                device_name = d[1]
+        """
+        return self._server.adapter.paired_devices
 
     @property
     def is_connected(self):
@@ -598,6 +700,33 @@ class BlueDot():
         self._when_swiped = value
 
     @property 
+    def rotation_segments(self):
+        """
+        Sets or returns the number of segment used when rotating. Defaults to ``8``.
+        """
+        return self._rotation_segments
+
+    @rotation_segments.setter
+    def rotation_segments(self, value):
+        self._rotation_segments = value
+
+    @property
+    def when_rotated(self):
+        """
+        Sets or returns the function which is called when the Blue Dot is rotated (like an
+        iPod clock wheel). 
+
+        The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
+        instance of ``BlueDotRotation`` will be returned representing the how the Blue Dot was
+        rotated.
+        """
+        return self._when_rotated
+
+    @when_rotated.setter
+    def when_rotated(self, value):
+        self._when_rotated = value
+
+    @property 
     def when_client_connects(self):
         """
         Sets or returns the function which is called when a Blue Dot connects. 
@@ -630,6 +759,13 @@ class BlueDot():
     @print_messages.setter
     def print_messages(self, value):
         self._print_messages = value
+
+    @property
+    def running(self):
+        """
+        Returns a ``True`` if the server is running.
+        """
+        return self._server.running
 
     def start(self):
         """
@@ -810,7 +946,7 @@ class BlueDot():
 
         self._process_callback(self.when_released, position)
 
-        self._process_interaction()
+        self._process_swipe()
 
     def _moved(self, position):
         self._is_moved_event.set()
@@ -818,30 +954,34 @@ class BlueDot():
         self._interaction.moved(position)
 
         self._process_callback(self.when_moved, position)
+
+        if self.when_rotated:
+            self._process_rotation()
     
         self._is_moved_event.clear()
     
-    def _process_callback(self, callback, position):
+    def _process_callback(self, callback, arg):
         if callback:
             if len(getfullargspec(callback).args) == 0:
                 call_back_t = WrapThread(target=callback)    
             else:
-                call_back_t = WrapThread(target=callback, args=(position, ))
+                call_back_t = WrapThread(target=callback, args=(arg, ))
             call_back_t.start()
 
-    def _process_interaction(self):
+    def _process_swipe(self):
         #was the Blue Dot swiped?
         swipe = BlueDotSwipe(self._interaction)
         if swipe.valid:
             self._is_swiped_event.set()
             if self.when_swiped:
-                if swipe.valid:
-                    if len(getfullargspec(self.when_swiped).args) == 0:
-                        self.when_swiped()
-                    else:
-                        self.when_swiped(swipe)
-
+                self._process_callback(self.when_swiped, swipe)
+                
             self._is_swiped_event.clear()
+
+    def _process_rotation(self):
+        rotation = BlueDotRotation(self._interaction, self._rotation_segments)
+        if rotation.valid:
+            self._process_callback(self.when_rotated, rotation)
 
     def _print_message(self, message):
         if self.print_messages:

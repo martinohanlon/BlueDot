@@ -4,6 +4,15 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.2.0 - 2017-12-10
+~~~~~~~~~~~~~~~~~~
+
+ * added when_rotated
+ * threaded swipe callbacks
+ * exposed new BlueDot properties (adapter, running, paired_devices)
+ * fixed active bug in interaction
+ * automated tests
+
 1.1.0 - 2017-11-05
 ~~~~~~~~~~~~~~~~~~
 

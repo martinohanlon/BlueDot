@@ -96,7 +96,6 @@ class BluetoothAdapter():
             for d in devices:
                 device_address = d[0]
                 device_name = d[1]
-
         """
         return get_paired_devices(self._device)
 
