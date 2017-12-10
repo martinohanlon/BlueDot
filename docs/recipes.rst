@@ -393,8 +393,8 @@ You can use Blue Dot like a rotary encoder or iPod classic click wheel, rotating
 counter
 ~~~~~~~
 
-Using the `when_rotated` callback you can create a counter which increments / decrements when the Blue Dot is rotated clockwise / anti-clockwise,  `BlueDotRotation`_ object
-is returned to the callback, the `.value` property will be `-1` if rotated anti-clockwise and `1` if rotated clockwise::
+Using the ``when_rotated`` callback you can create a counter which increments / decrements when the Blue Dot is rotated clockwise / anti-clockwise,  `BlueDotRotation`_ object
+is returned to the callback, the ``.value`` property will be ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise::
 
     from bluedot import BlueDot
     from signal import pause
