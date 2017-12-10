@@ -390,11 +390,13 @@ Rotating
 
 You can use Blue Dot like a rotary encoder or iPod classic click wheel, rotating around the outer edge of the Blue Dot will cause it to 'tick'.
 
+The Blue Dot is split into a number of virtual segments (the default is 8), when the position moves from one segment to another, it clicks.
+
 counter
 ~~~~~~~
 
 Using the ``when_rotated`` callback you can create a counter which increments / decrements when the Blue Dot is rotated clockwise / anti-clockwise,  `BlueDotRotation`_ object
-is returned to the callback, the ``.value`` property will be ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise::
+is returned to the callback, the ``value`` property will be ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise::
 
     from bluedot import BlueDot
     from signal import pause
@@ -411,6 +413,10 @@ is returned to the callback, the ``.value`` property will be ``-1`` if rotated a
     bd.when_rotated = rotated
 
     pause()
+
+The rotation speed can be change by modifying the number of segments the Blue Dot is split into by change the ``rotation_segments`` property::
+
+    bd.rotation_segments = 16
 
 Bluetooth
 ---------
