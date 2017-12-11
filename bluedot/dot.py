@@ -702,7 +702,8 @@ class BlueDot():
     @property 
     def rotation_segments(self):
         """
-        Sets or returns the number of segment used when rotating. Defaults to ``8``.
+        Sets or returns the number of virtual segments the Blue Dot is split into for  rotating. 
+        Defaults to ``8``.
         """
         return self._rotation_segments
 
@@ -717,7 +718,7 @@ class BlueDot():
         iPod clock wheel). 
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an 
-        instance of ``BlueDotRotation`` will be returned representing the how the Blue Dot was
+        instance of ``BlueDotRotation`` will be returned representing how the Blue Dot was
         rotated.
         """
         return self._when_rotated
