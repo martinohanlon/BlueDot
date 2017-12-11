@@ -388,14 +388,14 @@ speed, angle, distance
 Rotating
 --------
 
-You can use Blue Dot like a rotary encoder or iPod classic click wheel, rotating around the outer edge of the Blue Dot will cause it to 'tick'.
+You can use Blue Dot like a rotary encoder or 'iPod classic click wheel' - rotating around the outer edge of the Blue Dot will cause it to 'tick'.
 
-The Blue Dot is split into a number of virtual segments (the default is 8), when the position moves from one segment to another, it clicks.
+The Blue Dot is split into a number of virtual segments (the default is 8), when the position moves from one segment to another, it ticks.
 
 counter
 ~~~~~~~
 
-Using the ``when_rotated`` callback you can create a counter which increments / decrements when the Blue Dot is rotated clockwise / anti-clockwise,  `BlueDotRotation`_ object
+Using the ``when_rotated`` callback you can create a counter which increments / decrements when the Blue Dot is rotated either clockwise or anti-clockwise. A `BlueDotRotation`_ object
 is returned to the callback, the ``value`` property will be ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise::
 
     from bluedot import BlueDot
@@ -414,7 +414,7 @@ is returned to the callback, the ``value`` property will be ``-1`` if rotated an
 
     pause()
 
-The rotation speed can be change by modifying the number of segments the Blue Dot is split into by change the ``rotation_segments`` property::
+The rotation speed can be modified using the ``rotation_segments`` property which changes the number of segments the Blue Dot is split into::
 
     bd.rotation_segments = 16
 

@@ -16,9 +16,12 @@ Start
 
 `Install and usage`_ is really simple:
 
-1. Get the Android or Python Blue Dot app 
-2. Pair your Raspberry Pi
-3. Install the Python library
+1. Install the Python library::
+
+    sudo pip3 install bluedot
+
+2. Get the `Android Blue Dot app`_ or use the `Python Blue Dot app`_ 
+3. Pair your Raspberry Pi
 4. Write some code::
 
     from bluedot import BlueDot
@@ -39,7 +42,7 @@ Why be restricted by such vague positions like top and bottom though, you can ge
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
-You can press it, slide it, swipe it - one blue circle can do a lot.
+You can press it, slide it, swipe it, rotate it - one blue circle can do a lot.
 
 Even more
 ---------
@@ -60,7 +63,8 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
 .. _Python library: http://bluedot.readthedocs.io/en/latest/dotapi.html
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _Recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
-.. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
+.. _Android Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
+.. _Python Blue Dot app: http://bluedot.readthedocs.io/en/latest/bluedotpythonapp.html
 .. _issue: https://github.com/martinohanlon/bluedot/issues
 .. _BlueDot controlled Robot: https://youtu.be/eW9oEPySF58
 .. _joystick: http://bluedot.readthedocs.io/en/latest/recipes.html#joystick
