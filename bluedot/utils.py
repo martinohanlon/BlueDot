@@ -39,15 +39,15 @@ def get_mac(device_name):
 
 def get_adapter_powered_status(device_name):
     powered = get_adapter_property(device_name, "Powered")
-    return True if powered else False
+    return bool(powered)
 
 def get_adapter_discoverable_status(device_name):
     discoverable = get_adapter_property(device_name, "Discoverable")
-    return True if discoverable else False
+    return bool(discoverable)
 
 def get_adapter_pairable_status(device_name):
     pairable = get_adapter_property(device_name, "Pairable")
-    return True if pairable else False
+    return bool(pairable)
 
 def get_paired_devices(device_name):
     paired_devices = []

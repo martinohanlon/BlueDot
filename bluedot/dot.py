@@ -1,15 +1,18 @@
+from __future__ import division
+
 import sys
 from time import sleep, time
 from threading import Event
 from math import atan2, degrees, hypot
 
-if sys.version_info[0] > 2:
+try:
     from inspect import getfullargspec
-else:
+except ImportError:
     from inspect import getargspec as getfullargspec
 
 from .btcomm import BluetoothServer
 from .threads import WrapThread
+
 
 class BlueDotPosition():
     """
@@ -55,7 +58,7 @@ class BlueDotPosition():
         The angle from centre of where the Blue Dot is pressed, held or released.
         0 degress is up, 0..180 degrees clockwise, -180..0 degrees anti-clockwise.
         """
-        if self._angle == None:
+        if self._angle is None:
             self._angle = degrees(atan2(self.x, self.y))
         return self._angle
 
@@ -65,7 +68,7 @@ class BlueDotPosition():
         The distance from centre of where the Blue Dot is pressed, held or released.
         The radius of the Blue Dot is 1.
         """
-        if self._distance == None:
+        if self._distance is None:
             self._distance = self._clamped(hypot(self.x, self.y))
         return self._distance
 
@@ -74,35 +77,35 @@ class BlueDotPosition():
         """
         Returns ``True`` if the Blue Dot is pressed, held or released in the middle.
         """
-        return True if self.distance <= 0.5 else False
+        return self.distance <= 0.5
 
     @property
     def top(self):
         """
         Returns ``True`` if the Blue Dot is pressed, held or released at the top.
         """
-        return True if self.distance > 0.5 and self.angle > -45 and self.angle <= 45 else False
+        return self.distance > 0.5 and (-45 < self.angle <= 45)
 
     @property
     def right(self):
         """
         Returns ``True`` if the Blue Dot is pressed, held or released on the right.
         """
-        return True if self.distance > 0.5 and self.angle > 45 and self.angle <= 135 else False
+        return self.distance > 0.5 and (45 < self.angle <= 135)
 
     @property
     def bottom(self):
         """
         Returns ``True`` if the Blue Dot is pressed, held or released at the bottom.
         """
-        return True if self.distance > 0.5 and (self.angle > 135 or self.angle <= -135) else False
+        return self.distance > 0.5 and (self.angle > 135 or self.angle <= -135)
 
     @property
     def left(self):
         """
         Returns ``True`` if the Blue Dot is pressed, held or released on the left.
         """
-        return True if self.distance > 0.5 and self.angle > -135 and self.angle <= -45 else False
+        return self.distance > 0.5 and (-135 < self.angle <= -45)
 
     @property
     def time(self):
@@ -315,28 +318,29 @@ class BlueDotSwipe():
         """
         Returns ``True`` if the Blue Dot was swiped up.
         """
-        return True if self.valid and self.angle > -45 and self.angle <= 45 else False
+        return self.valid and (-45 < self.angle <= 45)
 
     @property
     def down(self):
         """
         Returns ``True`` if the Blue Dot was swiped down.
         """
-        return True if self.valid and (self.angle > 135 or self.angle <= -135) else False
+        return self.valid and (self.angle > 135 or self.angle <= -135)
 
     @property
     def left(self):
         """
         Returns ``True`` if the Blue Dot was swiped left.
         """
-        return True if self.valid and self.angle > -135 and self.angle <= -45 else False
+        return self.valid and (-135 < self.angle <= -45)
 
     @property
     def right(self):
         """
         Returns ``True`` if the Blue Dot was swiped right.
         """
-        return True if self.valid and self.angle > 45 and self.angle <= 135 else False
+        return self.valid and (45 < self.angle <= 135)
+
 
 class BlueDotRotation():
     def __init__(self, interaction, no_of_segments):
@@ -389,7 +393,7 @@ class BlueDotRotation():
         """
         Returns ``True`` if the Blue Dot was rotated.
         """
-        return True if self._value != 0 else False
+        return self._value != 0
 
     @property
     def value(self):
@@ -403,14 +407,15 @@ class BlueDotRotation():
         """
         Returns ``True`` if the Blue Dot was rotated anti-clockwise.
         """
-        return True if self._value == -1 else False
+        return self._value == -1
 
     @property
     def clockwise(self):
         """
         Returns ``True`` if the Blue Dot was rotated clockwise.
         """
-        return True if self._value == 1 else False
+        return self._value == 1
+
 
 class BlueDot():
     """

@@ -2,7 +2,18 @@ import socket
 import sys
 from time import sleep
 
-from .utils import register_spp, get_mac, get_adapter_powered_status, get_adapter_discoverable_status, get_adapter_pairable_status, get_paired_devices, device_pairable, device_discoverable, device_powered, string_to_bytes
+from .utils import (
+    register_spp,
+    get_mac,
+    get_adapter_powered_status,
+    get_adapter_discoverable_status,
+    get_adapter_pairable_status,
+    get_paired_devices,
+    device_pairable,
+    device_discoverable,
+    device_powered,
+    string_to_bytes,
+)
 
 from .threads import WrapThread
 
@@ -12,6 +23,7 @@ else:
     BLUETOOTH_EXCEPTIONS = (IOError)
 
 BLUETOOTH_TIMEOUT = 0.01
+
 
 class BluetoothAdapter():
     """
