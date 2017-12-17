@@ -1,5 +1,6 @@
 import socket
 import sys
+import errno
 from time import sleep
 
 from .utils import (
@@ -15,11 +16,6 @@ from .utils import (
 )
 
 from .threads import WrapThread
-
-if sys.version_info[0] > 2:
-    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError, TimeoutError)
-else:
-    BLUETOOTH_EXCEPTIONS = (IOError)
 
 BLUETOOTH_TIMEOUT = 0.01
 
@@ -357,7 +353,7 @@ class BluetoothServer():
             try:
                 self._server_sock.bind((self.server_address, self.port))
             except (socket.error, OSError) as e:
-                if str(e) == "[Errno 98] Address already in use":
+                if e.errno == errno.EADDRINUSE:
                     print("Bluetooth address {} is already in use - is the server already running?".format(self.server_address))
                 raise e
             self._server_sock.listen(1)
@@ -389,7 +385,7 @@ class BluetoothServer():
                 data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
 
     def _wait_for_connection(self):
@@ -425,7 +421,7 @@ class BluetoothServer():
             data = ""
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
             if len(data) > 0:
                 #print("received [%s]" % data)
@@ -442,26 +438,27 @@ class BluetoothServer():
         self._client_connected = False
 
     def _handle_bt_error(self, bt_error):
+        assert isinstance(bt_error, IOError)
         #'timed out' is caused by the wait_for_connection loop
         if str(bt_error) == "timed out":
-            return
+            pass
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
-        if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
-            return
+        elif bt_error.errno == errno.EAGAIN:
+            pass
         #'connection reset' is caused when the client disconnects
-        if str(bt_error) == "[Errno 104] Connection reset by peer":
+        elif bt_error.errno == errno.ECONNRESET:
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
-            return
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
-        if str(bt_error) == "[Errno 110] Connection timed out":
+        elif bt_error.errno == errno.ETIMEDOUT:
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
-            return
-        raise bt_error
+        else:
+            raise bt_error
+
 
 class BluetoothClient():
     """
@@ -671,7 +668,7 @@ class BluetoothClient():
                 data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
 
     def _read(self):
@@ -681,9 +678,9 @@ class BluetoothClient():
             data = ""
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
-            if len(data) > 0:
+            if data:
                 #print("received [%s]" % data)
                 if self._data_received_callback:
                     if self._encoding:
@@ -692,16 +689,16 @@ class BluetoothClient():
             sleep(BLUETOOTH_TIMEOUT)
 
     def _handle_bt_error(self, bt_error):
+        assert isinstance(bt_error, IOError)
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
-        if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
-            return
+        if bt_error.errno == errno.EAGAIN:
+            pass
         #'connection reset' is caused when the client disconnects
-        if str(bt_error) == "[Errno 104] Connection reset by peer":
+        elif bt_error.errno == errno.ECONNRESET:
             self._connected = False
-            return
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
-        if str(bt_error) == "[Errno 110] Connection timed out":
+        elif bt_error.errno == errno.ETIMEDOUT:
             self._connected = False
-            return
-        raise bt_error
+        else:
+            raise bt_error
