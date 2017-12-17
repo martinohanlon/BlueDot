@@ -31,7 +31,7 @@ def get_adapter_property(device_name, property):
     bus = dbus.SystemBus()
     adapter_path = find_adapter(device_name).object_path
     adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
-    return adapter.Get(ADAPTER_INTERFACE, property)    
+    return adapter.Get(ADAPTER_INTERFACE, property)
 
 def get_mac(device_name):
     return get_adapter_property(device_name, "Address")
@@ -136,7 +136,7 @@ def register_spp(port):
 #        "AutoConnect" : True,
         "ServiceRecord" : service_record
     }
-    
+
     try:
         manager.RegisterProfile(path, uuid, opts)
     except dbus.exceptions.DBusException as e:

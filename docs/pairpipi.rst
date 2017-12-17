@@ -31,7 +31,7 @@ Using the Command Line
 
 On Raspberry Pi 1:
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control 
+1. Type ``bluetoothctl`` and press Enter to open Bluetooth control
 2. At the ``[bluetooth]$`` prompt enter the following commands::
 
     discoverable on
@@ -41,7 +41,7 @@ On Raspberry Pi 1:
 
 On Raspberry Pi 2:
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control 
+1. Type ``bluetoothctl`` and press Enter to open Bluetooth control
 2. At the ``[bluetooth]$`` prompt enter the following commands::
 
     discoverable on
@@ -63,5 +63,5 @@ On Raspberry Pi 2:
 On Raspberry Pi 1:
 
 1. Enter the same PIN when prompted
-2. Type ``exit`` and press Enter to return to the command line 
+2. Type ``exit`` and press Enter to return to the command line
 

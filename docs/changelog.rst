@@ -22,7 +22,7 @@ Bluedot Python library
 1.0.4 - 2017-09-10
 ~~~~~~~~~~~~~~~~~~
 
- * serial port profile port fix 
+ * serial port profile port fix
  * launching multiple blue dots fix
 
 1.0.3 - 2017-07-28
@@ -72,7 +72,7 @@ Bluedot Python library
 
  * added when_client_connects, when_client_disconnects
  * added allow_pairing functions
- * refactored Bluetooth comms 
+ * refactored Bluetooth comms
  * added BluetoothAdapter
 
 0.1.2 - 2017-04-14
@@ -90,7 +90,7 @@ Bluedot Python library
 ~~~~~~~~~~~~~~~~~~
 
  * Check Bluetooth adapter is powered
- * Handle client connection timeouts 
+ * Handle client connection timeouts
  * Docs & image updates
 
 0.0.6 - 2017-04-05
@@ -125,7 +125,7 @@ Android app
  * fixed issues with small screen devices
  * rounded x,y values increasing performance
  * new help icon
- * link to https://bluedot.readthedocs.io not http 
+ * link to https://bluedot.readthedocs.io not http
 
 1 (0.0.2) - 2017-04-05
 ~~~~~~~~~~~~~~~~~~~~~~~~

@@ -65,7 +65,7 @@ Double presses can also be used with ``wait_for_double_press()`` and ``when_doub
 flash an led
 ~~~~~~~~~~~~
 
-Using Blue Dot in combination with `gpiozero`_ you can interact with electronic components, such as LED's, connected to your Raspberry Pi. 
+Using Blue Dot in combination with `gpiozero`_ you can interact with electronic components, such as LED's, connected to your Raspberry Pi.
 
 When the Blue Dot is pressed, the LED will turn on, when released it will turn off::
 
@@ -116,7 +116,7 @@ Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily crea
     from bluedot import BlueDot
     from picamera import PiCamera
     from signal import pause
-    
+
     bd = BlueDot()
     cam = PiCamera()
 
@@ -324,7 +324,7 @@ single
 ~~~~~~
 
 Detecting a single swipe is easy using ``wait_for_swipe``::
-    
+
     from bluedot import BlueDot
     bd = BlueDot()
     bd.wait_for_swipe()
@@ -408,7 +408,7 @@ is returned to the callback, the ``value`` property will be ``-1`` if rotated an
         count += rotation.value
 
         print("{} {} {}".format(count, rotation.clockwise, rotation.anti_clockwise))
-        
+
     bd = BlueDot()
     bd.when_rotated = rotated
 
@@ -437,7 +437,7 @@ You can put your Raspberry Pi into pairing mode which will allow pairing from ot
     pause()
 
 Or connect up a physical button up to start the pairing::
-    
+
     from bluedot import BlueDot
     from gpiozero import Button
     from signal import pause
@@ -456,7 +456,7 @@ You can get the devices that your raspberry pi is paired too::
 
     from bluedot import BlueDot
     bd = BlueDot()
-    
+
     devices = bd.paired_devices
     for d in devices:
         device_address = d[0]

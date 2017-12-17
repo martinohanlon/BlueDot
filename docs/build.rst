@@ -41,7 +41,7 @@ Create .pypirc credentials file::
 
     [pypi]
     username:
-    password:    
+    password:
 
 Build for deployment::
 

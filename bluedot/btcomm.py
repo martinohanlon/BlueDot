@@ -25,7 +25,7 @@ class BluetoothAdapter():
         print(a.paired_devices)
 
     :param string device:
-        The bluetooth device to be used, the default is ``hci0``, if your device 
+        The bluetooth device to be used, the default is ``hci0``, if your device
         only has 1 bluetooth adapter this shouldn't need to be changed.
     """
     def __init__(self, device = "hci0"):
@@ -39,7 +39,7 @@ class BluetoothAdapter():
         The bluetooth device name. This defaults to hci0.
         """
         return self._device
-    
+
     @property
     def address(self):
         """
@@ -52,7 +52,7 @@ class BluetoothAdapter():
         """
         Set to ``True`` to power on the bluetooth adapter.
 
-        Depending on how bluetooth has been powered down, you may need to use 
+        Depending on how bluetooth has been powered down, you may need to use
         rfkill to unblock bluetooth to give permission to bluez to power on bluetooth::
 
             sudo rfkill unblock bluetooth
@@ -88,9 +88,9 @@ class BluetoothAdapter():
     @property
     def paired_devices(self):
         """
-        Returns a list of devices paired with this adapater 
+        Returns a list of devices paired with this adapater
         ``((device_mac_address, device_name), (device_mac_address, device_name))``::
-        
+
             a = BluetoothAdapter()
             devices = a.paired_devices
             for d in devices:
@@ -105,17 +105,17 @@ class BluetoothAdapter():
 
         :param int timeout:
             The time in seconds the adapter will remain pairable. If set to ``None``
-            the device will be discoverable and pairable indefinetly. 
+            the device will be discoverable and pairable indefinetly.
         """
         #if a pairing thread is already running, stop it and restart
         if self._pairing_thread:
             if self._pairing_thread.is_alive:
                 self._pairing_thread.stop()
-        
+
         #make the adapter pairable
         self.pairable = True
         self.discoverable = True
-        
+
         if timeout != None:
             #start the pairing thread
             self._pairing_thread = WrapThread(target=self._expire_pairing, args=(timeout, ))
@@ -129,15 +129,15 @@ class BluetoothAdapter():
 
 class BluetoothServer():
     """
-    Creates a Bluetooth server which will allow connections and accept incoming 
+    Creates a Bluetooth server which will allow connections and accept incoming
     RFCOMM serial data.
 
     When data is received by the server it is passed to a callback function
     which must be specified at initiation.
 
-    The following example will create a bluetooth server which will wait for a 
+    The following example will create a bluetooth server which will wait for a
     connection and print any data it receives and send it back to the client::
-    
+
         from bluedot.btcomm import BluetoothServer
         from signal import pause
 
@@ -151,7 +151,7 @@ class BluetoothServer():
     :param data_received_callback:
         A function reference should be passed, this function will be called when
         data is received by the server.  The function should accept a single parameter
-        which when called will hold the data received. Set to ``None`` if  received 
+        which when called will hold the data received. Set to ``None`` if  received
         data is not required.
 
     :param bool auto_start:
@@ -167,14 +167,14 @@ class BluetoothServer():
         The bluetooth port the server should use, the default is ``1``.
 
     :param string encoding:
-        The encoding standard to be used when sending and receiving byte data. The default is 
+        The encoding standard to be used when sending and receiving byte data. The default is
         ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
 
     :param bool power_up_device:
-        If ``True``, the bluetooth device will be powered up (if required) when the 
-        server starts. The default is ``False``. 
-        
-        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        If ``True``, the bluetooth device will be powered up (if required) when the
+        server starts. The default is ``False``.
+
+        Depending on how bluetooth has been powered down, you may need to use rfkill
         to unblock bluetooth to give permission to bluez to power on bluetooth::
 
             sudo rfkill unblock bluetooth
@@ -188,14 +188,14 @@ class BluetoothServer():
         (the default), no notification will be given when a client disconnects
 
     """
-    def __init__(self, 
-        data_received_callback, 
-        auto_start = True, 
-        device = "hci0", 
+    def __init__(self,
+        data_received_callback,
+        auto_start = True,
+        device = "hci0",
         port = 1,
         encoding = "utf-8",
         power_up_device = False,
-        when_client_connects = None, 
+        when_client_connects = None,
         when_client_disconnects = None):
 
         self._device = device
@@ -213,12 +213,12 @@ class BluetoothServer():
         self._server_sock = None
         self._client_info = None
         self._client_sock = None
-        
+
         self._conn_thread = None
 
         if auto_start:
             self.start()
-    
+
     @property
     def device(self):
         """
@@ -229,7 +229,7 @@ class BluetoothServer():
     @property
     def adapter(self):
         """
-        A BluetoothAdapter object which represents the bluetooth device 
+        A BluetoothAdapter object which represents the bluetooth device
         the server is using.
         """
         return self._adapter
@@ -265,7 +265,7 @@ class BluetoothServer():
     @property
     def client_address(self):
         """
-        The mac address of the client connected to the server. Returns 
+        The mac address of the client connected to the server. Returns
         ``None`` if no client is connected.
         """
         if self._client_info:
@@ -283,7 +283,7 @@ class BluetoothServer():
     @property
     def data_received_callback(self):
         """
-        Sets or returns the function which is called when data is received by the server. 
+        Sets or returns the function which is called when data is received by the server.
 
         The function should accept a single parameter which when called will hold
         the data received. Set to ``None`` if received data is not required.
@@ -297,7 +297,7 @@ class BluetoothServer():
     @property
     def when_client_connects(self):
         """
-        Sets or returns the function which is called when a client connects. 
+        Sets or returns the function which is called when a client connects.
         """
         return self._when_client_connects
 
@@ -308,7 +308,7 @@ class BluetoothServer():
     @property
     def when_client_disconnects(self):
         """
-        Sets or returns the function which is called when a client disconnects. 
+        Sets or returns the function which is called when a client disconnects.
         """
         return self._when_client_disconnects
 
@@ -391,7 +391,7 @@ class BluetoothServer():
                 #call the call back
                 if self.when_client_connects:
                     self.when_client_connects()
-                
+
                 #read data
                 self._read()
 
@@ -449,12 +449,12 @@ class BluetoothClient():
     """
     Creates a Bluetooth client which can send data to a server using RFCOMM Serial Data.
 
-    The following example will create a bluetooth client which will connect to a paired 
+    The following example will create a bluetooth client which will connect to a paired
     device called ``raspberrypi``, send ``helloworld`` and print any data is receives::
-    
+
         from bluedot.btcomm import BluetoothClient
         from signal import pause
-        
+
         def data_received(data):
             print(data)
 
@@ -462,9 +462,9 @@ class BluetoothClient():
         c.send("helloworld")
 
         pause()
-    
+
     :param string server:
-        The server name ("raspberrypi") or server mac address 
+        The server name ("raspberrypi") or server mac address
         ("11:11:11:11:11:11") to connect too.
 
         The server must be a paired device.
@@ -472,40 +472,40 @@ class BluetoothClient():
     :param data_received_callback:
         A function reference should be passed, this function will be called when
         data is received by the client.  The function should accept a single parameter
-        which when called will hold the data received. Set to ``None`` if data 
+        which when called will hold the data received. Set to ``None`` if data
         received is not required.
 
     :param int port:
         The bluetooth port the client should use, the default is ``1``
 
     :param string device:
-        The bluetooth device to be used, the default is ``hci0``, if your device 
+        The bluetooth device to be used, the default is ``hci0``, if your device
         only has 1 bluetooth adapter this shouldn't need to be changed.
 
     :param string encoding:
-        The encoding standard to be used when sending and receiving byte data. The default is 
+        The encoding standard to be used when sending and receiving byte data. The default is
         ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
 
     :param bool power_up_device:
-        If ``True``, the bluetooth device will be powered up (if required) when the 
-        server starts. The default is ``False``. 
-        
-        Depending on how bluetooth has been powered down, you may need to use rfkill 
+        If ``True``, the bluetooth device will be powered up (if required) when the
+        server starts. The default is ``False``.
+
+        Depending on how bluetooth has been powered down, you may need to use rfkill
         to unblock bluetooth to give permission to bluez to power on bluetooth::
 
             sudo rfkill unblock bluetooth
 
     :param bool auto_connect:
         If ``True`` (the default), the bluetooth client will automatically try to
-        connect to the server at initialisation, if ``False``, the method ``connect`` 
+        connect to the server at initialisation, if ``False``, the method ``connect``
         will need to be called.
 
     """
-    def __init__(self, 
+    def __init__(self,
         server,
         data_received_callback,
         port = 1,
-        device = "hci0", 
+        device = "hci0",
         encoding = "utf-8",
         power_up_device = False,
         auto_connect = True):
@@ -537,7 +537,7 @@ class BluetoothClient():
     @property
     def server(self):
         """
-        The server name ("raspberrypi") or server mac address 
+        The server name ("raspberrypi") or server mac address
         ("11:11:11:11:11:11") to connect too.
         """
         return self._server
@@ -552,7 +552,7 @@ class BluetoothClient():
     @property
     def adapter(self):
         """
-        A BluetoothAdapter object which represents the bluetooth device 
+        A BluetoothAdapter object which represents the bluetooth device
         the client is using.
         """
         return self._adapter
@@ -560,7 +560,7 @@ class BluetoothClient():
     @property
     def encoding(self):
         """
-        The encoding standard the client is using. The default is ``utf-8``. 
+        The encoding standard the client is using. The default is ``utf-8``.
         """
         return self._encoding
 
@@ -581,8 +581,8 @@ class BluetoothClient():
     @property
     def data_received_callback(self):
         """
-        Sets or returns the function which is called when data is received by the client. 
-        
+        Sets or returns the function which is called when data is received by the client.
+
         The function should accept a single parameter which when called will hold
         the data received. Set to ``None`` if data received is not required.
         """
@@ -612,14 +612,14 @@ class BluetoothClient():
                     break
             if server_mac == None:
                 raise Exception("Server {} not found in paired devices".format(self._server))
-            
+
             #create a socket
             self._client_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             self._client_sock.bind((self.adapter.address, self._port))
             self._client_sock.connect((server_mac, self._port))
-        
-            self._connected = True 
-        
+
+            self._connected = True
+
             self._conn_thread = WrapThread(target=self._read)
             self._conn_thread.start()
 
@@ -628,7 +628,7 @@ class BluetoothClient():
         Disconnect from a bluetooth server.
         """
         if self._connected:
-            
+
             #stop the connection thread
             if self._conn_thread:
                 self._conn_thread.stop()
@@ -640,7 +640,7 @@ class BluetoothClient():
             finally:
                 self._client_sock = None
                 self._connected = False
-        
+
     def send(self, data):
         """
         Send data to a bluetooth server
@@ -655,7 +655,7 @@ class BluetoothClient():
                 self._client_sock.send(data)
             except BLUETOOTH_EXCEPTIONS as e:
                 self._handle_bt_error(e)
-            
+
     def _read(self):
         #read until the client is stopped or the client disconnects
         while not self._conn_thread.stopping.is_set() and self._connected:

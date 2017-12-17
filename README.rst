@@ -5,7 +5,7 @@ Blue Dot
 
 Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
 
-|bluedotfeature| 
+|bluedotfeature|
 
 |bluedotapp| |bluedotpython|
 
@@ -20,7 +20,7 @@ Start
 
     sudo pip3 install bluedot
 
-2. Get the `Android Blue Dot app`_ or use the `Python Blue Dot app`_ 
+2. Get the `Android Blue Dot app`_ or use the `Python Blue Dot app`_
 3. Pair your Raspberry Pi
 4. Write some code::
 
@@ -79,7 +79,7 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
 .. |bluedotpython| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotpython.png
    :height: 247 px
    :width: 294 px
-   :scale: 100 %    
+   :scale: 100 %
    :alt: blue dot python app
 
 .. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature_small.png

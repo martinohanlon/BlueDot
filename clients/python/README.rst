@@ -19,7 +19,7 @@ The app is included in the bluedot Python library:
 
 |bluedotpythondevices|
 
-5. Press the Dot 
+5. Press the Dot
 
 |bluedotpython|
 

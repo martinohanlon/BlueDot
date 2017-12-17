@@ -7,7 +7,7 @@ Using the Desktop
 On your Android phone:
 
 1. Open Settings
-2. Select Bluetooth 
+2. Select Bluetooth
 3. This will make your phone Discoverable
 
 Using your Raspberry Pi:
@@ -31,7 +31,7 @@ Using the Command Line
 
 Using your Raspberry Pi:
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control 
+1. Type ``bluetoothctl`` and press Enter to open Bluetooth control
 2. At the ``[bluetooth]$`` prompt enter the following commands::
 
     discoverable on
@@ -42,11 +42,11 @@ Using your Raspberry Pi:
 Using your Android phone:
 
 1. Open Settings
-2. Select Bluetooth 
+2. Select Bluetooth
 3. Your Raspberry Pi will appear in the list, select it
 4. Enter a PIN
 
 Using your Raspberry Pi:
 
 1. Re-enter the PIN
-2. Type ``exit`` and press Enter to return to the command line 
+2. Type ``exit`` and press Enter to return to the command line

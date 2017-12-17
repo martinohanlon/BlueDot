@@ -33,7 +33,7 @@ Positions are values between -1 and +1, with 0 being the centre, 1 being the rad
 
 ``y`` is the vertical position, +1 is the top.
 
-e.g. 
+e.g.
 
 If the blue dot is pressed at the top, the following message would be sent::
 

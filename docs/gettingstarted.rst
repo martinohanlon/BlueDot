@@ -17,7 +17,7 @@ In order to use Blue Dot you will need:
 Installation
 ------------
 
-These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
+These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel.
 
 android app
 ~~~~~~~~~~~
@@ -73,11 +73,11 @@ Start-up the `Blue Dot app`_ on your Android phone or run the `Blue Dot python a
 
  1. Select your Raspberry Pi from the list
  2. Press the blue dot
- 
+
 Where next
 ----------
 
-Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bluedot.  
+Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bluedot.
 
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
