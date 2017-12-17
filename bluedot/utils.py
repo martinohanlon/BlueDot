@@ -28,11 +28,11 @@ def find_adapter_in_objects(objects, pattern=None):
             return dbus.Interface(obj, ADAPTER_INTERFACE)
     raise Exception("Bluetooth adapter {} not found".format(pattern))
 
-def get_adapter_property(device_name, property):
+def get_adapter_property(device_name, prop):
     bus = dbus.SystemBus()
     adapter_path = find_adapter(device_name).object_path
     adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
-    return adapter.Get(ADAPTER_INTERFACE, property)
+    return adapter.Get(ADAPTER_INTERFACE, prop)
 
 def get_mac(device_name):
     return get_adapter_property(device_name, "Address")
@@ -144,12 +144,3 @@ def register_spp(port):
         #the spp profile has already been registered, ignore
         if str(e) != "org.bluez.Error.AlreadyExists: Already Exists":
             raise(e)
-
-if sys.version_info[0] > 2:
-    def string_to_bytes(data, encoding):
-        return bytes(data, encoding=encoding)
-else:
-    def string_to_bytes(data, encoding):
-        data.encode(encoding)
-        return bytes(data)
-

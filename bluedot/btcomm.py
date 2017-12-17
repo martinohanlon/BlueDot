@@ -12,7 +12,6 @@ from .utils import (
     device_pairable,
     device_discoverable,
     device_powered,
-    string_to_bytes,
 )
 
 from .threads import WrapThread
@@ -386,8 +385,8 @@ class BluetoothServer():
             The data to be sent.
         """
         if self._client_connected:
-            if self._encoding:
-                data = string_to_bytes(data, self._encoding)
+            if self._encoding is not None:
+                data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
             except BLUETOOTH_EXCEPTIONS as e:
@@ -668,8 +667,8 @@ class BluetoothClient():
             The data to be sent.
         """
         if self._connected:
-            if self._encoding:
-                data = string_to_bytes(data, self._encoding)
+            if self._encoding is not None:
+                data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
             except BLUETOOTH_EXCEPTIONS as e:
