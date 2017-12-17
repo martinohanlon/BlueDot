@@ -16,12 +16,12 @@ class BlueDotPosition():
     Represents a position of where the blue for is pressed, released or held.
 
     :param float x:
-        The x position of the Blue Dot, 0 being centre, ``-1`` being far left
-        and ``1`` being far right.
+        The x position of the Blue Dot, 0 being centre, -1 being far left
+        and 1 being far right.
 
     :param float y:
-        The y position of the Blue Dot, 0 being centre, ``-1`` being at the
-        bottom and ``1`` being at the top.
+        The y position of the Blue Dot, 0 being centre, -1 being at the
+        bottom and 1 being at the top.
     """
     def __init__(self, x, y):
         self._time = time()
@@ -36,16 +36,16 @@ class BlueDotPosition():
     @property
     def x(self):
         """
-        The x position of the Blue Dot, ``0`` being centre, ``-1`` being far
-        left and ``1`` being far right.
+        The x position of the Blue Dot, 0 being centre, -1 being far
+        left and 1 being far right.
         """
         return self._x
 
     @property
     def y(self):
         """
-        The y position of the Blue Dot, ``0`` being centre, ``-1`` being at
-        the bottom and ``1`` being at the top.
+        The y position of the Blue Dot, 0 being centre, -1 being at
+        the bottom and 1 being at the top.
         """
         return self._y
 
@@ -53,7 +53,7 @@ class BlueDotPosition():
     def angle(self):
         """
         The angle from centre of where the Blue Dot is pressed, held or released.
-        0 degress is up, 0 > 180 degrees clockwise, 0 > -180 degrees anti-clockwise.
+        0 degress is up, 0..180 degrees clockwise, -180..0 degrees anti-clockwise.
         """
         if self._angle == None:
             self._angle = degrees(atan2(self.x, self.y))
@@ -63,7 +63,7 @@ class BlueDotPosition():
     def distance(self):
         """
         The distance from centre of where the Blue Dot is pressed, held or released.
-        The radius of the Blue Dot is ``1``.
+        The radius of the Blue Dot is 1.
         """
         if self._distance == None:
             self._distance = self._clamped(hypot(self.x, self.y))
@@ -109,17 +109,20 @@ class BlueDotPosition():
         """
         The time the blue dot was at this position.
 
-        Note - this is the time the message was received from the Blue Dot app,
-        not the time it was sent.
+        .. note::
+
+            This is the time the message was received from the Blue Dot app,
+            not the time it was sent.
         """
         return self._time
+
 
 class BlueDotInteraction():
     """
     Represents an interaction with the Blue Dot, from when it was pressed to
     when it was released.
 
-    A ``BlueDotInteraction`` can be active or inactive, i.e. it is active
+    A :class:`BlueDotInteraction` can be active or inactive, i.e. it is active
     because the Blue Dot has not been released, or inactive because the Blue
     Dot was released and the interaction finished.
 
@@ -142,8 +145,8 @@ class BlueDotInteraction():
     @property
     def positions(self):
         """
-        A list of ``BlueDotPositions`` for all the positions which make up this
-        interaction.
+        A sequence of :class:`BlueDotPosition` instances for all the positions
+        which make up this interaction.
 
         The first position is where the Blue Dot was pressed, the last is where
         the Blue Dot was released, all position in between are where the position
@@ -175,7 +178,7 @@ class BlueDotInteraction():
         Returns the current position for the interaction.
 
         If the interaction is inactive, it will return the position when the
-        Blue Dot was released
+        Blue Dot was released.
         """
         return self._positions[-1]
 
@@ -230,11 +233,12 @@ class BlueDotInteraction():
         self._active = False
         self._positions.append(released_position)
 
+
 class BlueDotSwipe():
     """
     Represents a Blue Dot swipe interaction.
 
-    A ``BlueDotSwipe`` can be valid or invalid based on whether the Blue Dot
+    A :class:`BlueDotSwipe` can be valid or invalid based on whether the Blue Dot
     interaction was a swipe or not.
 
     :param BlueDotInteraction interaction:
@@ -261,7 +265,7 @@ class BlueDotSwipe():
     @property
     def interaction(self):
         """
-        The ``BlueDotInteraction`` object relating to this swipe.
+        The :class:`BlueDotInteraction` object relating to this swipe.
         """
         return self._interaction
 
@@ -339,11 +343,11 @@ class BlueDotRotation():
         """
         Represents a Blue Dot rotation.
 
-        A ``BlueDotRotation`` can be valid or invalid based on whether the Blue Dot
+        A :class:`BlueDotRotation` can be valid or invalid based on whether the Blue Dot
         interaction was a rotation or not.
 
         :param BlueDotInteraction interaction:
-            The BlueDotInteraction object to be used to determine whether the interaction
+            The object to be used to determine whether the interaction
             was a rotation.
         """
         self._value = 0
@@ -390,7 +394,7 @@ class BlueDotRotation():
     @property
     def value(self):
         """
-        Returns ``0`` if the Blue Dot wasn't rotated, ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise.
+        Returns 0 if the Blue Dot wasn't rotated, -1 if rotated anti-clockwise and 1 if rotated clockwise.
         """
         return self._value
 
@@ -413,7 +417,7 @@ class BlueDot():
     Interacts with a Blue Dot client application, communicating when and where it
     has been pressed, released or held.
 
-    This class starts an instance of a bluetooth server (btcomm.BluetoothServer)
+    This class starts an instance of :class:`.btcomm.BluetoothServer`
     which manages the connection with the Blue Dot client.
 
     This class is intended for use with the Blue Dot client application.
@@ -425,25 +429,25 @@ class BlueDot():
         bd.wait_for_press()
         print("The blue dot was pressed")
 
-    :param string device:
-        The bluetooth device the server should use, the default is ``hci0``, if
-        your device only has 1 bluetooth adapter this shouldn't need to be changed.
+    :param str device:
+        The Bluetooth device the server should use, the default is "hci0", if
+        your device only has 1 Bluetooth adapter this shouldn't need to be changed.
 
     :param int port:
-        The bluetooth port the server should use, the default is ``1``, and under
+        The Bluetooth port the server should use, the default is 1, and under
         normal use this should never need to change.
 
     :param bool auto_start_server:
-        If ``True`` (the default), the bluetooth server will be automatically started
-        on initialisation, if ``False``, the method ``start`` will need to use called
-        before connections will be accepted.
+        If ``True`` (the default), the Bluetooth server will be automatically
+        started on initialisation; if ``False``, the method :meth:`start` will
+        need to be called before connections will be accepted.
 
     :param bool power_up_device:
-        If ``True``, the bluetooth device will be powered up (if required) when the
+        If ``True``, the Bluetooth device will be powered up (if required) when the
         server starts. The default is ``False``.
 
-        Depending on how bluetooth has been powered down, you may need to use rfkill
-        to unblock bluetooth to give permission to bluez to power on bluetooth::
+        Depending on how Bluetooth has been powered down, you may need to use :command:`rfkill`
+        to unblock Bluetooth to give permission to bluez to power on Bluetooth::
 
             sudo rfkill unblock bluetooth
 
@@ -494,21 +498,21 @@ class BlueDot():
     @property
     def device(self):
         """
-        The bluetooth device the server is using. This defaults to ``hci0``.
+        The Bluetooth device the server is using. This defaults to "hci0".
         """
         return self._device
 
     @property
     def port(self):
         """
-        The port the server is using. This defaults to ``1``.
+        The port the server is using. This defaults to 1.
             """
         return self._port
 
     @property
     def server(self):
         """
-        The ``btcomm.BluetoothServer`` instance that is being used to communicate
+        The :class:`.btcomm.BluetoothServer` instance that is being used to communicate
         with clients.
         """
         return self._server
@@ -516,15 +520,15 @@ class BlueDot():
     @property
     def adapter(self):
         """
-        The ``btcomm.BluetoothAdapter`` instance that is being used.
+        The :class:`.btcomm.BluetoothAdapter` instance that is being used.
         """
         return self._server.adapter
 
     @property
     def paired_devices(self):
         """
-        Returns a list of devices paired with this adapater
-        ``((device_mac_address, device_name), (device_mac_address, device_name))``::
+        Returns a sequence of devices paired with this adapter
+        :code:`[(mac_address, name), (mac_address, name), ...]`::
 
             bd = BlueDot()
             devices = bd.paired_devices
@@ -551,14 +555,14 @@ class BlueDot():
     @property
     def value(self):
         """
-        Returns a ``1`` if the Blue Dot is pressed, ``0`` if released.
+        Returns a 1 if the Blue Dot is pressed, 0 if released.
         """
         return 1 if self.is_pressed else 0
 
     @property
     def values(self):
         """
-        Returns an infinite generator constantly yielding the current value
+        Returns an infinite generator constantly yielding the current value.
         """
         while True:
             yield self.value
@@ -566,27 +570,31 @@ class BlueDot():
     @property
     def position(self):
         """
-        Returns an instance of ``BlueDotPosition`` representing the
+        Returns an instance of :class:`BlueDotPosition` representing the
         current or last position the Blue Dot was pressed, held or
         released.
 
-        Note - if the Blue Dot is released (and inactive), ``position``
-        will return position when it was released, until it is pressed
-        again. If the Blue Dot has never been pressed ``position`` will
-        return ``None``.
+        .. note::
+
+            If the Blue Dot is released (and inactive), :attr:`position` will
+            return the position where it was released, until it is pressed
+            again. If the Blue Dot has never been pressed :attr:`position` will
+            return ``None``.
         """
         return self._position
 
     @property
     def interaction(self):
         """
-        Returns an instance of ``BlueDotInteraction`` representing the
+        Returns an instance of :class:`BlueDotInteraction` representing the
         current or last interaction with the Blue Dot.
 
-        Note - if the Blue Dot is released (and inactive), ``interaction``
-        will return the interaction when it was released, until it is
-        pressed again. If the Blue Dot has never been pressed ``interaction``
-        will return ``None``.
+        .. note::
+
+            If the Blue Dot is released (and inactive), :attr:`interaction`
+            will return the interaction when it was released, until it is
+            pressed again.  If the Blue Dot has never been pressed
+            :attr:`interaction` will return ``None``.
         """
         return self._interaction
 
@@ -596,7 +604,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is pressed.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was pressed.
+        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was pressed.
 
         The following example will print a message to the screen when the button is pressed::
 
@@ -631,7 +639,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is double pressed.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was
+        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was
         pressed the second time.
 
         Note - the double press event is fired before the 2nd press event e.g. events would be
@@ -646,7 +654,7 @@ class BlueDot():
     @property
     def double_press_time(self):
         """
-        Sets or returns the time threshold in seconds for a double press. Defaults to ``0.3``.
+        Sets or returns the time threshold in seconds for a double press. Defaults to 0.3.
         """
         return self._double_press_time
 
@@ -660,7 +668,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is released.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotPosition`` will be returned representing where the Blue Dot was held
+        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was held
         when it was released.
         """
         return self._when_released
@@ -675,7 +683,7 @@ class BlueDot():
         Sets or returns the function which is called when the position the Blue Dot is pressed is moved.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotPosition`` will be returned representing the new position of where the
+        instance of :class:`BlueDotPosition` will be returned representing the new position of where the
         Blue Dot is held.
         """
         return self._when_moved
@@ -690,7 +698,7 @@ class BlueDot():
         Sets or returns the function which is called when the Blue Dot is swiped.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotSwipe`` will be returned representing the how the Blue Dot was
+        instance of :class:`BlueDotSwipe` will be returned representing the how the Blue Dot was
         swiped.
         """
         return self._when_swiped
@@ -703,7 +711,7 @@ class BlueDot():
     def rotation_segments(self):
         """
         Sets or returns the number of virtual segments the Blue Dot is split into for  rotating.
-        Defaults to ``8``.
+        Defaults to 8.
         """
         return self._rotation_segments
 
@@ -718,7 +726,7 @@ class BlueDot():
         iPod clock wheel).
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of ``BlueDotRotation`` will be returned representing how the Blue Dot was
+        instance of :class:`BlueDotRotation` will be returned representing how the Blue Dot was
         rotated.
         """
         return self._when_rotated
@@ -752,7 +760,7 @@ class BlueDot():
     @property
     def print_messages(self):
         """
-        When set to ``True`` results in messages relating to the status of the bluetooth server
+        When set to ``True`` results in messages relating to the status of the Bluetooth server
         to be printed.
         """
         return self._print_messages
@@ -770,7 +778,7 @@ class BlueDot():
 
     def start(self):
         """
-        Start the BluetoothServer if it is not already running. By default the server is started at
+        Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
         initialisation.
         """
         self._server.start()
@@ -789,7 +797,7 @@ class BlueDot():
 
     def stop(self):
         """
-        Stop the bluetooth server.
+        Stop the Bluetooth server.
         """
         self._server.stop()
 

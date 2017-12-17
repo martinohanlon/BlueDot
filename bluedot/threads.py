@@ -10,6 +10,7 @@ def _shutdown():
 
 atexit.register(_shutdown)
 
+
 class WrapThread(Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
         super(WrapThread, self).__init__(group, target, name, args, kwargs)
@@ -28,4 +29,3 @@ class WrapThread(Thread):
     def join(self):
         super(WrapThread, self).join()
         _THREADS.discard(self)
-

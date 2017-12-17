@@ -1,6 +1,8 @@
 Change log
 ==========
 
+.. currentmodule:: bluedot
+
 Bluedot Python library
 ----------------------
 
@@ -9,7 +11,7 @@ Bluedot Python library
 
  * added when_rotated
  * threaded swipe callbacks
- * exposed new BlueDot properties (adapter, running, paired_devices)
+ * exposed new :class:`BlueDot` properties (:attr:`~BlueDot.adapter`, :attr:`~BlueDot.running`, :attr:`~BlueDot.paired_devices`)
  * fixed active bug in interaction
  * automated tests
 
@@ -53,27 +55,27 @@ Bluedot Python library
 
  * added swipes and interactions
  * doc updates
- * bug fix in BlueDot.when_moved
+ * bug fix in :attr:`BlueDot.when_moved`
 
 0.3.0 - 2017-05-01
 ~~~~~~~~~~~~~~~~~~
 
  * Python Blue Dot app
- * minor bug fix in BluetoothClient
+ * minor bug fix in :class:`~.btcomm.BluetoothClient`
 
 0.2.1 - 2017-04-23
 ~~~~~~~~~~~~~~~~~~
 
- * bug fix in MockBlueDot
+ * bug fix in :class:`MockBlueDot`
  * doc fixes
 
 0.2.0 - 2017-04-23
 ~~~~~~~~~~~~~~~~~~
 
- * added when_client_connects, when_client_disconnects
- * added allow_pairing functions
+ * added :attr:`~BlueDot.when_client_connects`, :attr:`~BlueDot.when_client_disconnects`
+ * added :meth:`~BlueDot.allow_pairing` functions
  * refactored Bluetooth comms
- * added BluetoothAdapter
+ * added :class:`~.btcomm.BluetoothAdapter`
 
 0.1.2 - 2017-04-14
 ~~~~~~~~~~~~~~~~~~
@@ -84,7 +86,7 @@ Bluedot Python library
 0.1.1 - 2017-04-08
 ~~~~~~~~~~~~~~~~~~
 
- * clamped distance in BlueDotPosition
+ * clamped distance in :class:`BlueDotPosition`
 
 0.1.0 - 2017-04-07
 ~~~~~~~~~~~~~~~~~~
@@ -96,7 +98,7 @@ Bluedot Python library
 0.0.6 - 2017-04-05
 ~~~~~~~~~~~~~~~~~~
 
- * Added MockBlueDot for testing and debugging
+ * Added :class:`MockBlueDot` for testing and debugging
  * more docs
 
 0.0.4 - 2017-03-31
@@ -104,7 +106,7 @@ Bluedot Python library
 
 Updates after alpha feedback
 
- * Python 2 compatability
+ * Python 2 compatibility
  * ``.dot_position`` to ``.position``
  * ``.values`` added
  * clamped ``x``, ``y`` to 1
@@ -132,7 +134,7 @@ Android app
 
  * icon transparency
  * connection monitor
- * added info icon to bluedot.readthedocs.io
+ * added info icon to https://bluedot.readthedocs.io
 
 0 (0.0.1) - 2017-03-29
 ~~~~~~~~~~~~~~~~~~~~~~~~

@@ -3,49 +3,48 @@ Blue Dot
 
 |pypibadge| |docsbadge|
 
-Blue Dot allows you to control your Raspberry Pi projects wirelessly - its a bluetooth remote and zero boiler plate (super simple to use :) Python library.
+Blue Dot allows you to control your Raspberry Pi projects wirelessly - it's a Bluetooth remote and zero boiler plate (super simple to use :) Python library.
 
 |bluedotfeature|
 
 |bluedotapp| |bluedotpython|
 
-Created by `Martin O'Hanlon`_, `@martinohanlon`_, `stuffaboutco.de`_.
+Created by `Martin O'Hanlon`_ (`@martinohanlon`_, `stuffaboutco.de`_).
 
-Start
------
+Getting Started
+---------------
 
 `Install and usage`_ is really simple:
 
 1. Install the Python library::
 
-    sudo pip3 install bluedot
+       sudo pip3 install bluedot
 
 2. Get the `Android Blue Dot app`_ or use the `Python Blue Dot app`_
+
 3. Pair your Raspberry Pi
+
 4. Write some code::
 
-    from bluedot import BlueDot
-    bd = BlueDot()
-    bd.wait_for_press()
-    print("You pressed the blue dot!")
+       from bluedot import BlueDot
+       bd = BlueDot()
+       bd.wait_for_press()
+       print("You pressed the blue dot!")
 
 5. Press the Blue Dot
 
-See the `getting started`_ guide to 'get started'!
+See the `getting started`_ guide for more!
 
-More
-----
+More Information
+----------------
 
-The Blue Dot is a `joystick`_ as well as `button`_, you can tell if the dot was pressed in the middle, on the top, bottom, left or right. Perhaps create a `BlueDot controlled Robot`_.
+The Blue Dot is a `joystick`_ as well as `button`_. You can tell if the dot was pressed in the middle, on the top, bottom, left or right. You can easily create a `BlueDot controlled Robot`_.
 
-Why be restricted by such vague positions like top and bottom though, you can get the exact x, y position or even the angle and distance from centre where the dot was pressed.
+Why be restricted by such vague positions like top and bottom though: you can get the exact (x, y) position or even the angle and distance from centre where the dot was pressed.
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
-You can press it, slide it, swipe it, rotate it - one blue circle can do a lot.
-
-Even more
----------
+You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
 
 The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ and ideas.
 

@@ -2,6 +2,7 @@ from .btcomm import BluetoothServer
 from .dot import BlueDot
 from .threads import WrapThread
 
+
 class MockBluetoothAdapter():
     def __init__(self, device = "mock0"):
         self._device = device
@@ -69,8 +70,10 @@ class MockBluetoothAdapter():
 
 class MockBluetoothServer(BluetoothServer):
     """
-    MockBluetoothServer inherits from BluetoothServer but overrides __init__, .start
-    and .stop to create a MockBluetoothServer which can be used for testing and debugging.
+    :class:`MockBluetoothServer` inherits from
+    :class:`~.btcomm.BluetoothServer` but overrides ``__init__``, :meth:`start`
+    and :meth:`stop` to create a :class:`MockBluetoothServer` which can
+    be used for testing and debugging.
     """
     def __init__(self,
         data_received_callback,
@@ -106,7 +109,7 @@ class MockBluetoothServer(BluetoothServer):
 
     def mock_client_connected(self, client_address = "11:11:11:11:11:11"):
         """
-        Simulates a client connected to the BluetoothServer.
+        Simulates a client connected to the :class:`~.btcomm.BluetoothServer`.
 
         :param string client_address:
             The mock client mac address, defaults to '11:11:11:11:11:11'
@@ -120,7 +123,8 @@ class MockBluetoothServer(BluetoothServer):
 
     def mock_client_disconnected(self):
         """
-        Simulates a client disconnecting from the BluetoothServer.
+        Simulates a client disconnecting from the
+        :class:`~.btcomm.BluetoothServer`.
         """
         if self._client_connected:
             self._client_connected = False
@@ -130,15 +134,18 @@ class MockBluetoothServer(BluetoothServer):
 
     def mock_client_sending_data(self, data):
         """
-        Simulates a client sending data to the BluetoothServer.
+        Simulates a client sending data to the
+        :class:`~.btcomm.BluetoothServer`.
         """
         if self._client_connected:
             self._data_received_callback(data)
 
+
 class MockBlueDot(BlueDot):
     """
-    MockBlueDot inherits from BlueDot but overrides ._create_server, to create
-    a MockBluetoothServer which can be used for testing and debugging.
+    :class:`MockBlueDot` inherits from :class:`BlueDot` but overrides
+    :meth:`_create_server`, to create a :class:`~.mock.MockBluetoothServer`
+    which can be used for testing and debugging.
     """
     def _create_server(self):
         self._server = MockBluetoothServer(
@@ -150,7 +157,7 @@ class MockBlueDot(BlueDot):
 
     def mock_client_connected(self, client_address = "11:11:11:11:11:11"):
         """
-        Simulates a client connecting to the BlueDot.
+        Simulates a client connecting to the Blue Dot.
 
         :param string client_address:
             The mock client mac address, defaults to '11:11:11:11:11:11'
@@ -159,43 +166,43 @@ class MockBlueDot(BlueDot):
 
     def mock_client_disconnected(self):
         """
-        Simulates a client disconnecting from the BlueDot.
+        Simulates a client disconnecting from the Blue Dot.
         """
         self._server.mock_client_disconnected()
 
     def mock_blue_dot_pressed(self, x, y):
         """
-        Simulates the blue dot being pressed.
+        Simulates the Blue Dot being pressed.
 
         :param int x:
-            The x position where the mock blue dot was pressed
+            The x position where the mock Blue Dot was pressed
 
         :param int y:
-            The y position where the mock blue dot was pressed
+            The y position where the mock Blue Dot was pressed
         """
         self._server.mock_client_sending_data("1,{},{}\n".format(x, y))
 
     def mock_blue_dot_released(self, x, y):
         """
-        Simulates the blue dot being released.
+        Simulates the Blue Dot being released.
 
         :param int x:
-            The x position where the mock blue dot was released
+            The x position where the mock Blue Dot was released
 
         :param int y:
-            The y position where the mock blue dot was released
+            The y position where the mock Blue Dot was released
         """
         self._server.mock_client_sending_data("0,{},{}\n".format(x, y))
 
     def mock_blue_dot_moved(self, x, y):
         """
-        Simulates the blue dot being moved.
+        Simulates the Blue Dot being moved.
 
         :param int x:
-            The x position where the mock blue dot was moved too
+            The x position where the mock Blue Dot was moved too
 
         :param int y:
-            The y position where the mock blue dot was moved too
+            The y position where the mock Blue Dot was moved too
         """
         self._server.mock_client_sending_data("2,{},{}\n".format(x, y))
 
@@ -206,7 +213,7 @@ class MockBlueDot(BlueDot):
         The mock app reacts to mouse clicks and movement and calls the mock blue
         dot methods to simulates presses.
 
-        This is useful for testing, allowing you to interact with BlueDot without
+        This is useful for testing, allowing you to interact with Blue Dot without
         having to script mock functions.
 
         The mock app uses pygame which will need to be installed.

@@ -1,25 +1,30 @@
-
 Recipes
 =======
 
-The recipes provide examples of how you can use Blue Dot, dont be restricted by these ideas and be sure to have a look at the `BlueDot API`_ as there is more to be discovered.
+The recipes provide examples of how you can use Blue Dot. Don't be restricted
+by these ideas and be sure to have a look at the :doc:`dotapi` as there is more
+to be discovered.
 
 Button
 ------
 
 The simplest way to use the Blue Dot is as a wireless button.
 
-hello world
+Hello World
 ~~~~~~~~~~~
 
-Let's say Hello World by creating the `BlueDot`_ object then waiting for the Blue Dot app to connect and be pressed::
+.. currentmodule:: bluedot
+
+Let's say "Hello World" by creating the :class:`BlueDot` object then waiting
+for the Blue Dot app to connect and be pressed::
 
     from bluedot import BlueDot
     bd = BlueDot()
     bd.wait_for_press()
     print("Hello World")
 
-Alternatively you can also use ``when_pressed`` to call a function::
+Alternatively you can also use :attr:`~BlueDot.when_pressed` to call a
+function::
 
     from bluedot import BlueDot
     from signal import pause
@@ -32,7 +37,8 @@ Alternatively you can also use ``when_pressed`` to call a function::
 
     pause()
 
-``wait_for_release()`` and ``when_released`` also allow you to interact when the Blue Dot is released::
+:attr:`~BlueDot.wait_for_release` and :attr:`~BlueDot.when_released` also allow
+you to interact when the Blue Dot is released::
 
     from bluedot import BlueDot
     from signal import pause
@@ -49,7 +55,8 @@ Alternatively you can also use ``when_pressed`` to call a function::
 
     pause()
 
-Double presses can also be used with ``wait_for_double_press()`` and ``when_double_pressed``::
+Double presses can also be used with :attr:`~BlueDot.wait_for_double_press` and
+:attr:`~BlueDot.when_double_pressed`::
 
     from bluedot import BlueDot
     from signal import pause
@@ -62,12 +69,14 @@ Double presses can also be used with ``wait_for_double_press()`` and ``when_doub
 
     pause()
 
-flash an led
+Flash an LED
 ~~~~~~~~~~~~
 
-Using Blue Dot in combination with `gpiozero`_ you can interact with electronic components, such as LED's, connected to your Raspberry Pi.
+Using Blue Dot in combination with :mod:`gpiozero` you can interact with
+electronic components, such as LEDs, connected to your Raspberry Pi.
 
-When the Blue Dot is pressed, the LED will turn on, when released it will turn off::
+When the Blue Dot is pressed, the LED will turn on; when released it will turn
+off::
 
     from bluedot import BlueDot
     from gpiozero import LED
@@ -81,7 +90,8 @@ When the Blue Dot is pressed, the LED will turn on, when released it will turn o
     bd.wait_for_release()
     led.off()
 
-You could also use ``when_pressed`` and ``when_released``::
+You could also use :attr:`~BlueDot.when_pressed` and
+:attr:`~BlueDot.when_released`::
 
     from bluedot import BlueDot
     from gpiozero import LED
@@ -95,7 +105,8 @@ You could also use ``when_pressed`` and ``when_released``::
 
     pause()
 
-Alternatively use ``LED.source`` and ``BlueDot.values``::
+Alternatively use :attr:`~gpiozero.SourceMixin.source` and
+:attr:`~BlueDot.values`::
 
     from bluedot import BlueDot
     from gpiozero import LED
@@ -108,10 +119,11 @@ Alternatively use ``LED.source`` and ``BlueDot.values``::
 
     pause()
 
-remote camera
+Remote Camera
 ~~~~~~~~~~~~~
 
-Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily create a remote camera::
+Using a Raspberry Pi camera module, :class:`picamera.PiCamera` and
+:class:`BlueDot`, you can really easily create a remote camera::
 
     from bluedot import BlueDot
     from picamera import PiCamera
@@ -130,12 +142,14 @@ Using a Raspberry Pi camera, `picamera`_ and Blue Dot you can really easily crea
 Joystick
 --------
 
-The Blue Dot can also be used as a joystick when the middle, top, bottom, left or right areas of the dot are used.
+The Blue Dot can also be used as a joystick when the middle, top, bottom, left
+or right areas of the dot are touched.
 
-d pad
+D-pad
 ~~~~~
 
-Using the position the Blue Dot was pressed you can work out whether it was pressed to go up, down, left, right like the dpad on a joystick::
+Using the position the Blue Dot was pressed you can work out whether it was
+pressed to go up, down, left, right like the `D-pad`_ on a joystick::
 
     from bluedot import BlueDot
     from signal import pause
@@ -157,14 +171,18 @@ Using the position the Blue Dot was pressed you can work out whether it was pres
 
     pause()
 
-At the moment the dpad only registers when it is pressed, to get it work when the position is moved you should add::
+At the moment the `D-pad`_ only registers when it is pressed. To get it work
+when the position is moved you should add the following line above
+:code:`pause`::
 
     bd.when_moved = dpad
 
-robot
+Robot
 ~~~~~
 
-Using the Blue Dot and `gpiozero`_, you can create a `bluetooth controlled robot`_ which moves when the dot is pressed and stops when it is released::
+Using the Blue Dot and :class:`gpiozero.Robot`, you can create a `bluetooth
+controlled robot`_ which moves when the dot is pressed and stops when it is
+released::
 
     from bluedot import BlueDot
     from gpiozero import Robot
@@ -192,12 +210,15 @@ Using the Blue Dot and `gpiozero`_, you can create a `bluetooth controlled robot
 
     pause()
 
-variable speed robot
+Variable Speed Robot
 ~~~~~~~~~~~~~~~~~~~~
 
-You can change the robot to use variable speeds, so the further towards the edge you press the Blue Dot, the faster the robot will go.
+You can change the robot to use variable speeds, so the further towards the
+edge you press the Blue Dot, the faster the robot will go.
 
-``distance`` returns how far from the centre the Blue Dot was pressed, which can be passed to the robot's functions to change its speed::
+The :attr:`~BlueDotPosition.distance` attribute returns how far from the centre
+the Blue Dot was pressed, which can be passed to the robot's functions to
+change its speed::
 
     from bluedot import BlueDot
     from gpiozero import Robot
@@ -225,7 +246,8 @@ You can change the robot to use variable speeds, so the further towards the edge
 
     pause()
 
-Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's source property (courtesy of `Ben Nuttall`_)::
+Alternatively you can use a generator and yield (x, y) values to the
+:attr:`gpiozero.Robot.source` property (courtesy of `Ben Nuttall`_)::
 
     from gpiozero import Robot
     from bluedot import BlueDot
@@ -257,12 +279,15 @@ Alternatively you can use a generator and yield ``x``, ``y`` values to Robot's s
 Slider
 ------
 
-By holding down the Blue Dot and moving the position you can use it as an analogue slider.
+By holding down the Blue Dot and moving the position you can use it as an
+analogue slider.
 
-center out
+Centre Out
 ~~~~~~~~~~
 
-Using the ``distance`` property of the `BlueDotPosition`_ which is returned when the position is moved you can create a slide which goes from the centre out in any direction::
+Using the :attr:`BlueDotPosition.distance` property which is returned when the
+position is moved you can create a slider which goes from the centre out in any
+direction::
 
     from bluedot import BlueDot
     from signal import pause
@@ -276,10 +301,12 @@ Using the ``distance`` property of the `BlueDotPosition`_ which is returned when
 
     pause()
 
-left to right
+Left to Right
 ~~~~~~~~~~~~~
 
-The ``x`` property of the `BlueDotPosition`_ returns a value from -1 (far left) to 1 (far right), using this value you can create slider which goes horizontally through the middle::
+The :attr:`BlueDotPosition.x` property returns a value from -1 (far left) to 1
+(far right). Using this value you can create a slider which goes horizontally
+through the middle::
 
     from bluedot import BlueDot
     from signal import pause
@@ -294,12 +321,14 @@ The ``x`` property of the `BlueDotPosition`_ returns a value from -1 (far left) 
 
     pause()
 
-To make a vertical slider you would change the code above to use the ``y`` property instead of the ``x``.
+To make a vertical slider you could change the code above to use
+:attr:`BlueDotPosition.y` instead.
 
-dimmer switch
+Dimmer Switch
 ~~~~~~~~~~~~~
 
-Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can create a wireless dimmer switch::
+Using the :class:`gpiozero.PWMLED` class and :class:`BlueDot` as a vertical
+slider you can create a wireless dimmer switch::
 
     from bluedot import BlueDot
     from gpiozero import PWMLED
@@ -318,19 +347,21 @@ Using the PWMLED class from `gpiozero`_ and BlueDot as a vertical slider you can
 Swiping
 -------
 
-You can interact with the Blue Dot by swiping across it, like you would to move between pages in a mobile app.
+You can interact with the Blue Dot by swiping across it, like you would to move
+between pages in a mobile app.
 
-single
+Single
 ~~~~~~
 
-Detecting a single swipe is easy using ``wait_for_swipe``::
+Detecting a single swipe is easy using :attr:`~BlueDot.wait_for_swipe`::
 
     from bluedot import BlueDot
     bd = BlueDot()
     bd.wait_for_swipe()
     print("Blue Dot swiped")
 
-Alternatively you can also use ``when_swiped`` to call a function::
+Alternatively you can also use :attr:`~BlueDot.when_swiped` to call a
+function::
 
     from bluedot import BlueDot
     from signal import pause
@@ -343,10 +374,12 @@ Alternatively you can also use ``when_swiped`` to call a function::
 
     pause()
 
-direction
+Direction
 ~~~~~~~~~
 
-You can tell what direction the Blue Dot is swiped by using the `BlueDotSwipe`_ object returned by ``when_swiped``::
+You can tell what direction the Blue Dot is swiped by using the
+:class:`BlueDotSwipe` object passed to the function assigned to
+:attr:`~BlueDot.when_swiped`::
 
     from bluedot import BlueDot
     from signal import pause
@@ -366,10 +399,12 @@ You can tell what direction the Blue Dot is swiped by using the `BlueDotSwipe`_ 
 
     pause()
 
-speed, angle, distance
-~~~~~~~~~~~~~~~~~~~~~~
+Speed, Angle, and Distance
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`BlueDotSwipe`_ returns more information other than the direction including the speed of the swipe (in Blue Dot radius per second), the angle of the swipe and the distance between the start and end position of the swipe::
+:class:`BlueDotSwipe` returns more than just the direction. It also includes
+the speed of the swipe (in Blue Dot radius per second), the angle, and the
+distance between the start and end positions of the swipe::
 
     from bluedot import BlueDot
     from signal import pause
@@ -388,15 +423,19 @@ speed, angle, distance
 Rotating
 --------
 
-You can use Blue Dot like a rotary encoder or 'iPod classic click wheel' - rotating around the outer edge of the Blue Dot will cause it to 'tick'.
+You can use Blue Dot like a rotary encoder or "iPod classic click wheel" -
+rotating around the outer edge of the Blue Dot will cause it to "tick".  The
+Blue Dot is split into a number of virtual segments (the default is 8), when
+the position moves from one segment to another, it ticks.
 
-The Blue Dot is split into a number of virtual segments (the default is 8), when the position moves from one segment to another, it ticks.
-
-counter
+Counter
 ~~~~~~~
 
-Using the ``when_rotated`` callback you can create a counter which increments / decrements when the Blue Dot is rotated either clockwise or anti-clockwise. A `BlueDotRotation`_ object
-is returned to the callback, the ``value`` property will be ``-1`` if rotated anti-clockwise and ``1`` if rotated clockwise::
+Using the :attr:`~BlueDot.when_rotated` callback you can create a counter which
+increments / decrements when the Blue Dot is rotated either clockwise or
+anti-clockwise. A :class:`BlueDotRotation` object is passed to the callback.
+Its :attr:`~BlueDotRotation.value` property will be -1 if rotated
+anti-clockwise and 1 if rotated clockwise::
 
     from bluedot import BlueDot
     from signal import pause
@@ -407,26 +446,30 @@ is returned to the callback, the ``value`` property will be ``-1`` if rotated an
         global count
         count += rotation.value
 
-        print("{} {} {}".format(count, rotation.clockwise, rotation.anti_clockwise))
+        print("{} {} {}".format(count,
+                                rotation.clockwise,
+                                rotation.anti_clockwise))
 
     bd = BlueDot()
     bd.when_rotated = rotated
 
     pause()
 
-The rotation speed can be modified using the ``rotation_segments`` property which changes the number of segments the Blue Dot is split into::
+The rotation speed can be modified using the :attr:`BlueDot.rotation_segments`
+property which changes the number of segments the Blue Dot is split into::
 
     bd.rotation_segments = 16
 
 Bluetooth
 ---------
 
-You can interact with the Bluetooth adapter using `BlueDot`_.
+You can interact with the Bluetooth adapter using :class:`BlueDot`.
 
-pairing
+Pairing
 ~~~~~~~
 
-You can put your Raspberry Pi into pairing mode which will allow pairing from other devices for 60 seconds::
+You can put your Raspberry Pi into pairing mode which will allow pairing from
+other devices for 60 seconds::
 
     from bluedot import BlueDot
     from signal import pause
@@ -449,10 +492,10 @@ Or connect up a physical button up to start the pairing::
 
     pause()
 
-paired devices
+Paired Devices
 ~~~~~~~~~~~~~~
 
-You can get the devices that your raspberry pi is paired too::
+You can iterate over the devices that your Raspberry Pi is paired too::
 
     from bluedot import BlueDot
     bd = BlueDot()
@@ -465,16 +508,21 @@ You can get the devices that your raspberry pi is paired too::
 Testing
 -------
 
-bluedot includes a `MockBlueDot`_ class to allow you to test and debug your program without having to use bluetooth or a Blue Dot client.
+Blue Dot includes a :class:`MockBlueDot` class to allow you to test and debug
+your program without having to use Bluetooth or a Blue Dot client.
 
-MockBlueDot inherits from BlueDot and is used in the same way, but you have the option of launching a mock app which you can click with a mouse or writing scripts to simulate the Blue Dot being used.
+:class:`MockBlueDot` inherits from :class:`BlueDot` and is used in the same
+way, but you have the option of launching a mock app which you can click with a
+mouse or writing scripts to simulate the Blue Dot being used.
 
-|mockbluedot|
+.. image:: images/mockbluedot.png
+   :alt: Screenshot of the mock Blue Dot app
 
-mock app
+Mock App
 ~~~~~~~~
 
-Launch the mock Blue Dot app to test by clicking the on-screen dot with the mouse::
+Launch the mock Blue Dot app to test by clicking the on-screen dot with the
+mouse::
 
     from bluedot import MockBlueDot
     from signal import pause
@@ -488,10 +536,10 @@ Launch the mock Blue Dot app to test by clicking the on-screen dot with the mous
     bd.launch_mock_app()
     pause()
 
-scripted tests
+Scripted Tests
 ~~~~~~~~~~~~~~
 
-Tests can also be scripted using MockBlueDot::
+Tests can also be scripted using :class:`MockBlueDot`::
 
     from bluedot import MockBlueDot
 
@@ -504,17 +552,6 @@ Tests can also be scripted using MockBlueDot::
     bd.mock_client_connected()
     bd.mock_blue_dot_pressed(0,0)
 
-.. _gpiozero: https://gpiozero.readthedocs.io
-.. _picamera: https://picamera.readthedocs.io
 .. _Ben Nuttall: https://github.com/bennuttall
 .. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
-.. _BlueDot API: http://bluedot.readthedocs.io/en/latest/dotapi.html
-.. _BlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#bluedot
-.. _BlueDotPosition: dotapi.html#bluedotposition
-.. _BlueDotInteraction: dotapi.html#bluedotinteraction
-.. _BlueDotSwipe: dotapi.html#bluedotswipe
-.. _BlueDotRotation: dotapi.html#bluedotrotation
-.. _MockBlueDot: http://bluedot.readthedocs.io/en/latest/dotapi.html#mockbluedot
-
-.. |mockbluedot| image:: images/mockbluedot.png
-   :alt: mock blue dot app
+.. _D-pad: https://en.wikipedia.org/wiki/D-pad

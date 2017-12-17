@@ -1,52 +1,65 @@
-Pair raspberry pi and android phone
-===================================
+Pair a Raspberry Pi and Android phone
+=====================================
 
 Using the Desktop
--------------------------
+-----------------
 
 On your Android phone:
 
 1. Open Settings
+
 2. Select Bluetooth
-3. This will make your phone Discoverable
 
-Using your Raspberry Pi:
+3. This will make your phone "discoverable"
 
-1. Click the bluetooth icon on the taskbar
-2. Turn on Bluetooth (if its off)
-3. Click `Make Discoverable`
-4. Click Add Device
-5. Your phone will appear in the list, select it and click Pair
-6. Enter a PIN code
+On your Raspberry Pi:
 
-On your Android phone:
+1. Click :menuselection:`Bluetooth --> Turn On Bluetooth` (if it's off)
+
+2. Click :menuselection:`Bluetooth --> Make Discoverable`
+
+3. Click :menuselection:`Bluetooth --> Add Device`
+
+4. Your phone will appear in the list, select it and click guilabel:`Pair`
+
+5. Enter a PIN code
+
+On your Android phone again:
 
 1. Enter the same PIN code when prompted
-2. Click Ok
 
-Note - You may receive errors relating to services not being able available or being unable to connect, these can be ignored.
+2. Touch "OK"
+
+.. note::
+
+    You may receive errors relating to services not being able available or being unable to connect: these can be ignored.
 
 Using the Command Line
--------------------------
+----------------------
 
-Using your Raspberry Pi:
+On your Raspberry Pi:
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control
-2. At the ``[bluetooth]$`` prompt enter the following commands::
+1. Type :command:`bluetoothctl` and press Enter to open Bluetooth control
 
-    discoverable on
-    pairable on
-    agent on
-    default-agent
+2. At the ``[bluetooth]#`` prompt enter the following commands::
 
-Using your Android phone:
+       discoverable on
+       pairable on
+       agent on
+       default-agent
+
+On your Android phone:
 
 1. Open Settings
+
 2. Select Bluetooth
-3. Your Raspberry Pi will appear in the list, select it
+
+3. Your Raspberry Pi will appear in the list; select it
+
 4. Enter a PIN
 
-Using your Raspberry Pi:
+On your Raspberry Pi again:
 
 1. Re-enter the PIN
-2. Type ``exit`` and press Enter to return to the command line
+
+2. Type :command:`quit` and press Enter to return to the command line
