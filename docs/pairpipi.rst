@@ -1,67 +1,74 @@
-Pair 2 raspberry pi's
-=========================
+Pair 2 Raspberry Pis
+====================
 
-The instructions below describe Raspberry Pi 1 and 2, it doesn't matter which Pi is 1 and which is 2.
+The instructions below describe pairing a couple of Raspberry Pis which either
+have built-in Bluetooth (the Pi 3B or the Pi Zero W) or a USB Bluetooth dongle.
 
 Using the Desktop
--------------------------
+-----------------
 
-On Raspberry Pi 1:
+On the first Raspberry Pi:
 
-1. Click the bluetooth icon on the taskbar
-2. Turn on Bluetooth (if its off)
-3. Click `Make Discoverable`
+1. Click :menuselection:`Bluetooth --> Turn On Bluetooth` (if it's off)
 
-On Raspberry Pi 2:
+2. Click :menuselection:`Bluetooth --> Make Discoverable`
 
-1. Click the bluetooth icon on the taskbar
-2. Turn on Bluetooth (if its off)
-3. Click `Make Discoverable`
-4. Click Add Device
-5. Pi 1 will appear in the list, select it and click Pair
+On the second Raspberry Pi:
 
-On Raspberry Pi 1:
+1. Click :menuselection:`Bluetooth --> Turn On Bluetooth` (if it's off)
+
+2. Click :menuselection:`Bluetooth --> Make Discoverable`
+
+3. Click :menuselection:`Bluetooth --> Add Device`
+
+4. The first Pi will appear in the list: select it and click the :guilabel:`Pair` button
+
+On the first Raspberry Pi again:
 
 1. Accept the pairing request
 
-Note - You may receive errors relating to services not being able available or being unable to connect, these can be ignored.
+.. note::
+
+    You may receive errors relating to services not being able available or being unable to connect: these can be ignored.
 
 Using the Command Line
--------------------------
+----------------------
 
-On Raspberry Pi 1:
+On the first Raspberry Pi:
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control 
-2. At the ``[bluetooth]$`` prompt enter the following commands::
+1. Enter :command:`bluetoothctl` to open Bluetooth control
 
-    discoverable on
-    pairable on
-    agent on
-    default-agent
+2. At the ``[bluetooth]#`` prompt enter the following commands::
 
-On Raspberry Pi 2:
+       discoverable on
+       pairable on
+       agent on
+       default-agent
 
-1. Type ``bluetoothctl`` and press Enter to open Bluetooth control 
-2. At the ``[bluetooth]$`` prompt enter the following commands::
+On the second Raspberry Pi:
 
-    discoverable on
-    pairable on
-    agent on
-    default-agent
-    scan on
+1. Enter :command:`bluetoothctl` to open Bluetooth control
 
-3. Wait for a message to appear showing Pi 1 has been found::
+2. At the ``[bluetooth]#`` prompt enter the following commands::
 
-    [NEW] Device 12:23:34:45:56:67 devicename
+       discoverable on
+       pairable on
+       agent on
+       default-agent
+       scan on
 
-4. Type pair with the mac address of Pi 1::
+3. Wait for a message to appear showing the first Pi has been found::
 
-    pair 12:23:34:45:56:67
+       [NEW] Device 12:23:34:45:56:67 devicename
+
+4. Type pair with the mac address of the first Pi::
+
+       pair 12:23:34:45:56:67
 
 5. Enter a PIN
 
-On Raspberry Pi 1:
+On the first Raspberry Pi again:
 
 1. Enter the same PIN when prompted
-2. Type ``exit`` and press Enter to return to the command line 
 
+2. Type :command:`quit` and press Enter to return to the command line

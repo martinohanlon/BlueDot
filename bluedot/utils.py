@@ -1,4 +1,5 @@
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import unicode_literals
+
 import dbus
 import time
 import sys
@@ -27,26 +28,26 @@ def find_adapter_in_objects(objects, pattern=None):
             return dbus.Interface(obj, ADAPTER_INTERFACE)
     raise Exception("Bluetooth adapter {} not found".format(pattern))
 
-def get_adapter_property(device_name, property):
+def get_adapter_property(device_name, prop):
     bus = dbus.SystemBus()
     adapter_path = find_adapter(device_name).object_path
     adapter = dbus.Interface(bus.get_object(SERVICE_NAME, adapter_path),"org.freedesktop.DBus.Properties")
-    return adapter.Get(ADAPTER_INTERFACE, property)    
+    return adapter.Get(ADAPTER_INTERFACE, prop)
 
 def get_mac(device_name):
     return get_adapter_property(device_name, "Address")
 
 def get_adapter_powered_status(device_name):
     powered = get_adapter_property(device_name, "Powered")
-    return True if powered else False
+    return bool(powered)
 
 def get_adapter_discoverable_status(device_name):
     discoverable = get_adapter_property(device_name, "Discoverable")
-    return True if discoverable else False
+    return bool(discoverable)
 
 def get_adapter_pairable_status(device_name):
     pairable = get_adapter_property(device_name, "Pairable")
-    return True if pairable else False
+    return bool(pairable)
 
 def get_paired_devices(device_name):
     paired_devices = []
@@ -136,19 +137,10 @@ def register_spp(port):
 #        "AutoConnect" : True,
         "ServiceRecord" : service_record
     }
-    
+
     try:
         manager.RegisterProfile(path, uuid, opts)
     except dbus.exceptions.DBusException as e:
         #the spp profile has already been registered, ignore
         if str(e) != "org.bluez.Error.AlreadyExists: Already Exists":
             raise(e)
-
-if sys.version_info[0] > 2:
-    def string_to_bytes(data, encoding):
-        return bytes(data, encoding=encoding)
-else:
-    def string_to_bytes(data, encoding):
-        data.encode(encoding)
-        return bytes(data)
-

@@ -1,88 +1,94 @@
-Getting started
+Getting Started
 ===============
-
-What
-----
 
 In order to use Blue Dot you will need:
 
-* a Raspberry Pi
+* A Raspberry Pi
 
-  * with built-in Bluetooth (such as the Pi 3 or Pi Zero W)
-  * or a USB Bluetooth dongle
+  - with built-in Bluetooth (such as the Pi 3 or Pi Zero W)
+  - or a USB Bluetooth dongle
 
-* an Android phone or 2nd Raspberry Pi for the remote
-* an internet connection (for the install)
+* An Android phone or 2nd Raspberry Pi for the remote
+* An Internet connection (for the install)
 
 Installation
 ------------
 
-These instructions assume your Raspberry Pi is running the latest version of `Raspbian`_ with Pixel. 
+These instructions assume your Raspberry Pi is running the latest version of
+`Raspbian`_.
 
-android app
+Android App
 ~~~~~~~~~~~
 
-If using an Android phone, the `Blue Dot app`_ can be installed from the Google Play Store.
+If you're using an Android phone, the `Blue Dot app`_ can be installed from the
+Google Play Store.
 
-python library
+Python Library
 ~~~~~~~~~~~~~~
 
-Open a terminal, click ``Menu > Accessories > Terminal``::
+Open a terminal (click :menuselection:`Menu --> Accessories --> Terminal`),
+then enter::
 
-    sudo apt-get install python3-dbus
+    sudo apt install python3-dbus
     sudo pip3 install bluedot
 
-If you want to use bluedot with Python 2 (there really is no need though!)::
+If you want to use Blue Dot with Python 2 (there really is no need though!)::
 
-    sudo apt-get install python-dbus
+    sudo apt install python-dbus
     sudo pip install bluedot
 
 To upgrade to the latest version::
 
     sudo pip3 install bluedot --upgrade
 
-Usage
------
+Pairing
+-------
 
-pair
-~~~~
+In order to use Blue Dot you will need to pair the Raspberry Pi to the remote
+:doc:`Android phone <pairpiandroid>` or :doc:`2nd Raspberry Pi <pairpipi>`.
 
-In order to use Blue Dot you will need to pair the Raspberry Pi to the remote (`Android phone`_ or `2nd Raspberry Pi`_).
+Code
+----
 
-write code
-~~~~~~~~~~
+1. Start up Python 3 (select :menuselection:`Menu --> Programming --> Python
+   3`)
 
-1. Start up Python 3, click ``Menu > Programming > Python 3``
-2. Click ``File > New File`` to create a new program
-3. Create your python program::
+2. Select :menuselection:`File --> New File` to create a new program
 
-    from bluedot import BlueDot
-    bd = BlueDot()
-    bd.wait_for_press()
-    print("You pressed the blue dot!")
+3. Enter the following code::
 
-4. Save your program, click ``File > Save As`` and save as ``mydot.py``
-5. Run the program, click ``Run > Run Module`` or press ``F5``
+       from bluedot import BlueDot
+       bd = BlueDot()
+       bd.wait_for_press()
+       print("You pressed the blue dot!")
 
-Warning - do not save your program as ``bluedot.py`` as Python will try and import your program rather than the bluedot module and you will get the error ``ImportError: cannot import name BlueDot``.
+4. Save your program (select :menuselection:`File --> Save As`) and save as
+   :file:`mydot.py`
 
-connect
-~~~~~~~
+5. Run the program, (select :menuselection:`Run --> Run Module` or press
+   :kbd:`F5`)
 
-Start-up the `Blue Dot app`_ on your Android phone or run the `Blue Dot python app`_ on your 2nd Raspberry Pi:
+.. warning::
 
- 1. Select your Raspberry Pi from the list
- 2. Press the blue dot
- 
+    Do not save your program as :file:`bluedot.py` as Python will try and
+    import your program rather than the bluedot module and you will get the
+    error ``ImportError: cannot import name BlueDot``.
+
+Connecting
+----------
+
+Start-up the `Blue Dot app`_ on your Android phone or run the
+:doc:`bluedotpythonapp` on your 2nd Raspberry Pi:
+
+1. Select your Raspberry Pi from the list
+
+2. Press the Blue Dot
+
 Where next
 ----------
 
-Check out the `Recipes`_ and the `API`_ documentation for more ideas on using bluedot.  
+Check out the :doc:`recipes` and the :doc:`dotapi` documentation for more ideas
+on using Blue Dot.
 
 .. _Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
 .. _Raspbian: https://www.raspberrypi.org/downloads/raspbian/
-.. _Recipes: recipes.html
-.. _API: dotapi.html
-.. _2nd Raspberry Pi: pairpipi.html
-.. _Android phone: pairpiandroid.html
-.. _Blue Dot python app: bluedotpythonapp.html
