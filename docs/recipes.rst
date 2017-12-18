@@ -16,58 +16,24 @@ Hello World
 .. currentmodule:: bluedot
 
 Let's say "Hello World" by creating the :class:`BlueDot` object then waiting
-for the Blue Dot app to connect and be pressed::
+for the Blue Dot app to connect and be pressed:
 
-    from bluedot import BlueDot
-    bd = BlueDot()
-    bd.wait_for_press()
-    print("Hello World")
+.. literalinclude:: examples/hello_world.py
 
 Alternatively you can also use :attr:`~BlueDot.when_pressed` to call a
-function::
+function:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def say_hello():
-        print("Hello World")
-
-    bd = BlueDot()
-    bd.when_pressed = say_hello
-
-    pause()
+.. literalinclude:: examples/hello_event.py
 
 :attr:`~BlueDot.wait_for_release` and :attr:`~BlueDot.when_released` also allow
-you to interact when the Blue Dot is released::
+you to interact when the Blue Dot is released:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def say_hello():
-        print("Hello World")
-
-    def say_goodbye():
-        print("goodbye")
-
-    bd = BlueDot()
-    bd.when_pressed = say_hello
-    bd.when_released = say_goodbye
-
-    pause()
+.. literalinclude:: examples/goodbye_world.py
 
 Double presses can also be used with :attr:`~BlueDot.wait_for_double_press` and
-:attr:`~BlueDot.when_double_pressed`::
+:attr:`~BlueDot.when_double_pressed`:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def shout_hello():
-        print("HELLO")
-
-    bd = BlueDot()
-    bd.when_double_pressed = shout_hello
-
-    pause()
+.. literalinclude:: examples/shout_hello.py
 
 Flash an LED
 ~~~~~~~~~~~~
@@ -75,69 +41,28 @@ Flash an LED
 Using Blue Dot in combination with :mod:`gpiozero` you can interact with
 electronic components, such as LEDs, connected to your Raspberry Pi.
 
-When the Blue Dot is pressed, the LED will turn on; when released it will turn
-off::
+When the Blue Dot is pressed, the LED connected to GPIO 27 will turn on; when
+released it will turn off:
 
-    from bluedot import BlueDot
-    from gpiozero import LED
-
-    bd = BlueDot()
-    led = LED(pin)
-
-    bd.wait_for_press()
-    led.on()
-
-    bd.wait_for_release()
-    led.off()
+.. literalinclude:: examples/led1.py
 
 You could also use :attr:`~BlueDot.when_pressed` and
-:attr:`~BlueDot.when_released`::
+:attr:`~BlueDot.when_released`:
 
-    from bluedot import BlueDot
-    from gpiozero import LED
-    from signal import pause
-
-    bd = BlueDot()
-    led = LED(pin)
-
-    bd.when_pressed = led.on
-    bd.when_released = led.off
-
-    pause()
+.. literalinclude:: examples/led2.py
 
 Alternatively use :attr:`~gpiozero.SourceMixin.source` and
-:attr:`~BlueDot.values`::
+:attr:`~BlueDot.values`:
 
-    from bluedot import BlueDot
-    from gpiozero import LED
-    from signal import pause
-
-    bd = BlueDot()
-    led = LED(pin)
-
-    led.source = bd.values
-
-    pause()
+.. literalinclude:: examples/led3.py
 
 Remote Camera
 ~~~~~~~~~~~~~
 
 Using a Raspberry Pi camera module, :class:`picamera.PiCamera` and
-:class:`BlueDot`, you can really easily create a remote camera::
+:class:`BlueDot`, you can really easily create a remote camera:
 
-    from bluedot import BlueDot
-    from picamera import PiCamera
-    from signal import pause
-
-    bd = BlueDot()
-    cam = PiCamera()
-
-    def take_picture():
-        cam.capture("pic.jpg")
-
-    bd.when_pressed = take_picture
-
-    pause()
+.. literalinclude:: examples/camera.py
 
 Joystick
 --------
@@ -149,66 +74,29 @@ D-pad
 ~~~~~
 
 Using the position the Blue Dot was pressed you can work out whether it was
-pressed to go up, down, left, right like the `D-pad`_ on a joystick::
+pressed to go up, down, left, right like the `D-pad`_ on a joystick:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def dpad(pos):
-        if pos.top:
-            print("up")
-        elif pos.bottom:
-            print("down")
-        elif pos.left:
-            print("left")
-        elif pos.right:
-            print("right")
-        elif pos.middle:
-            print("fire")
-
-    bd = BlueDot()
-    bd.when_pressed = dpad
-
-    pause()
+.. literalinclude:: examples/dpad.py
 
 At the moment the `D-pad`_ only registers when it is pressed. To get it work
 when the position is moved you should add the following line above
-:code:`pause`::
+:code:`pause()`::
 
     bd.when_moved = dpad
 
 Robot
 ~~~~~
 
+These recipes assume your robot is constructed with a pair of H-bridges. The
+forward and backward pins for the H-bridge of the left wheel are 17 and 18
+respectively, and the forward and backward pins for H-bridge of the right wheel
+are 22 and 23 respectively.
+
 Using the Blue Dot and :class:`gpiozero.Robot`, you can create a `bluetooth
 controlled robot`_ which moves when the dot is pressed and stops when it is
-released::
+released:
 
-    from bluedot import BlueDot
-    from gpiozero import Robot
-    from signal import pause
-
-    bd = BlueDot()
-    robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
-
-    def move(pos):
-        if pos.top:
-            robot.forward()
-        elif pos.bottom:
-            robot.backward()
-        elif pos.left:
-            robot.left()
-        elif pos.right:
-            robot.right()
-
-    def stop():
-        robot.stop()
-
-    bd.when_pressed = move
-    bd.when_moved = move
-    bd.when_released = stop
-
-    pause()
+.. literalinclude:: examples/robot1.py
 
 Variable Speed Robot
 ~~~~~~~~~~~~~~~~~~~~
@@ -218,63 +106,14 @@ edge you press the Blue Dot, the faster the robot will go.
 
 The :attr:`~BlueDotPosition.distance` attribute returns how far from the centre
 the Blue Dot was pressed, which can be passed to the robot's functions to
-change its speed::
+change its speed:
 
-    from bluedot import BlueDot
-    from gpiozero import Robot
-    from signal import pause
-
-    bd = BlueDot()
-    robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
-
-    def move(pos):
-        if pos.top:
-            robot.forward(pos.distance)
-        elif pos.bottom:
-            robot.backward(pos.distance)
-        elif pos.left:
-            robot.left(pos.distance)
-        elif pos.right:
-            robot.right(pos.distance)
-
-    def stop():
-        robot.stop()
-
-    bd.when_pressed = move
-    bd.when_moved = move
-    bd.when_released = stop
-
-    pause()
+.. literalinclude:: examples/robot2.py
 
 Alternatively you can use a generator and yield (x, y) values to the
-:attr:`gpiozero.Robot.source` property (courtesy of `Ben Nuttall`_)::
+:attr:`gpiozero.Robot.source` property (courtesy of `Ben Nuttall`_):
 
-    from gpiozero import Robot
-    from bluedot import BlueDot
-    from signal import pause
-
-    def pos_to_values(x, y):
-        left = y if x > 0 else y + x
-        right = y if x < 0 else y - x
-        return (clamped(left), clamped(right))
-
-    def clamped(v):
-        return max(-1, min(1, v))
-
-    def drive():
-        while True:
-            if bd.is_pressed:
-                x, y = bd.position.x, bd.position.y
-                yield pos_to_values(x, y)
-            else:
-                yield (0, 0)
-
-    robot = Robot(left=(lfpin, lbpin), right=(rfpin, rbpin))
-    bd = BlueDot()
-
-    robot.source = drive()
-
-    pause()
+.. literalinclude:: examples/robot3.py
 
 Slider
 ------
@@ -287,39 +126,18 @@ Centre Out
 
 Using the :attr:`BlueDotPosition.distance` property which is returned when the
 position is moved you can create a slider which goes from the centre out in any
-direction::
+direction:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def show_percentage(pos):
-        percentage = round(pos.distance * 100, 2)
-        print("{}%".format(percentage))
-
-    bd = BlueDot()
-    bd.when_moved = show_percentage
-
-    pause()
+.. literalinclude:: examples/slider_centre.py
 
 Left to Right
 ~~~~~~~~~~~~~
 
 The :attr:`BlueDotPosition.x` property returns a value from -1 (far left) to 1
 (far right). Using this value you can create a slider which goes horizontally
-through the middle::
+through the middle:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def show_percentage(pos):
-        horizontal = ((pos.x + 1) / 2)
-        percentage = round(horizontal * 100, 2)
-        print("{}%".format(percentage))
-
-    bd = BlueDot()
-    bd.when_moved = show_percentage
-
-    pause()
+.. literalinclude:: examples/slider_left_right.py
 
 To make a vertical slider you could change the code above to use
 :attr:`BlueDotPosition.y` instead.
@@ -328,21 +146,9 @@ Dimmer Switch
 ~~~~~~~~~~~~~
 
 Using the :class:`gpiozero.PWMLED` class and :class:`BlueDot` as a vertical
-slider you can create a wireless dimmer switch::
+slider you can create a wireless dimmer switch:
 
-    from bluedot import BlueDot
-    from gpiozero import PWMLED
-    from signal import pause
-
-    def set_brightness(pos):
-        brightness = ((pos.y + 1) / 2)
-        led.value = brightness
-
-    bd = BlueDot()
-    bd.when_moved = set_brightness
-    led = PWMLED(pin)
-
-    pause()
+.. literalinclude:: examples/slider_dimmer.py
 
 Swiping
 -------
@@ -353,72 +159,32 @@ between pages in a mobile app.
 Single
 ~~~~~~
 
-Detecting a single swipe is easy using :attr:`~BlueDot.wait_for_swipe`::
+Detecting a single swipe is easy using :attr:`~BlueDot.wait_for_swipe`:
 
-    from bluedot import BlueDot
-    bd = BlueDot()
-    bd.wait_for_swipe()
-    print("Blue Dot swiped")
+.. literalinclude:: examples/swipe1.py
 
 Alternatively you can also use :attr:`~BlueDot.when_swiped` to call a
-function::
+function:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def swiped():
-        print("Blue Dot swiped")
-
-    bd = BlueDot()
-    bd.when_swiped = swiped
-
-    pause()
+.. literalinclude:: examples/swipe2.py
 
 Direction
 ~~~~~~~~~
 
 You can tell what direction the Blue Dot is swiped by using the
 :class:`BlueDotSwipe` object passed to the function assigned to
-:attr:`~BlueDot.when_swiped`::
+:attr:`~BlueDot.when_swiped`:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def swiped(swipe):
-        if swipe.up:
-            print("up")
-        elif swipe.down:
-            print("down")
-        elif swipe.left:
-            print("left")
-        elif swipe.right:
-            print("right")
-
-    bd = BlueDot()
-    bd.when_swiped = swiped
-
-    pause()
+.. literalinclude:: examples/swipe_direction.py
 
 Speed, Angle, and Distance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :class:`BlueDotSwipe` returns more than just the direction. It also includes
 the speed of the swipe (in Blue Dot radius per second), the angle, and the
-distance between the start and end positions of the swipe::
+distance between the start and end positions of the swipe:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    def swiped(swipe):
-        print("Swiped")
-        print("speed={}".format(swipe.speed))
-        print("angle={}".format(swipe.angle))
-        print("distance={}".format(swipe.distance))
-
-    bd = BlueDot()
-    bd.when_swiped = swiped
-
-    pause()
+.. literalinclude:: examples/swipe_speed_angle.py
 
 Rotating
 --------
@@ -435,25 +201,9 @@ Using the :attr:`~BlueDot.when_rotated` callback you can create a counter which
 increments / decrements when the Blue Dot is rotated either clockwise or
 anti-clockwise. A :class:`BlueDotRotation` object is passed to the callback.
 Its :attr:`~BlueDotRotation.value` property will be -1 if rotated
-anti-clockwise and 1 if rotated clockwise::
+anti-clockwise and 1 if rotated clockwise:
 
-    from bluedot import BlueDot
-    from signal import pause
-
-    count = 0
-
-    def rotated(rotation):
-        global count
-        count += rotation.value
-
-        print("{} {} {}".format(count,
-                                rotation.clockwise,
-                                rotation.anti_clockwise))
-
-    bd = BlueDot()
-    bd.when_rotated = rotated
-
-    pause()
+.. literalinclude:: examples/rotation.py
 
 The rotation speed can be modified using the :attr:`BlueDot.rotation_segments`
 property which changes the number of segments the Blue Dot is split into::
@@ -469,41 +219,21 @@ Pairing
 ~~~~~~~
 
 You can put your Raspberry Pi into pairing mode which will allow pairing from
-other devices for 60 seconds::
+other devices for 60 seconds:
 
-    from bluedot import BlueDot
-    from signal import pause
+.. literalinclude:: examples/bt_pairing.py
 
-    bd = BlueDot()
-    bd.allow_pairing()
+Or connect up a physical button up to start the pairing (the button is assumed
+to be wired to GPIO 27):
 
-    pause()
-
-Or connect up a physical button up to start the pairing::
-
-    from bluedot import BlueDot
-    from gpiozero import Button
-    from signal import pause
-
-    bd = BlueDot()
-    button = Button(pin)
-
-    button.when_pressed = bd.allow_pairing
-
-    pause()
+.. literalinclude:: examples/bt_pair_button.py
 
 Paired Devices
 ~~~~~~~~~~~~~~
 
-You can iterate over the devices that your Raspberry Pi is paired too::
+You can iterate over the devices that your Raspberry Pi is paired too:
 
-    from bluedot import BlueDot
-    bd = BlueDot()
-
-    devices = bd.paired_devices
-    for d in devices:
-        device_address = d[0]
-        device_name = d[1]
+.. literalinclude:: examples/bt_enumerate.py
 
 Testing
 -------
@@ -522,35 +252,17 @@ Mock App
 ~~~~~~~~
 
 Launch the mock Blue Dot app to test by clicking the on-screen dot with the
-mouse::
+mouse:
 
-    from bluedot import MockBlueDot
-    from signal import pause
-
-    def say_hello():
-        print("Hello World")
-
-    bd = MockBlueDot()
-    bd.when_pressed = say_hello
-
-    bd.launch_mock_app()
-    pause()
+.. literalinclude:: examples/mock_app.py
 
 Scripted Tests
 ~~~~~~~~~~~~~~
 
-Tests can also be scripted using :class:`MockBlueDot`::
+Tests can also be scripted using :class:`MockBlueDot`:
 
-    from bluedot import MockBlueDot
+.. literalinclude:: examples/mock_script.py
 
-    def say_hello():
-        print("Hello World")
-
-    bd = MockBlueDot()
-    bd.when_pressed = say_hello
-
-    bd.mock_client_connected()
-    bd.mock_blue_dot_pressed(0,0)
 
 .. _Ben Nuttall: https://github.com/bennuttall
 .. _bluetooth controlled robot: https://youtu.be/eW9oEPySF58
