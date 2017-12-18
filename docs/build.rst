@@ -1,13 +1,10 @@
 Build
-==================
+=====
 
 These are instructions for how to develop, build and deploy Blue Dot.
 
-bluedot Python library
-----------------------
-
 Setup
-~~~~~
+-----
 
 Clone repo and install for dev::
 
@@ -17,9 +14,9 @@ Clone repo and install for dev::
     sudo python3 setup.py develop
 
 Test
-~~~~
+----
 
-Install pytest::
+Install `pytest`_::
 
     sudo pip3 install -U pytest
 
@@ -29,9 +26,9 @@ Run tests::
     pytest -v
 
 Deploy
-~~~~~~
+------
 
-Create .pypirc credentials file::
+Create :file:`.pypirc` credentials file::
 
     nano ~/.pypirc
 
@@ -41,12 +38,16 @@ Create .pypirc credentials file::
 
     [pypi]
     username:
-    password:    
+    password:
 
 Build for deployment::
 
     python3 setup.py sdist
 
-Deploy to pypi::
+Deploy to `PyPI`_::
 
     twine upload dist/* --skip-existing
+
+
+.. _pytest: https://doc.pytest.org/
+.. _PyPI: https://pypi.python.org/pypi

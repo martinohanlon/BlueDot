@@ -15,6 +15,7 @@ FONT = "monospace"
 FONTSIZE = 18
 FONTPAD = 3
 
+
 class BlueDotClient():
     def __init__(self, device, server, fullscreen, width, height):
 
@@ -30,7 +31,7 @@ class BlueDotClient():
 
         #create the screen
         screenflags = 0
-        
+
         if fullscreen:
             screenflags = pygame.FULLSCREEN
             if width == None and height == None:
@@ -40,7 +41,7 @@ class BlueDotClient():
 
         if width == None: width = DEFAULTSIZE[0]
         if height == None: height = DEFAULTSIZE[1]
-        
+
         screen = pygame.display.set_mode((width, height), screenflags)
 
         #has a server been specified?  If so connected directly
@@ -54,6 +55,7 @@ class BlueDotClient():
 
         pygame.quit()
 
+
 class BlueDotScreen(object):
     def __init__(self, screen, font, width, height):
         self.screen = screen
@@ -66,13 +68,13 @@ class BlueDotScreen(object):
         self.close_rect = pygame.Rect(self.width - FONTSIZE - FONTPAD - BORDER, BORDER, FONTSIZE + FONTPAD, FONTSIZE + FONTPAD)
 
         self.draw_screen()
-    
+
     def draw_screen(self):
         #set the screen background
         self.screen.fill(GREY)
 
         self.draw_close_button()
-        
+
     def draw_close_button(self):
         #draw close button
         pygame.draw.rect(self.screen, BLUE, self.close_rect, 2)
@@ -84,7 +86,7 @@ class BlueDotScreen(object):
                         (self.close_rect[0], self.close_rect[1] + self.close_rect[3]),
                         (self.close_rect[0] + self.close_rect[2], self.close_rect[1]),
                         1)
-        
+
     def draw_error(self, e):
         message = "Error: {}".format(e)
         print(message)
@@ -115,8 +117,8 @@ class BlueDotScreen(object):
             while self.font.size(text[:i])[0] < (rect.width - (border_pad * 2)) and i < len(text):
                 i += 1
 
-            # if we've wrapped the text, then adjust the wrap to the last word      
-            if i < len(text): 
+            # if we've wrapped the text, then adjust the wrap to the last word
+            if i < len(text):
                 i = text.rfind(" ", 0, i) + 1
 
             # render the line and blit it to the surface
@@ -135,11 +137,12 @@ class BlueDotScreen(object):
         #return the rect the text was drawn in
         rect.top = rect.top + start_y
         rect.height = y - start_y
-    
+
         if border:
             pygame.draw.rect(self.screen, colour, rect, border_width)
 
         return rect
+
 
 class DevicesScreen(BlueDotScreen):
     def __init__(self, screen, font, device, width, height):
@@ -159,7 +162,7 @@ class DevicesScreen(BlueDotScreen):
         y = title_rect.bottom
         for d in self.bt_adapter.paired_devices:
             device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE, y, border = True, border_pad = FONTPAD)
-    
+
             self.device_rects.append(pygame.Rect(device_rect))
 
             y = device_rect.bottom
@@ -176,7 +179,7 @@ class DevicesScreen(BlueDotScreen):
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    
+
                     #has a device been clicked?
                     for d in range(len(self.device_rects)):
                         if self.device_rects[d].collidepoint(pos):
@@ -190,15 +193,16 @@ class DevicesScreen(BlueDotScreen):
 
                     if self.close_rect.collidepoint(pos):
                         running = False
-                    
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
                 if event.type == pygame.QUIT:
                     running = False
-                    
+
             pygame.display.update()
+
 
 class ButtonScreen(BlueDotScreen):
     def __init__(self, screen, font, device, server, width, height):
@@ -222,7 +226,7 @@ class ButtonScreen(BlueDotScreen):
             self.circle_radius = int(self.frame_rect.height / 2)
         else:
             self.circle_radius = int(self.frame_rect.width / 2)
-        
+
         self.circle_rect = pygame.draw.circle(self.screen, colour, self.circle_centre, self.circle_radius, 0)
 
     def _process(self, op, pos):
@@ -248,29 +252,29 @@ class ButtonScreen(BlueDotScreen):
         except:
             e = str(sys.exc_info()[1])
             self.draw_error(e)
-        
+
     def run(self):
-        
+
         self.bt_client = BluetoothClient(self.server, None, device = self.device, auto_connect = False)
         try:
             self.bt_client.connect()
         except:
             e = str(sys.exc_info()[1])
             self.draw_error(e)
-    
+
         clock = pygame.time.Clock()
         pygame.event.clear()
-        
+
         mouse_pressed = False
         running = True
-        
+
         while running:
             clock.tick(50)
 
             ev = pygame.event.get()
 
             for event in ev:
-                
+
                 # handle mouse
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP or (event.type == pygame.MOUSEMOTION and mouse_pressed):
                     pos = pygame.mouse.get_pos()
@@ -282,28 +286,28 @@ class ButtonScreen(BlueDotScreen):
                             mouse_pressed = True
                             self._draw_circle(DARKBLUE)
                             self._process(1, pos)
-                            
+
                         elif event.type == pygame.MOUSEBUTTONUP:
                             mouse_pressed = False
                             self._draw_circle(BLUE)
                             self._process(0, pos)
-                        
+
                         elif event.type == pygame.MOUSEMOTION:
                             self._process(2, pos)
-                
+
                     #close clicked?
                     if self.close_rect.collidepoint(pos):
                         running = False
-                    
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
                 if event.type == pygame.QUIT:
                     running = False
-                    
+
             pygame.display.update()
-            
+
         self.bt_client.disconnect()
 
 if __name__ == "__main__":
@@ -318,5 +322,3 @@ if __name__ == "__main__":
 
     #start the blue dot client
     blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
-
-

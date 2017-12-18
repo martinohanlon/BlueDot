@@ -4,7 +4,7 @@ Blue Dot Android App
 The `Blue Dot app`_ is available to download from the Google Play store.
 
 Please leave a rating and review if you find Blue Dot useful :)
- 
+
 |bluedotapp| |bluedotappdevices|
 
 Start
@@ -20,7 +20,7 @@ Start
 
 |bluedotappdevices|
 
-5. Press the Dot 
+5. Press the Dot
 
 |bluedotapp|
 

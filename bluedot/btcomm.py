@@ -1,32 +1,40 @@
+from __future__ import unicode_literals
+
 import socket
 import sys
-from time import sleep
+import errno
 
-from .utils import register_spp, get_mac, get_adapter_powered_status, get_adapter_discoverable_status, get_adapter_pairable_status, get_paired_devices, device_pairable, device_discoverable, device_powered, string_to_bytes
+from .utils import (
+    register_spp,
+    get_mac,
+    get_adapter_powered_status,
+    get_adapter_discoverable_status,
+    get_adapter_pairable_status,
+    get_paired_devices,
+    device_pairable,
+    device_discoverable,
+    device_powered,
+)
 
 from .threads import WrapThread
 
-if sys.version_info[0] > 2:
-    BLUETOOTH_EXCEPTIONS = (BlockingIOError, ConnectionResetError, TimeoutError)
-else:
-    BLUETOOTH_EXCEPTIONS = (IOError)
-
 BLUETOOTH_TIMEOUT = 0.01
+
 
 class BluetoothAdapter():
     """
     Represents and allows interaction with a Bluetooth Adapter.
 
-    The following example will get the bluetooth adapter, print its powered status
+    The following example will get the Bluetooth adapter, print its powered status
     and any paired devices::
 
         a = BluetoothAdapter()
         print("Powered = {}".format(a.powered))
         print(a.paired_devices)
 
-    :param string device:
-        The bluetooth device to be used, the default is ``hci0``, if your device 
-        only has 1 bluetooth adapter this shouldn't need to be changed.
+    :param str device:
+        The Bluetooth device to be used, the default is "hci0", if your device
+        only has 1 Bluetooth adapter this shouldn't need to be changed.
     """
     def __init__(self, device = "hci0"):
         self._device = device
@@ -36,24 +44,26 @@ class BluetoothAdapter():
     @property
     def device(self):
         """
-        The bluetooth device name. This defaults to hci0.
+        The Bluetooth device name. This defaults to "hci0".
         """
         return self._device
-    
+
     @property
     def address(self):
         """
-        The mac address of the bluetooth adapter.
+        The `MAC address`_ of the Bluetooth adapter.
+
+        .. _MAC address: https://en.wikipedia.org/wiki/MAC_address
         """
         return self._address
 
     @property
     def powered(self):
         """
-        Set to ``True`` to power on the bluetooth adapter.
+        Set to ``True`` to power on the Bluetooth adapter.
 
-        Depending on how bluetooth has been powered down, you may need to use 
-        rfkill to unblock bluetooth to give permission to bluez to power on bluetooth::
+        Depending on how Bluetooth has been powered down, you may need to use
+        :command:`rfkill` to unblock Bluetooth to give permission to bluez to power on Bluetooth::
 
             sudo rfkill unblock bluetooth
         """
@@ -66,7 +76,7 @@ class BluetoothAdapter():
     @property
     def discoverable(self):
         """
-        Set to ``True`` to make the bluetooth adapter discoverable.
+        Set to ``True`` to make the Bluetooth adapter discoverable.
         """
         return get_adapter_discoverable_status(self._device)
 
@@ -77,7 +87,7 @@ class BluetoothAdapter():
     @property
     def pairable(self):
         """
-        Set to ``True`` to make the bluetooth adapter pairable.
+        Set to ``True`` to make the Bluetooth adapter pairable.
         """
         return get_adapter_pairable_status(self._device)
 
@@ -88,9 +98,9 @@ class BluetoothAdapter():
     @property
     def paired_devices(self):
         """
-        Returns a list of devices paired with this adapater 
-        ``((device_mac_address, device_name), (device_mac_address, device_name))``::
-        
+        Returns a sequence of devices paired with this adapater
+        :code:`[(mac_address, name), (mac_address, name), ...]`::
+
             a = BluetoothAdapter()
             devices = a.paired_devices
             for d in devices:
@@ -105,17 +115,17 @@ class BluetoothAdapter():
 
         :param int timeout:
             The time in seconds the adapter will remain pairable. If set to ``None``
-            the device will be discoverable and pairable indefinetly. 
+            the device will be discoverable and pairable indefinetly.
         """
         #if a pairing thread is already running, stop it and restart
         if self._pairing_thread:
             if self._pairing_thread.is_alive:
                 self._pairing_thread.stop()
-        
+
         #make the adapter pairable
         self.pairable = True
         self.discoverable = True
-        
+
         if timeout != None:
             #start the pairing thread
             self._pairing_thread = WrapThread(target=self._expire_pairing, args=(timeout, ))
@@ -127,17 +137,18 @@ class BluetoothAdapter():
         self.discoverable = False
         self.pairable = False
 
+
 class BluetoothServer():
     """
-    Creates a Bluetooth server which will allow connections and accept incoming 
+    Creates a Bluetooth server which will allow connections and accept incoming
     RFCOMM serial data.
 
     When data is received by the server it is passed to a callback function
     which must be specified at initiation.
 
-    The following example will create a bluetooth server which will wait for a 
+    The following example will create a Bluetooth server which will wait for a
     connection and print any data it receives and send it back to the client::
-    
+
         from bluedot.btcomm import BluetoothServer
         from signal import pause
 
@@ -151,31 +162,31 @@ class BluetoothServer():
     :param data_received_callback:
         A function reference should be passed, this function will be called when
         data is received by the server.  The function should accept a single parameter
-        which when called will hold the data received. Set to ``None`` if  received 
+        which when called will hold the data received. Set to ``None`` if  received
         data is not required.
 
     :param bool auto_start:
-        If ``True`` (the default), the bluetooth server will be automatically started
+        If ``True`` (the default), the Bluetooth server will be automatically started
         on initialisation, if ``False``, the method ``start`` will need to be called
         before connections will be accepted.
 
-    :param string device:
-        The bluetooth device the server should use, the default is ``hci0``, if
-        your device only has 1 bluetooth adapter this shouldn't need to be changed.
+    :param str device:
+        The Bluetooth device the server should use, the default is "hci0", if
+        your device only has 1 Bluetooth adapter this shouldn't need to be changed.
 
     :param int port:
-        The bluetooth port the server should use, the default is ``1``.
+        The Bluetooth port the server should use, the default is 1.
 
-    :param string encoding:
-        The encoding standard to be used when sending and receiving byte data. The default is 
-        ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
+    :param str encoding:
+        The encoding standard to be used when sending and receiving byte data. The default is
+        "utf-8".  If set to ``None`` no encoding is done and byte data types should be used.
 
     :param bool power_up_device:
-        If ``True``, the bluetooth device will be powered up (if required) when the 
-        server starts. The default is ``False``. 
-        
-        Depending on how bluetooth has been powered down, you may need to use rfkill 
-        to unblock bluetooth to give permission to bluez to power on bluetooth::
+        If ``True``, the Bluetooth device will be powered up (if required) when the
+        server starts. The default is ``False``.
+
+        Depending on how Bluetooth has been powered down, you may need to use :command:`rfkill`
+        to unblock Bluetooth to give permission to bluez to power on Bluetooth::
 
             sudo rfkill unblock bluetooth
 
@@ -188,14 +199,14 @@ class BluetoothServer():
         (the default), no notification will be given when a client disconnects
 
     """
-    def __init__(self, 
-        data_received_callback, 
-        auto_start = True, 
-        device = "hci0", 
+    def __init__(self,
+        data_received_callback,
+        auto_start = True,
+        device = "hci0",
         port = 1,
         encoding = "utf-8",
         power_up_device = False,
-        when_client_connects = None, 
+        when_client_connects = None,
         when_client_disconnects = None):
 
         self._device = device
@@ -213,23 +224,23 @@ class BluetoothServer():
         self._server_sock = None
         self._client_info = None
         self._client_sock = None
-        
+
         self._conn_thread = None
 
         if auto_start:
             self.start()
-    
+
     @property
     def device(self):
         """
-        The bluetooth device the server is using. This defaults to hci0.
+        The Bluetooth device the server is using. This defaults to "hci0".
         """
         return self.adapter.device
 
     @property
     def adapter(self):
         """
-        A BluetoothAdapter object which represents the bluetooth device 
+        A :class:`BluetoothAdapter` object which represents the Bluetooth device
         the server is using.
         """
         return self._adapter
@@ -244,7 +255,7 @@ class BluetoothServer():
     @property
     def encoding(self):
         """
-        The encoding standard the server is using. This defaults to ``utf-8``.
+        The encoding standard the server is using. This defaults to "utf-8".
         """
         return self.encoding
 
@@ -258,15 +269,19 @@ class BluetoothServer():
     @property
     def server_address(self):
         """
-        The mac address of the device the server is using.
+        The `MAC address`_ of the device the server is using.
+
+        .. _MAC address: https://en.wikipedia.org/wiki/MAC_address
         """
         return self.adapter.address
 
     @property
     def client_address(self):
         """
-        The mac address of the client connected to the server. Returns 
+        The `MAC address`_ of the client connected to the server. Returns
         ``None`` if no client is connected.
+
+        .. _MAC address: https://en.wikipedia.org/wiki/MAC_address
         """
         if self._client_info:
             return self._client_info[0]
@@ -283,7 +298,7 @@ class BluetoothServer():
     @property
     def data_received_callback(self):
         """
-        Sets or returns the function which is called when data is received by the server. 
+        Sets or returns the function which is called when data is received by the server.
 
         The function should accept a single parameter which when called will hold
         the data received. Set to ``None`` if received data is not required.
@@ -297,7 +312,7 @@ class BluetoothServer():
     @property
     def when_client_connects(self):
         """
-        Sets or returns the function which is called when a client connects. 
+        Sets or returns the function which is called when a client connects.
         """
         return self._when_client_connects
 
@@ -308,7 +323,7 @@ class BluetoothServer():
     @property
     def when_client_disconnects(self):
         """
-        Sets or returns the function which is called when a client disconnects. 
+        Sets or returns the function which is called when a client disconnects.
         """
         return self._when_client_disconnects
 
@@ -329,17 +344,17 @@ class BluetoothServer():
             if not self.adapter.powered:
                 raise Exception("Bluetooth device {} is turned off".format(self.adapter.device))
 
-            #register the serial port profile with bluetooth
+            #register the serial port profile with Bluetooth
             register_spp(self._port)
 
-            #start bluetooth server
-            #open the bluetooth socket
+            #start Bluetooth server
+            #open the Bluetooth socket
             self._server_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             self._server_sock.settimeout(BLUETOOTH_TIMEOUT)
             try:
                 self._server_sock.bind((self.server_address, self.port))
             except (socket.error, OSError) as e:
-                if str(e) == "[Errno 98] Address already in use":
+                if e.errno == errno.EADDRINUSE:
                     print("Bluetooth address {} is already in use - is the server already running?".format(self.server_address))
                 raise e
             self._server_sock.listen(1)
@@ -361,17 +376,17 @@ class BluetoothServer():
 
     def send(self, data):
         """
-        Send data to a connected bluetooth client
+        Send data to a connected Bluetooth client
 
-        :param string data:
+        :param str data:
             The data to be sent.
         """
         if self._client_connected:
-            if self._encoding:
-                data = string_to_bytes(data, self._encoding)
+            if self._encoding is not None:
+                data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
 
     def _wait_for_connection(self):
@@ -379,10 +394,12 @@ class BluetoothServer():
         while not self._conn_thread.stopping.is_set():
             #wait for connection
             self._client_connected = False
-            while not self._conn_thread.stopping.is_set() and not self._client_connected:
+            while not self._conn_thread.stopping.is_set():
                 try:
+                    # accept() will timeout after BLUETOOTH_TIMEOUT seconds
                     self._client_sock, self._client_info = self._server_sock.accept()
                     self._client_connected = True
+                    break
                 except socket.timeout as e:
                     self._handle_bt_error(e)
 
@@ -391,7 +408,7 @@ class BluetoothServer():
                 #call the call back
                 if self.when_client_connects:
                     self.when_client_connects()
-                
+
                 #read data
                 self._read()
 
@@ -402,20 +419,20 @@ class BluetoothServer():
 
     def _read(self):
         #read until the server is stopped or the client disconnects
-        while not self._conn_thread.stopping.is_set() and self._client_connected:
-            #read data from bluetooth socket
-            data = ""
+        while self._client_connected:
+            #read data from Bluetooth socket
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
-            if len(data) > 0:
-                #print("received [%s]" % data)
+                data = b""
+            if data:
                 if self._data_received_callback:
                     if self._encoding:
                         data = data.decode(self._encoding)
                     self.data_received_callback(data)
-            sleep(BLUETOOTH_TIMEOUT)
+            if self._conn_thread.stopping.wait(BLUETOOTH_TIMEOUT):
+                break
 
         #close the client socket
         self._client_sock.close()
@@ -424,37 +441,38 @@ class BluetoothServer():
         self._client_connected = False
 
     def _handle_bt_error(self, bt_error):
+        assert isinstance(bt_error, IOError)
         #'timed out' is caused by the wait_for_connection loop
-        if str(bt_error) == "timed out":
-            return
+        if isinstance(bt_error, socket.timeout):
+            pass
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
-        if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
-            return
+        elif bt_error.errno == errno.EAGAIN:
+            pass
         #'connection reset' is caused when the client disconnects
-        if str(bt_error) == "[Errno 104] Connection reset by peer":
+        elif bt_error.errno == errno.ECONNRESET:
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
-            return
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
-        if str(bt_error) == "[Errno 110] Connection timed out":
+        elif bt_error.errno == errno.ETIMEDOUT:
             self._client_connected = False
             if self.when_client_disconnects:
                 self.when_client_disconnects()
-            return
-        raise bt_error
+        else:
+            raise bt_error
+
 
 class BluetoothClient():
     """
     Creates a Bluetooth client which can send data to a server using RFCOMM Serial Data.
 
-    The following example will create a bluetooth client which will connect to a paired 
-    device called ``raspberrypi``, send ``helloworld`` and print any data is receives::
-    
+    The following example will create a Bluetooth client which will connect to a paired
+    device called "raspberrypi", send "helloworld" and print any data is receives::
+
         from bluedot.btcomm import BluetoothClient
         from signal import pause
-        
+
         def data_received(data):
             print(data)
 
@@ -462,50 +480,48 @@ class BluetoothClient():
         c.send("helloworld")
 
         pause()
-    
-    :param string server:
-        The server name ("raspberrypi") or server mac address 
-        ("11:11:11:11:11:11") to connect too.
 
-        The server must be a paired device.
+    :param str server:
+        The server name ("raspberrypi") or server MAC address
+        ("11:11:11:11:11:11") to connect to. The server must be a paired device.
 
     :param data_received_callback:
         A function reference should be passed, this function will be called when
         data is received by the client.  The function should accept a single parameter
-        which when called will hold the data received. Set to ``None`` if data 
+        which when called will hold the data received. Set to ``None`` if data
         received is not required.
 
     :param int port:
-        The bluetooth port the client should use, the default is ``1``
+        The Bluetooth port the client should use, the default is 1.
 
-    :param string device:
-        The bluetooth device to be used, the default is ``hci0``, if your device 
-        only has 1 bluetooth adapter this shouldn't need to be changed.
+    :param str device:
+        The Bluetooth device to be used, the default is "hci0", if your device
+        only has 1 Bluetooth adapter this shouldn't need to be changed.
 
-    :param string encoding:
-        The encoding standard to be used when sending and receiving byte data. The default is 
-        ``utf-8``.  If set to ``None`` no encoding is done and byte data types should be used.
+    :param str encoding:
+        The encoding standard to be used when sending and receiving byte data. The default is
+        "utf-8".  If set to ``None`` no encoding is done and byte data types should be used.
 
     :param bool power_up_device:
-        If ``True``, the bluetooth device will be powered up (if required) when the 
-        server starts. The default is ``False``. 
-        
-        Depending on how bluetooth has been powered down, you may need to use rfkill 
-        to unblock bluetooth to give permission to bluez to power on bluetooth::
+        If ``True``, the Bluetooth device will be powered up (if required) when the
+        server starts. The default is ``False``.
+
+        Depending on how Bluetooth has been powered down, you may need to use :command:`rfkill`
+        to unblock Bluetooth to give permission to Bluez to power on Bluetooth::
 
             sudo rfkill unblock bluetooth
 
     :param bool auto_connect:
-        If ``True`` (the default), the bluetooth client will automatically try to
-        connect to the server at initialisation, if ``False``, the method ``connect`` 
-        will need to be called.
+        If ``True`` (the default), the Bluetooth client will automatically try
+        to connect to the server at initialisation, if ``False``, the
+        :meth:`connect` method will need to be called.
 
     """
-    def __init__(self, 
+    def __init__(self,
         server,
         data_received_callback,
         port = 1,
-        device = "hci0", 
+        device = "hci0",
         encoding = "utf-8",
         power_up_device = False,
         auto_connect = True):
@@ -530,15 +546,17 @@ class BluetoothClient():
     @property
     def device(self):
         """
-        The bluetooth device the client is using. This defaults to hci0.
+        The Bluetooth device the client is using. This defaults to "hci0".
         """
         return self.adapter.device
 
     @property
     def server(self):
         """
-        The server name ("raspberrypi") or server mac address 
-        ("11:11:11:11:11:11") to connect too.
+        The server name ("raspberrypi") or server `MAC address`_
+        ("11:11:11:11:11:11") to connect to.
+
+        .. _MAC address: https://en.wikipedia.org/wiki/MAC_address
         """
         return self._server
 
@@ -552,22 +570,22 @@ class BluetoothClient():
     @property
     def adapter(self):
         """
-        A BluetoothAdapter object which represents the bluetooth device 
-        the client is using.
+        A :class:`BluetoothAdapter` object which represents the Bluetooth
+        device the client is using.
         """
         return self._adapter
 
     @property
     def encoding(self):
         """
-        The encoding standard the client is using. The default is ``utf-8``. 
+        The encoding standard the client is using. The default is "utf-8".
         """
         return self._encoding
 
     @property
     def client_address(self):
         """
-        The mac address of the device being used.
+        The MAC address of the device being used.
         """
         return self.adapter.address
 
@@ -581,8 +599,8 @@ class BluetoothClient():
     @property
     def data_received_callback(self):
         """
-        Sets or returns the function which is called when data is received by the client. 
-        
+        Sets or returns the function which is called when data is received by the client.
+
         The function should accept a single parameter which when called will hold
         the data received. Set to ``None`` if data received is not required.
         """
@@ -594,7 +612,7 @@ class BluetoothClient():
 
     def connect(self):
         """
-        Connect to a bluetooth server.
+        Connect to a Bluetooth server.
         """
         if not self._connected:
 
@@ -604,7 +622,7 @@ class BluetoothClient():
             if not self.adapter.powered:
                 raise Exception("Bluetooth device {} is turned off".format(self.adapter.device))
 
-            #try and find the server name or mac address in the paired devices list
+            #try and find the server name or MAC address in the paired devices list
             server_mac = None
             for device in self.adapter.paired_devices:
                 if self._server == device[0] or self._server == device[1]:
@@ -612,23 +630,23 @@ class BluetoothClient():
                     break
             if server_mac == None:
                 raise Exception("Server {} not found in paired devices".format(self._server))
-            
+
             #create a socket
             self._client_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
             self._client_sock.bind((self.adapter.address, self._port))
             self._client_sock.connect((server_mac, self._port))
-        
-            self._connected = True 
-        
+
+            self._connected = True
+
             self._conn_thread = WrapThread(target=self._read)
             self._conn_thread.start()
 
     def disconnect(self):
         """
-        Disconnect from a bluetooth server.
+        Disconnect from a Bluetooth server.
         """
         if self._connected:
-            
+
             #stop the connection thread
             if self._conn_thread:
                 self._conn_thread.stop()
@@ -640,50 +658,51 @@ class BluetoothClient():
             finally:
                 self._client_sock = None
                 self._connected = False
-        
+
     def send(self, data):
         """
-        Send data to a bluetooth server
+        Send data to a Bluetooth server.
 
-        :param string data:
+        :param str data:
             The data to be sent.
         """
         if self._connected:
-            if self._encoding:
-                data = string_to_bytes(data, self._encoding)
+            if self._encoding is not None:
+                data = data.encode(self._encoding)
             try:
                 self._client_sock.send(data)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
-            
+
     def _read(self):
         #read until the client is stopped or the client disconnects
-        while not self._conn_thread.stopping.is_set() and self._connected:
-            #read data from bluetooth socket
-            data = ""
+        while self._connected:
+            #read data from Bluetooth socket
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except BLUETOOTH_EXCEPTIONS as e:
+            except IOError as e:
                 self._handle_bt_error(e)
-            if len(data) > 0:
+                data = b""
+            if data:
                 #print("received [%s]" % data)
                 if self._data_received_callback:
                     if self._encoding:
                         data = data.decode(self._encoding)
                     self.data_received_callback(data)
-            sleep(BLUETOOTH_TIMEOUT)
+            if self._conn_thread.stopping.wait(BLUETOOTH_TIMEOUT):
+                break
 
     def _handle_bt_error(self, bt_error):
+        assert isinstance(bt_error, IOError)
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
-        if str(bt_error) == "[Errno 11] Resource temporarily unavailable":
-            return
+        if bt_error.errno == errno.EAGAIN:
+            pass
         #'connection reset' is caused when the client disconnects
-        if str(bt_error) == "[Errno 104] Connection reset by peer":
+        elif bt_error.errno == errno.ECONNRESET:
             self._connected = False
-            return
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
-        if str(bt_error) == "[Errno 110] Connection timed out":
+        elif bt_error.errno == errno.ETIMEDOUT:
             self._connected = False
-            return
-        raise bt_error
+        else:
+            raise bt_error

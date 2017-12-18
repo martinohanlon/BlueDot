@@ -19,7 +19,7 @@ The app is included in the bluedot Python library:
 
 |bluedotpythondevices|
 
-5. Press the Dot 
+5. Press the Dot
 
 |bluedotpython|
 
@@ -40,7 +40,7 @@ You can specify the server to connect to at startup by using the ``--server`` op
 
 The screen size of the Blue Dot app can be changed using the ``width`` and ``height`` options and specifying the number of pixels::
 
-    python3 -m bluedot.app --width 500 -- height 500
+    python3 -m bluedot.app --width 500 --height 500
 
 The app can also be used full screen, if no ``width`` or ``height`` is given the screen will be sized to the current resolution of the screen::
 
