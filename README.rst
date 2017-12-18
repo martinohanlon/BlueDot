@@ -44,7 +44,7 @@ Why be restricted by such vague positions like top and bottom though: you can ge
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
-You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
+You can press it, `slide it`_, `swipe it`_, `rotate it`_ - one blue circle can do a lot!
 
 Even more
 ---------
@@ -71,6 +71,9 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
 .. _BlueDot controlled Robot: https://youtu.be/eW9oEPySF58
 .. _joystick: http://bluedot.readthedocs.io/en/latest/recipes.html#joystick
 .. _button: http://bluedot.readthedocs.io/en/latest/recipes.html#button
+.. _slide it: http://bluedot.readthedocs.io/en/latest/recipes.html#slider
+.. _swipe it: http://bluedot.readthedocs.io/en/latest/recipes.html#swiping
+.. _rotate it: http://bluedot.readthedocs.io/en/latest/recipes.html#rotating
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
    :height: 247 px
