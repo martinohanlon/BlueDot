@@ -7,8 +7,8 @@ Table of Contents
    :maxdepth: 2
 
    gettingstarted
-   pairpipi
    pairpiandroid
+   pairpipi
    recipes
    bluedotandroidapp
    bluedotpythonapp
