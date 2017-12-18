@@ -1,7 +1,8 @@
+from __future__ import unicode_literals
+
 import socket
 import sys
 import errno
-from time import sleep
 
 from .utils import (
     register_spp,
@@ -393,10 +394,12 @@ class BluetoothServer():
         while not self._conn_thread.stopping.is_set():
             #wait for connection
             self._client_connected = False
-            while not self._conn_thread.stopping.is_set() and not self._client_connected:
+            while not self._conn_thread.stopping.is_set():
                 try:
+                    # accept() will timeout after BLUETOOTH_TIMEOUT seconds
                     self._client_sock, self._client_info = self._server_sock.accept()
                     self._client_connected = True
+                    break
                 except socket.timeout as e:
                     self._handle_bt_error(e)
 
@@ -416,20 +419,20 @@ class BluetoothServer():
 
     def _read(self):
         #read until the server is stopped or the client disconnects
-        while not self._conn_thread.stopping.is_set() and self._client_connected:
+        while self._client_connected:
             #read data from Bluetooth socket
-            data = ""
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
             except IOError as e:
                 self._handle_bt_error(e)
-            if len(data) > 0:
-                #print("received [%s]" % data)
+                data = b""
+            if data:
                 if self._data_received_callback:
                     if self._encoding:
                         data = data.decode(self._encoding)
                     self.data_received_callback(data)
-            sleep(BLUETOOTH_TIMEOUT)
+            if self._conn_thread.stopping.wait(BLUETOOTH_TIMEOUT):
+                break
 
         #close the client socket
         self._client_sock.close()
@@ -440,7 +443,7 @@ class BluetoothServer():
     def _handle_bt_error(self, bt_error):
         assert isinstance(bt_error, IOError)
         #'timed out' is caused by the wait_for_connection loop
-        if str(bt_error) == "timed out":
+        if isinstance(bt_error, socket.timeout):
             pass
         #'resource unavailable' is when data cannot be read because there is nothing in the buffer
         elif bt_error.errno == errno.EAGAIN:
@@ -673,20 +676,21 @@ class BluetoothClient():
 
     def _read(self):
         #read until the client is stopped or the client disconnects
-        while not self._conn_thread.stopping.is_set() and self._connected:
+        while self._connected:
             #read data from Bluetooth socket
-            data = ""
             try:
                 data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
             except IOError as e:
                 self._handle_bt_error(e)
+                data = b""
             if data:
                 #print("received [%s]" % data)
                 if self._data_received_callback:
                     if self._encoding:
                         data = data.decode(self._encoding)
                     self.data_received_callback(data)
-            sleep(BLUETOOTH_TIMEOUT)
+            if self._conn_thread.stopping.wait(BLUETOOTH_TIMEOUT):
+                break
 
     def _handle_bt_error(self, bt_error):
         assert isinstance(bt_error, IOError)

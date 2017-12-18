@@ -903,28 +903,33 @@ class BlueDot():
         last_command = self._data_buffer.rfind("\n")
         if last_command != -1:
             commands = self._data_buffer[:last_command].split("\n")
-            self._process_commands(commands)
             #remove the processed commands from the buffer
             self._data_buffer = self._data_buffer[last_command + 1:]
+            self._process_commands(commands)
 
     def _process_commands(self, commands):
         for command in commands:
-            operation, x, y = command.split(",")
-            position = BlueDotPosition(x,y)
-            #update the current position
-            self._position = position
+            try:
+                operation, x, y = command.split(",")
+                position = BlueDotPosition(x, y)
+            except ValueError:
+                # ignore the occasional corrupt command; XXX warn here?
+                pass
+            else:
+                #update the current position
+                self._position = position
 
-            #dot released
-            if operation == "0":
-                self._released(position)
+                #dot released
+                if operation == "0":
+                    self._released(position)
 
-            #dot pressed
-            elif operation == "1":
-                self._pressed(position)
+                #dot pressed
+                elif operation == "1":
+                    self._pressed(position)
 
-            #dot pressed position moved
-            elif operation == "2":
-                self._moved(position)
+                #dot pressed position moved
+                elif operation == "2":
+                    self._moved(position)
 
     def _pressed(self, position):
         self._is_pressed_event.set()
