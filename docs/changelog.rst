@@ -6,6 +6,11 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.2.1 - 2017-12-18
+~~~~~~~~~~~~~~~~~~
+
+ * massive code and docs tidy up by `Dave Jones`_
+
 1.2.0 - 2017-12-10
 ~~~~~~~~~~~~~~~~~~
 
@@ -140,3 +145,5 @@ Android app
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
  * alpha - initial testing
+
+.. _Dave Jones: https://github.com/waveform80
