@@ -12,7 +12,7 @@ def released():
 
 def moved(pos):
     print("Moved: x={} y={}".format(pos.x, pos.y))
-    
+
 mbd.when_pressed = pressed
 mbd.when_released = released
 mbd.when_moved = moved
