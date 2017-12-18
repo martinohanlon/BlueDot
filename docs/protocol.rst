@@ -13,8 +13,8 @@ Bluetooth
 Communication over Bluetooth is made using a RFCOMM serial port profile, on
 port 1, using UUID "00001101-0000-1000-8000-00805f9b34fb".
 
-Definition
-----------
+Specification
+-------------
 
 The transmission is a 1-way stream from client to server; the server sends
 no acknowledgements or data back to the client.

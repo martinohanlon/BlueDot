@@ -33,10 +33,10 @@ Getting Started
 
 5. Press the Blue Dot
 
-See the `getting started`_ guide for more!
+See the `getting started`_ guide to 'get statred'!
 
-More Information
-----------------
+More
+----
 
 The Blue Dot is a `joystick`_ as well as `button`_. You can tell if the dot was pressed in the middle, on the top, bottom, left or right. You can easily create a `BlueDot controlled Robot`_.
 
@@ -45,6 +45,9 @@ Why be restricted by such vague positions like top and bottom though: you can ge
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
 You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
+
+Even more
+---------
 
 The `online documentation`_ describes how to use Blue Dot and the `Python library`_ including `Recipes`_ and ideas.
 

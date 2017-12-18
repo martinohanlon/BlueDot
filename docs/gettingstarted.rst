@@ -41,17 +41,14 @@ To upgrade to the latest version::
 
     sudo pip3 install bluedot --upgrade
 
-Usage
------
-
 Pairing
-~~~~~~~
+-------
 
 In order to use Blue Dot you will need to pair the Raspberry Pi to the remote
 :doc:`Android phone <pairpiandroid>` or :doc:`2nd Raspberry Pi <pairpipi>`.
 
-Writing the Code
-~~~~~~~~~~~~~~~~
+Code
+----
 
 1. Start up Python 3 (select :menuselection:`Menu --> Programming --> Python
    3`)
@@ -77,8 +74,8 @@ Writing the Code
     import your program rather than the bluedot module and you will get the
     error ``ImportError: cannot import name BlueDot``.
 
-Connecting the App
-~~~~~~~~~~~~~~~~~~
+Connecting
+----------
 
 Start-up the `Blue Dot app`_ on your Android phone or run the
 :doc:`bluedotpythonapp` on your 2nd Raspberry Pi:

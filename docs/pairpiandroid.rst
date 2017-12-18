@@ -58,7 +58,7 @@ On your Android phone:
 
 4. Enter a PIN
 
-On your Raspberry Pi again:
+On your Raspberry Pi:
 
 1. Re-enter the PIN
 
