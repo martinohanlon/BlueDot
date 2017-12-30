@@ -6,8 +6,7 @@ These are instructions for how to develop, build and deploy Blue Dot.
 Setup
 -----
 
-Install / upgrade tools
----------------------
+Install / upgrade tools::
 
     sudo python3 -m pip install --upgrade pip setuptools wheel twine
 
