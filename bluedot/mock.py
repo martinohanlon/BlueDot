@@ -1,24 +1,16 @@
-from .btcomm import BluetoothServer
+from .btcomm import BluetoothServer, BluetoothAdapter
 from .dot import BlueDot
 from .threads import WrapThread
 
 
-class MockBluetoothAdapter():
-    def __init__(self, device = "mock0"):
+class MockBluetoothAdapter(BluetoothAdapter):
+    def __init__(self, device = "hci0"):
         self._device = device
         self._address = "00:00:00:00:00:00"
         self._powered = True
         self._discoverable = False
         self._pairable = False
         self._pairing_thread = None
-
-    @property
-    def device(self):
-        return self._device
-
-    @property
-    def address(self):
-        return self._address
 
     @property
     def powered(self):
@@ -47,25 +39,6 @@ class MockBluetoothAdapter():
     @property
     def paired_devices(self):
         return [["01:01:01:01:01:01", "mock_device_1"], ["02:02:02:02:02:02", "mock_device_2"]]
-
-    def allow_pairing(self, timeout = 60):
-        #if a pairing thread is already running, stop it and restart
-        if self._pairing_thread:
-            if self._pairing_thread.is_alive:
-                self._pairing_thread.stop()
-
-        #start the pairing thread
-        self._pairing_thread = WrapThread(target=self._allow_pairing, args=(timeout, ))
-        self._pairing_thread.start()
-
-    def _allow_pairing(self, timeout):
-        self.pairable = True
-        self.discoverable = True
-        if timeout != None:
-            #wait till the timeout or the thread is stopped
-            self._pairing_thread.stopping.wait(timeout)
-            self.discoverable = False
-            self.pairable = False
 
 
 class MockBluetoothServer(BluetoothServer):

@@ -257,7 +257,7 @@ class BluetoothServer():
         """
         The encoding standard the server is using. This defaults to "utf-8".
         """
-        return self.encoding
+        return self._encoding
 
     @property
     def running(self):

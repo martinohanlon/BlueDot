@@ -6,6 +6,11 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.2.2 - 2017-12-30
+~~~~~~~~~~~~~~~~~~
+
+ * bluetooth comms tests and minor bug fix in :class:`~.btcomm.BluetoothClient`
+
 1.2.1 - 2017-12-18
 ~~~~~~~~~~~~~~~~~~
 
