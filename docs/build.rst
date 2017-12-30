@@ -6,6 +6,11 @@ These are instructions for how to develop, build and deploy Blue Dot.
 Setup
 -----
 
+Install / upgrade tools
+---------------------
+
+    sudo python3 -m pip install --upgrade pip setuptools wheel twine
+
 Clone repo and install for dev::
 
     git clone https://github.com/martinohanlon/BlueDot
