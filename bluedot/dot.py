@@ -474,12 +474,16 @@ class BlueDot():
         self._power_up_device = power_up_device
         self._print_messages = print_messages
 
+        self._is_pressed = False
+
         self._is_connected_event = Event()
         self._is_pressed_event = Event()
         self._is_released_event = Event()
         self._is_moved_event = Event()
         self._is_swiped_event = Event()
         self._is_double_pressed_event = Event()
+
+        self._waiting_for_press = Event()
 
         self._when_pressed = None
         self._when_double_pressed = None
@@ -555,7 +559,7 @@ class BlueDot():
         """
         Returns ``True`` if the Blue Dot is pressed (or held).
         """
-        return self._is_pressed_event.is_set()
+        return self._is_pressed
 
     @property
     def value(self):
@@ -933,9 +937,9 @@ class BlueDot():
 
     def _pressed(self, position):
         self._is_pressed_event.set()
-        self._is_released_event.clear()
-        self._is_moved_event.clear()
-
+        self._is_pressed_event.clear()
+        self._is_pressed = True
+        
         self._double_pressed(position)
 
         #create new interaction
@@ -951,15 +955,14 @@ class BlueDot():
                 #was the dot pressed again in less than the threshold
                 if time() - self._interaction.released_position.time < self._double_press_time:
                     self._is_double_pressed_event.set()
+                    self._is_double_pressed_event.clear()
 
                     self._process_callback(self.when_double_pressed, position)
 
-                    self._is_double_pressed_event.clear()
-
     def _released(self, position):
-        self._is_pressed_event.clear()
         self._is_released_event.set()
-        self._is_moved_event.clear()
+        self._is_released_event.clear()
+        self._is_pressed = False
 
         self._interaction.released(position)
 
@@ -969,6 +972,7 @@ class BlueDot():
 
     def _moved(self, position):
         self._is_moved_event.set()
+        self._is_moved_event.clear()
 
         self._interaction.moved(position)
 
@@ -976,8 +980,6 @@ class BlueDot():
 
         if self.when_rotated:
             self._process_rotation()
-
-        self._is_moved_event.clear()
 
     def _process_callback(self, callback, arg):
         if callback:
@@ -992,10 +994,9 @@ class BlueDot():
         swipe = BlueDotSwipe(self._interaction)
         if swipe.valid:
             self._is_swiped_event.set()
+            self._is_swiped_event.clear()
             if self.when_swiped:
                 self._process_callback(self.when_swiped, swipe)
-
-            self._is_swiped_event.clear()
 
     def _process_rotation(self):
         rotation = BlueDotRotation(self._interaction, self._rotation_segments)
