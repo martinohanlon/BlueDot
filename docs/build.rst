@@ -47,6 +47,8 @@ Create :file:`.pypirc` credentials file::
 Build for deployment::
 
     python3 setup.py sdist
+    python3 setup.py bdist_wheel
+    python setup.py bdist_wheel
 
 Deploy to `PyPI`_::
 
