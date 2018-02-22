@@ -16,7 +16,7 @@ from .threads import WrapThread
 
 class BlueDotPosition():
     """
-    Represents a position of where the blue for is pressed, released or held.
+    Represents a position of where the blue dot is pressed, released or held.
 
     :param float x:
         The x position of the Blue Dot, 0 being centre, -1 being far left
@@ -891,13 +891,13 @@ class BlueDot():
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
         if self.when_client_connects:
-            self.when_client_connects()
+            self._process_callback(self.when_client_connects, None)
 
     def _client_disconnected(self):
         self._is_connected_event.clear()
         self._print_message("Client disconnected")
         if self.when_client_disconnects:
-            self.when_client_disconnects()
+            self._process_callback(self.when_client_disconnects, None)
 
     def _data_received(self, data):
         #add the data received to the buffer
@@ -936,10 +936,10 @@ class BlueDot():
                     self._moved(position)
 
     def _pressed(self, position):
+        self._is_pressed = True
         self._is_pressed_event.set()
         self._is_pressed_event.clear()
-        self._is_pressed = True
-        
+
         self._double_pressed(position)
 
         #create new interaction
@@ -960,9 +960,9 @@ class BlueDot():
                     self._process_callback(self.when_double_pressed, position)
 
     def _released(self, position):
+        self._is_pressed = False
         self._is_released_event.set()
         self._is_released_event.clear()
-        self._is_pressed = False
 
         self._interaction.released(position)
 

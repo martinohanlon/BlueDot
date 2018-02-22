@@ -1,6 +1,6 @@
 from bluedot import MockBlueDot, BlueDotSwipe, BlueDotRotation
 from time import sleep
-from threading import Event
+from threading import Event, Thread
 
 def test_default_values():
     mbd = MockBlueDot()
@@ -91,14 +91,56 @@ def test_pressed_moved_released():
     assert mbd.value == 0
 
     #wait_for_press
-    mbd.mock_blue_dot_pressed(0,0)
+    delay_function(lambda: mbd.mock_blue_dot_pressed(0,0), 0.5)
     assert mbd.wait_for_press(1)
     assert not mbd.wait_for_release(0)
 
     #wait_for_release
-    mbd.mock_blue_dot_released(0,0)
+    delay_function(lambda: mbd.mock_blue_dot_released(0,0), 0.5)
     assert mbd.wait_for_release(1)
     assert not mbd.wait_for_press(0)
+
+def test_double_press():
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+
+    def simulate_double_press():
+        #sleep longer than the double press time, to clear any past double presses!
+        sleep(mbd.double_press_time + 0.1)
+        mbd.mock_blue_dot_pressed(0,0)
+        mbd.mock_blue_dot_released(0,0)
+        mbd.mock_blue_dot_pressed(0,0)
+        mbd.mock_blue_dot_released(0,0)
+
+    def simulate_failed_double_press():
+        sleep(mbd.double_press_time + 0.1)
+        mbd.mock_blue_dot_pressed(0,0)
+        mbd.mock_blue_dot_released(0,0)
+        sleep(mbd.double_press_time + 0.1)
+        mbd.mock_blue_dot_pressed(0,0)
+        mbd.mock_blue_dot_released(0,0)
+
+    # when_double_pressed
+    event_double_pressed = Event()
+    mbd.when_double_pressed = lambda: event_double_pressed.set()
+
+    simulate_failed_double_press()
+    assert not event_double_pressed.is_set()
+
+    simulate_double_press()
+    assert event_double_pressed.is_set()
+
+    # wait for double press
+    # double press the blue dot
+    delay_function(simulate_double_press, 0.5)
+
+    # wait for double press
+    assert mbd.wait_for_double_press(1)
+
+    # dont double press the blue dot
+    delay_function(simulate_failed_double_press, 0.5)
+    assert not mbd.wait_for_double_press(1)
+
 
 def test_when_pressed_moved_released():
     mbd = MockBlueDot()
@@ -228,15 +270,26 @@ def test_swipe():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
 
+    def simulate_swipe(
+        pressed_x, pressed_y, 
+        moved_x, moved_y, 
+        released_x, released_y):
+
+        mbd.mock_blue_dot_pressed(pressed_x, pressed_y)
+        mbd.mock_blue_dot_moved(moved_x, moved_y)
+        mbd.mock_blue_dot_released(released_x, released_y)
+
+    #wait_for_swipe
+    delay_function(lambda: simulate_swipe(-1,0,0,0,1,0), 0.5)
+    assert mbd.wait_for_swipe(1)
+
     #when_swiped
     event_swiped = Event()
     mbd.when_swiped = lambda: event_swiped.set()
     assert not event_swiped.is_set()
 
     #simulate swipe left to right
-    mbd.mock_blue_dot_pressed(-1,0)
-    mbd.mock_blue_dot_moved(0,0)
-    mbd.mock_blue_dot_released(1,0)
+    simulate_swipe(-1,0,0,0,1,0)
     #check event
     assert event_swiped.is_set()
     #get the swipe
@@ -248,9 +301,7 @@ def test_swipe():
 
     #right to left
     event_swiped.clear()
-    mbd.mock_blue_dot_pressed(1,0)
-    mbd.mock_blue_dot_moved(0,0)
-    mbd.mock_blue_dot_released(-1,0)
+    simulate_swipe(1,0,0,0,-1,0)
     assert event_swiped.is_set()
     swipe = BlueDotSwipe(mbd.interaction)
     assert not swipe.right
@@ -260,9 +311,7 @@ def test_swipe():
 
     #bottom to top
     event_swiped.clear()
-    mbd.mock_blue_dot_pressed(0,-1)
-    mbd.mock_blue_dot_moved(0,0)
-    mbd.mock_blue_dot_released(0,1)
+    simulate_swipe(0,-1,0,0,0,1)
     assert event_swiped.is_set()
     swipe = BlueDotSwipe(mbd.interaction)
     assert not swipe.right
@@ -272,9 +321,7 @@ def test_swipe():
 
     #top to bottom
     event_swiped.clear()
-    mbd.mock_blue_dot_pressed(0,1)
-    mbd.mock_blue_dot_moved(0,0)
-    mbd.mock_blue_dot_released(0,-1)
+    simulate_swipe(0,1,0,0,0,-1)
     assert event_swiped.is_set()
     swipe = BlueDotSwipe(mbd.interaction)
     assert not swipe.right
@@ -328,3 +375,10 @@ def test_allow_pairing():
     assert mbd.adapter.discoverable
     assert mbd.adapter.pairable
 
+def delay_function(func, time):
+    delayed_thread = Thread(target = _delayed_function, args = (func, time))
+    delayed_thread.start()
+
+def _delayed_function(func, time):
+    sleep(time)
+    func()

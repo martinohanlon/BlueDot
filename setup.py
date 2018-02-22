@@ -12,7 +12,7 @@ else:
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'
@@ -46,4 +46,8 @@ if __name__ == '__main__':
           license= __license__,
           packages = [__project__],
           #install_requires = __requires__,
+          entry_points={
+              'console_scripts': [
+                  'bluedotapp = bluedot.app:main'
+                  ]},
           zip_safe=False)
