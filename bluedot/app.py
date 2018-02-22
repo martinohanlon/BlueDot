@@ -310,7 +310,7 @@ class ButtonScreen(BlueDotScreen):
 
         self.bt_client.disconnect()
 
-if __name__ == "__main__":
+def main():
     #read command line options
     parser = ArgumentParser(description="Blue Dot Python App")
     parser.add_argument("--device", help="The name of the bluetooth device to use (default is hci0)")
@@ -322,3 +322,6 @@ if __name__ == "__main__":
 
     #start the blue dot client
     blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
+
+if __name__ == "__main__":
+    main()

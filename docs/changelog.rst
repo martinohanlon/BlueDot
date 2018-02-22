@@ -6,6 +6,14 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.2.3 - 2018-02-22
+~~~~~~~~~~~~~~~~~~
+
+ * fix to `wait_for_press` and `wait_for_release`
+ * when_client_connects and when_client_disconnects callbacks are now threaded
+ * The python blue dot app can now be started with the command `bluedotapp`
+ * new tests for `wait_for_(events)`
+
 1.2.2 - 2017-12-30
 ~~~~~~~~~~~~~~~~~~
 

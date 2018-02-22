@@ -3,8 +3,8 @@ Build
 
 These are instructions for how to develop, build and deploy Blue Dot.
 
-Setup
------
+Develop
+-------
 
 Install / upgrade tools::
 
