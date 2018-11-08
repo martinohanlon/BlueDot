@@ -57,7 +57,7 @@ public class Devices extends AppCompatActivity {
         } else if(!myBluetooth.isEnabled()) {
             //Ask to the user turn the bluetooth on
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnBTon,1);
+            startActivityForResult(turnBTon, BT_ENABLE_REQUEST);
         } else {
 
             pairedDevicesList();
