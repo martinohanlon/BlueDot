@@ -1,5 +1,6 @@
 package com.stuffaboutcode.bluedot;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.bluetooth.BluetoothAdapter;
@@ -26,6 +27,7 @@ public class Devices extends AppCompatActivity {
     private Set<BluetoothDevice> pairedDevices;
     public static String EXTRA_ADDRESS = "device_address";
     public static String EXTRA_NAME = "device_name";
+    public static int BT_ENABLE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +43,25 @@ public class Devices extends AppCompatActivity {
         if(myBluetooth == null) {
             Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
 
-            //finish apk
-            this.finish();
-            System.exit(0);
+            //allow time for the user to read the Toast message
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //finish apk
+                    Devices.this.finish();
+                    System.exit(0);
+                }
+            }, 2500);
 
         } else if(!myBluetooth.isEnabled()) {
             //Ask to the user turn the bluetooth on
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnBTon,1);
+        } else {
+
+            pairedDevicesList();
+
         }
 
         infoButton.setOnClickListener(new View.OnClickListener() {
@@ -58,9 +71,30 @@ public class Devices extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
-        pairedDevicesList();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == BT_ENABLE_REQUEST && resultCode == RESULT_OK) {
+
+            pairedDevicesList();
+
+        } else {
+
+            Toast.makeText(getApplicationContext(), "Permission To Use Bluetooth Device Not Granted.", Toast.LENGTH_LONG).show();
+
+            //allow time for the user to read the Toast message
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //finish apk
+                    Devices.this.finish();
+                    System.exit(0);
+                }
+            }, 2500);
+        }
     }
 
     private void pairedDevicesList() {
