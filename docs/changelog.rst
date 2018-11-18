@@ -138,6 +138,11 @@ Alpha - initial testing
 Android app
 -----------
 
+3 (1.1.1) - 2018-09-21
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * Android SDK version uplift (due to google play store minimum requirements change).
+
 2 (1.1) - 2017-11-05
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
