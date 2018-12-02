@@ -12,6 +12,7 @@ except ImportError:
 
 from .btcomm import BluetoothServer
 from .threads import WrapThread
+from .constants import PROTOCOL_VERSION, CHECK_PROTOCOL_TIMEOUT
 
 
 class BlueDotPosition():
@@ -483,6 +484,8 @@ class BlueDot():
         self._is_swiped_event = Event()
         self._is_double_pressed_event = Event()
 
+        self._check_protocol_event = Event()
+
         self._waiting_for_press = Event()
 
         self._when_pressed = None
@@ -515,7 +518,7 @@ class BlueDot():
     def port(self):
         """
         The port the server is using. This defaults to 1.
-            """
+        """
         return self._port
 
     @property
@@ -892,9 +895,15 @@ class BlueDot():
         self._print_message("Client connected {}".format(self.server.client_address))
         if self.when_client_connects:
             self._process_callback(self.when_client_connects, None)
+        
+        # wait for the protocol version to be checked.
+        if not self._check_protocol_event.wait(CHECK_PROTOCOL_TIMEOUT):
+            self._print_message("Protocol version not received from client - update the client to the latest version.")
+            self._server.disconnect_client()
 
     def _client_disconnected(self):
         self._is_connected_event.clear()
+        self._check_protocol_event.clear()
         self._print_message("Client disconnected")
         if self.when_client_disconnects:
             self._process_callback(self.when_client_disconnects, None)
@@ -914,15 +923,16 @@ class BlueDot():
     def _process_commands(self, commands):
         for command in commands:
             try:
-                operation, x, y = command.split(",")
-                position = BlueDotPosition(x, y)
+                position = None
+                operation, param1, param2 = command.split(",")
+                if operation != "3":
+                    position = BlueDotPosition(param1, param2)
+                    self._position = position
+
             except ValueError:
                 # ignore the occasional corrupt command; XXX warn here?
                 pass
             else:
-                #update the current position
-                self._position = position
-
                 #dot released
                 if operation == "0":
                     self._released(position)
@@ -931,10 +941,14 @@ class BlueDot():
                 elif operation == "1":
                     self._pressed(position)
 
-                #dot pressed position moved
+                #dot pressed position moved 
                 elif operation == "2":
                     self._moved(position)
 
+                #protocol check
+                elif operation == "3":
+                    self._check_protocol_version(param1, param2)
+                    
     def _pressed(self, position):
         self._is_pressed = True
         self._is_pressed_event.set()
@@ -1002,6 +1016,23 @@ class BlueDot():
         rotation = BlueDotRotation(self._interaction, self._rotation_segments)
         if rotation.valid:
             self._process_callback(self.when_rotated, rotation)
+
+    def _check_protocol_version(self, protocol_version, client_name):
+        if protocol_version.isnumeric():
+            self._check_protocol_event.set()
+            version_no = int(protocol_version)
+            if version_no != PROTOCOL_VERSION:
+                msg = "Client '{}' was using protocol version {}, bluedot python library is using version {}. "
+                if version_no > PROTOCOL_VERSION:
+                    msg += "Update the bluedot python library, using 'sudo pip3 --upgrade install bluedot'."
+                    msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION)
+                else:
+                    msg += "Update the {}."
+                    msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION, client_name)
+                self._server.disconnect_client()
+                print(msg)    
+        else:
+            raise TypeError("protocol version number must be numeric, received {}.".format(protocol_version)) 
 
     def _print_message(self, message):
         if self.print_messages:

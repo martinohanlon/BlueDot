@@ -389,6 +389,22 @@ class BluetoothServer():
             except IOError as e:
                 self._handle_bt_error(e)
 
+    def disconnect_client(self):
+        """
+        Disconnects the client if connected. Returns `True` if a client was disconnected.
+        """
+        if self._client_connected:    
+            self._client_connected = False
+            
+            # call the callback
+            if self.when_client_disconnects:
+                WrapThread(target=self.when_client_disconnects).start()
+            
+            return True
+        
+        else:
+            return False
+    
     def _wait_for_connection(self):
         #keep going until the server is stopped
         while not self._conn_thread.stopping.is_set():
@@ -407,7 +423,7 @@ class BluetoothServer():
             if self._client_connected:
                 #call the call back
                 if self.when_client_connects:
-                    self.when_client_connects()
+                    WrapThread(target=self.when_client_connects).start()
 
                 #read data
                 self._read()
@@ -450,15 +466,11 @@ class BluetoothServer():
             pass
         #'connection reset' is caused when the client disconnects
         elif bt_error.errno == errno.ECONNRESET:
-            self._client_connected = False
-            if self.when_client_disconnects:
-                self.when_client_disconnects()
+            self.disconnect_client()
         #'conection timeout' is caused when the server can no longer connect to read from the client
         # (perhaps the client has gone out of range)
         elif bt_error.errno == errno.ETIMEDOUT:
-            self._client_connected = False
-            if self.when_client_disconnects:
-                self.when_client_disconnects()
+            self.disconnect_client()
         else:
             raise bt_error
 
