@@ -15,7 +15,7 @@ from .threads import WrapThread
 from .constants import PROTOCOL_VERSION, CHECK_PROTOCOL_TIMEOUT
 from .colors import parse_color, BLUE
 
-class BlueDotPosition():
+class BlueDotPosition(object):
     """
     Represents a position of where the blue dot is pressed, released or held.
 
@@ -121,7 +121,7 @@ class BlueDotPosition():
         return self._time
 
 
-class BlueDotInteraction():
+class BlueDotInteraction(object):
     """
     Represents an interaction with the Blue Dot, from when it was pressed to
     when it was released.
@@ -238,7 +238,7 @@ class BlueDotInteraction():
         self._positions.append(released_position)
 
 
-class BlueDotSwipe():
+class BlueDotSwipe(object):
     """
     Represents a Blue Dot swipe interaction.
 
@@ -343,7 +343,7 @@ class BlueDotSwipe():
         return self.valid and (45 < self.angle <= 135)
 
 
-class BlueDotRotation():
+class BlueDotRotation(object):
     def __init__(self, interaction, no_of_segments):
         """
         Represents a Blue Dot rotation.
@@ -418,7 +418,7 @@ class BlueDotRotation():
         return self._value == 1
 
 
-class BlueDot():
+class BlueDot(object):
     """
     Interacts with a Blue Dot client application, communicating when and where it
     has been pressed, released or held.
@@ -1103,11 +1103,12 @@ class BlueDot():
 
     # called whenever the dot is changed or a client connects
     def _send_dot_config(self):
-        self._server.send("4,{},{},{},{}\n".format(
-            self._color.str_argb, 
-            int(self._square),
-            int(self._border),
-            int(self._visible)))
+        if self.is_connected:
+            self._server.send("4,{},{},{},{}\n".format(
+                self._color.str_argb, 
+                int(self._square),
+                int(self._border),
+                int(self._visible)))
 
     def _print_message(self, message):
         if self.print_messages:

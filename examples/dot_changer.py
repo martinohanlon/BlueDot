@@ -25,8 +25,6 @@ def change_dot(pos):
         else:
             bd.square = True
 
-
-
 bd = BlueDot()
 bd.border = True
 bd.color = "pink"

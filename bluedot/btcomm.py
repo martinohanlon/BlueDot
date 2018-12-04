@@ -21,7 +21,7 @@ from .threads import WrapThread
 BLUETOOTH_TIMEOUT = 0.01
 
 
-class BluetoothAdapter():
+class BluetoothAdapter(object):
     """
     Represents and allows interaction with a Bluetooth Adapter.
 
@@ -138,7 +138,7 @@ class BluetoothAdapter():
         self.pairable = False
 
 
-class BluetoothServer():
+class BluetoothServer(object):
     """
     Creates a Bluetooth server which will allow connections and accept incoming
     RFCOMM serial data.

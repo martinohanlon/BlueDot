@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import pygame
 import sys
 from .btcomm import BluetoothAdapter, BluetoothClient
+from .constants import PROTOCOL_VERSION
 
 #colours
 BLUE = (0, 0, 255)
@@ -15,8 +16,10 @@ FONT = "monospace"
 FONTSIZE = 18
 FONTPAD = 3
 
+CLIENT_NAME = "Blue Dot Python app"
+BORDER_THICKNESS = 0.025
 
-class BlueDotClient():
+class BlueDotClient(object):
     def __init__(self, device, server, fullscreen, width, height):
 
         #init pygame
@@ -214,10 +217,13 @@ class ButtonScreen(BlueDotScreen):
         self.last_x = 0
         self.last_y = 0
 
+        self._colour = BLUE
+        self._border = False
+
     def draw_screen(self):
         super(ButtonScreen, self).draw_screen()
 
-        self._draw_circle(BLUE)
+        self._draw_circle(self._colour)
 
     def _draw_circle(self, colour):
         #draw the circle
@@ -246,6 +252,10 @@ class ButtonScreen(BlueDotScreen):
         else:
             self.draw_error("Blue Dot not connected")
 
+    def _send_protocol_version(self):
+        if self.bt_client.connected:
+            self._send_message("3," + PROTOCOL_VERSION + "," + CLIENT_NAME + "\n")
+
     def _send_message(self, message):
         try:
             self.bt_client.send(message)
@@ -258,6 +268,7 @@ class ButtonScreen(BlueDotScreen):
         self.bt_client = BluetoothClient(self.server, None, device = self.device, auto_connect = False)
         try:
             self.bt_client.connect()
+            self._send_protocol_version()
         except:
             e = str(sys.exc_info()[1])
             self.draw_error(e)

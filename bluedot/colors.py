@@ -1,6 +1,6 @@
 # color codes obtained from https://www.webucator.com/blog/2015/03/python-color-constants-module/
 
-class Color():
+class Color(object):
     """
     Represents a color within bluedot. Used to change the color of the dot.
 
