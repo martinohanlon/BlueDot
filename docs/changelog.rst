@@ -6,6 +6,13 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.3.0 - tbc
+~~~~~~~~~~~~~~~~~~
+
+ * added ability to change the color, border, shape and visibility of the dot (:attr:`~BlueDot.color`, :attr:`~BlueDot.border`, :attr:`~BlueDot.square`, :attr:`~BlueDot.visible`)
+ * added protocol version checking
+ * minor threading changes in btcomm
+ 
 1.2.3 - 2018-02-22
 ~~~~~~~~~~~~~~~~~~
 

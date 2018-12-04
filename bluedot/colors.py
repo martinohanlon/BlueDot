@@ -1,6 +1,24 @@
 # color codes obtained from https://www.webucator.com/blog/2015/03/python-color-constants-module/
 
 class Color():
+    """
+    Represents a color within bluedot. Used to change the color of the dot.
+
+    Color objects are immutable.
+
+    :param int red:
+        The red value of the color `0 - 255`. Default is `255`.
+
+    :param int green:
+        The green value of the color `0 - 255`. Default is `255`.
+
+    :param int green:
+        The blue value of the color `0 - 255`. Default is `255`.
+
+    :param int green:
+        The alpha value of the color `0 - 255`. `0` is transparent. Default 
+        is `255`.
+    """
     def __init__(self, red = 255, green = 255, blue = 255, alpha = 255):
         self._red = red
         self._green = green
@@ -9,38 +27,68 @@ class Color():
 
     @property
     def red(self):
+        """
+        Returns the red value of the color.
+        """
         return self._red
 
     @property
     def green(self):
+        """
+        Returns the green value of the color.
+        """
         return self._green
 
     @property
     def blue(self):
+        """
+        Returns the blue value of the color.
+        """
         return self._blue
 
     @property
     def alpha(self):
+        """
+        Returns the alpha value of the color.
+        """
         return self._alpha
 
     @property
     def rgb(self):
+        """
+        Returns a tuple of `(red, green, blue)` values.
+        """
         return (self._red, self._green, self._blue)
 
     @property
     def rgba(self):
+        """
+        Returns a tuple of `(red, green, blue, alpha)` values.
+        """
         return (self._red, self._green, self._blue, self._alpha)
 
     @property
     def str_rgb(self):
+        """
+        Returns a string of red, green, blue hex values in the format
+        `#rrggbb`.
+        """
         return '#%02x%02x%02x' % (self._red, self._green, self._blue)
 
     @property
     def str_rgba(self):
+        """
+        Returns a string of red, green, blue, alpha hex values in the format
+        `#rrggbbaa`.
+        """
         return '#%02x%02x%02x%02x' % (self._red, self._green, self._blue, self._alpha)
 
     @property
     def str_argb(self):
+        """
+        Returns a string of alpha, red, green, blue hex values in the format
+        `#aarrggbb`.
+        """
         return '#%02x%02x%02x%02x' % (self._alpha, self._red, self._green, self._blue)
 
     def __eq__(self, other):

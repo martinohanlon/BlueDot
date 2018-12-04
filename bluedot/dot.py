@@ -795,39 +795,64 @@ class BlueDot():
 
     @property
     def color(self):
+        """
+        Sets or returns the color of the dot. Defaults to BLUE.
+        
+        An instance of :class:`.colors.Color` is returned.
+
+        Value can be set as a :class:`.colors.Color` object, a hex color value
+        in the format `#rrggbb` or `#rrggbbaa` or a text description of the 
+        color, e.g. "red". 
+        
+        A dictionary of available colors can be obtained from `bluedot.COLORS`.
+        """
         return self._color
 
     @color.setter
     def color(self, value):
         self._color = parse_color(value)
-        self._dot_changed()
+        self._send_dot_config()
 
     @property
     def square(self):
+        """
+        When set to `True` the 'dot' is made square. Default is `False`.
+        """
         return self._square
 
     @square.setter
     def square(self, value):
         self._square = value
-        self._dot_changed()
+        self._send_dot_config()
 
     @property
     def border(self):
+        """
+        When set to `True` adds a border to the dot. Default is `False`.
+        """
         return self._border
 
     @border.setter
     def border(self, value):
         self._border = value
-        self._dot_changed()
+        self._send_dot_config()
 
     @property
     def visible(self):
+        """
+        When set to `True` makes the dot invisible. Default is `False`.
+
+        .. note::
+
+            Events (press, release, moved) are still sent from the dot
+            when it is not visible.
+        """
         return self._visible
 
     @visible.setter
     def visible(self, value):
         self._visible = value
-        self._dot_changed()
+        self._send_dot_config()
         
     def start(self):
         """
@@ -934,6 +959,7 @@ class BlueDot():
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
+        self._send_dot_config()
         if self.when_client_connects:
             self._process_callback(self.when_client_connects, None)
         
@@ -1075,8 +1101,8 @@ class BlueDot():
         else:
             raise TypeError("protocol version number must be numeric, received {}.".format(protocol_version)) 
 
-    # called whenever the dot is changed and the client should be called
-    def _dot_changed(self):
+    # called whenever the dot is changed or a client connects
+    def _send_dot_config(self):
         self._server.send("4,{},{},{},{}\n".format(
             self._color.str_argb, 
             int(self._square),

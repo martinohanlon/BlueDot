@@ -28,7 +28,9 @@ def change_dot(pos):
 
 
 bd = BlueDot()
-
+bd.border = True
+bd.color = "pink"
+bd.square = True
 bd.when_pressed = change_dot
 
 pause()
