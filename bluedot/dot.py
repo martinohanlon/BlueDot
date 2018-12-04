@@ -13,7 +13,7 @@ except ImportError:
 from .btcomm import BluetoothServer
 from .threads import WrapThread
 from .constants import PROTOCOL_VERSION, CHECK_PROTOCOL_TIMEOUT
-
+from .colors import parse_color, BLUE
 
 class BlueDotPosition():
     """
@@ -502,6 +502,11 @@ class BlueDot():
         self._double_press_time = 0.3
         self._rotation_segments = 8
 
+        self._color = BLUE
+        self._square = False
+        self._border = False
+        self._visible = True
+
         self._create_server()
 
         if auto_start_server:
@@ -788,6 +793,42 @@ class BlueDot():
         """
         return self._server.running
 
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = parse_color(value)
+        self._dot_changed()
+
+    @property
+    def square(self):
+        return self._square
+
+    @square.setter
+    def square(self, value):
+        self._square = value
+        self._dot_changed()
+
+    @property
+    def border(self):
+        return self._border
+
+    @border.setter
+    def border(self, value):
+        self._border = value
+        self._dot_changed()
+
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        self._visible = value
+        self._dot_changed()
+        
     def start(self):
         """
         Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
@@ -1033,6 +1074,14 @@ class BlueDot():
                 print(msg)    
         else:
             raise TypeError("protocol version number must be numeric, received {}.".format(protocol_version)) 
+
+    # called whenever the dot is changed and the client should be called
+    def _dot_changed(self):
+        self._server.send("4,{},{},{},{}\n".format(
+            self._color.str_argb, 
+            int(self._square),
+            int(self._border),
+            int(self._visible)))
 
     def _print_message(self, message):
         if self.print_messages:
