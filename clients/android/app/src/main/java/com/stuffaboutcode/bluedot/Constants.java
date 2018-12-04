@@ -32,4 +32,9 @@ public interface Constants {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
+    public static final float BORDER_THICKNESS = (float)0.025;
+
+    public static final String PROTOCOL_VERSION = "1";
+    public static final String CLIENT_NAME = "Blue Dot Android app";
+
 }

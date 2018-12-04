@@ -1,10 +1,10 @@
 package com.stuffaboutcode.bluedot;
 
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,8 +14,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
 import android.app.ProgressDialog;
-
-import java.util.UUID;
 
 import com.stuffaboutcode.logger.Log;
 
@@ -34,6 +32,8 @@ public class Button extends AppCompatActivity {
     private ProgressDialog progress;
     private double last_x = 0;
     private double last_y = 0;
+
+    private DynamicMatrix matrix;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,51 +69,55 @@ public class Button extends AppCompatActivity {
         // Attempt to connect to the device
         mChatService.connect(device, true);
 
-        final View roundButton = (View)findViewById(R.id.roundButton);
-        roundButton.setOnTouchListener(new View.OnTouchListener() {
+        matrix = findViewById(R.id.matrix);
+
+        // Once connected setup the listener
+        matrix.setOnUseListener(new DynamicMatrix.DynamicMatrixListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    pressed(roundButton, event);
-
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    released(roundButton, event);
-
-                } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    moved(roundButton, event);
-                }
-                return false;
+            public void onPress(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                send(buildMessage("1", x, y));
+                last_x = x;
+                last_y = y;
             }
+
+            @Override
+            public void onMove(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                if ((x != last_x) || (y != last_y)) {
+                    send(buildMessage("2", x, y));
+                    last_x = x;
+                    last_y = y;
+                }
+            }
+
+            @Override
+            public void onRelease(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                send(buildMessage("0", x, y));
+                last_x = x;
+                last_y = y;
+            }
+
         });
 
     }
 
-    private void pressed(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        sendMessage(buildMessage("1", x, y));
-        last_x = x;
-        last_y = y;
+    private double calcX(DynamicMatrix.MatrixCell cell, float actual_x) {
+
+        double relative_x = actual_x - cell.getBounds().left;
+        relative_x = (relative_x - (cell.getWidth() / 2)) / (cell.getWidth() / 2);
+        return (double)Math.round(relative_x * 10000d) / 10000d;
     }
 
-    private void released(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        sendMessage(buildMessage("0", x, y));
-        last_x = x;
-        last_y = y;
-    }
+    private double calcY(DynamicMatrix.MatrixCell cell, float actual_y) {
 
-    private void moved(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        //has x or y changed?
-        if ((x != last_x) || (y != last_y)) {
-            sendMessage(buildMessage("2", x, y));
-            last_x = x;
-            last_y = y;
-        }
+        double relative_y = actual_y - cell.getBounds().top;
+        relative_y = (relative_y - (cell.getHeight() / 2)) / (cell.getHeight() / 2) * -1;
+        return (double)Math.round(relative_y * 10000d) / 10000d;
     }
 
     private double calcX(View roundButton, MotionEvent event) {
@@ -132,7 +136,7 @@ public class Button extends AppCompatActivity {
         return (operation + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
     }
 
-    public void sendMessage(String message) {
+    public void send(String message) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(this, "cant send message - not connected", Toast.LENGTH_SHORT).show();
@@ -164,7 +168,7 @@ public class Button extends AppCompatActivity {
     }
 
     private void parseData(String data) {
-        //statusView.setText(data);
+        //msg(data);
 
         // add the message to the buffer
         mInStringBuffer.append(data);
@@ -199,48 +203,30 @@ public class Button extends AppCompatActivity {
         boolean invalidMessage = false;
 
         // Check the message
-        /*if (parameters.length > 0) {
+        if (parameters.length > 0) {
             // check length
-            if (parameters.length == 6) {
+            if (parameters.length == 5) {
 
                 // set matrix
-                if (parameters[0].equals("1")) {
-                    matrix.setSize(Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2]));
-                    if (!parameters[3].equals("")) {
+                if (parameters[0].equals("4")) {
+                    if (!parameters[1].equals("")) {
                         try {
-                            matrix.setColor(Color.parseColor(parameters[3]));
+                            matrix.setColor(Color.parseColor(parameters[1]));
                         }
                         catch(IllegalArgumentException i){
                             invalidMessage = true;
                         }
                     }
+                    if (!parameters[2].equals(""))
+                        matrix.setSquare(parameters[2].equals("1") ? true : false);
+                    if (!parameters[3].equals(""))
+                        matrix.setBorder(parameters[3].equals("1") ? true : false);
                     if (!parameters[4].equals(""))
-                        matrix.setBorder(parameters[4].equals("1") ? true : false);
-                    if (!parameters[5].equals(""))
-                        matrix.setVisible(parameters[5].equals("1") ? true : false);
+                        matrix.setVisible(parameters[4].equals("1") ? true : false);
                     matrix.update();
 
                     // set cell
-                } else if (parameters[0].equals("2")) {
-                    DynamicMatrix.MatrixCell cell = matrix.getCell(
-                            Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2]));
-                    if (!parameters[3].equals("")) {
-                        try {
-                            matrix.setColor(Color.parseColor(parameters[3]));
-                        }
-                        catch(IllegalArgumentException i){
-                            invalidMessage = true;
-                        }
-                    }
-                    cell.setColor(Color.parseColor(parameters[3]));
-                    if (!parameters[4].equals(""))
-                        cell.setBorder(parameters[4].equals("1") ? true : false);
-                    if (!parameters[5].equals(""))
-                        cell.setVisible(parameters[5].equals("1") ? true : false);
-                    matrix.update();
-
-                    // op not recognised
-                } else {
+                }  else {
                     invalidMessage = true;
                 }
             } else {
@@ -251,9 +237,10 @@ public class Button extends AppCompatActivity {
         }
 
         if (invalidMessage) {
-            statusView.setText("Error - Invalid message received");
-        }*/
+            msg("Error - Invalid message received '" + message +"'");
+        }
     }
+
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -265,12 +252,14 @@ public class Button extends AppCompatActivity {
                         case BluetoothChatService.STATE_CONNECTED:
                             Log.d("status","connected");
                             msg("Connected to " + deviceName);
-                            findViewById(R.id.roundButton).setVisibility(View.VISIBLE);
+                            matrix.setVisibility(View.VISIBLE);
+                            // send the protocol version to the server
+                            send("3," + Constants.PROTOCOL_VERSION + "," + Constants.CLIENT_NAME + "\n");
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             Log.d("status","connecting");
                             msg("Connecting to " + deviceName);
-                            findViewById(R.id.roundButton).setVisibility(View.INVISIBLE);
+                            matrix.setVisibility(View.INVISIBLE);
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
@@ -290,7 +279,7 @@ public class Button extends AppCompatActivity {
                     // construct a string from the valid bytes in the buffer
                     String readData = new String(readBuf, 0, msg.arg1);
                     // message received
-                    //parseData(readData);
+                    parseData(readData);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
