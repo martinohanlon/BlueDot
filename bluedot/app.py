@@ -7,6 +7,7 @@ from .constants import PROTOCOL_VERSION
 #colours
 BLUE = (0, 0, 255)
 DARKBLUE = (0, 0, 200)
+DARKGRAY = (109,109,110)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
 
@@ -67,8 +68,13 @@ class BlueDotScreen(object):
         self.height = height
 
         #setup screen attributes
-        self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2), self.height - (BORDER * 2))
+        self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2) - FONTSIZE - FONTPAD, self.height - (BORDER * 2))
         self.close_rect = pygame.Rect(self.width - FONTSIZE - FONTPAD - BORDER, BORDER, FONTSIZE + FONTPAD, FONTSIZE + FONTPAD)
+
+        # close_size = FONTSIZE + FONTPAD
+        # self.frame_rect = pygame.Rect(BORDER + close_size, BORDER + close_size, self.width - (BORDER + close_size * 2), self.height - (BORDER + close_size * 2))
+        # self.close_rect = pygame.Rect(self.width - BORDER - close_size, BORDER, close_size, close_size)
+
 
         self.draw_screen()
 
@@ -208,9 +214,7 @@ class DevicesScreen(BlueDotScreen):
 
 
 class ButtonScreen(BlueDotScreen):
-    def __init__(self, screen, font, device, server, width, height):
-        super(ButtonScreen, self).__init__(screen, font, width, height)
-
+    def __init__(self, screen, font, device, server, width, height):        
         self.device = device
         self.server = server
 
@@ -218,31 +222,49 @@ class ButtonScreen(BlueDotScreen):
         self.last_y = 0
 
         self._colour = BLUE
-        self._border = False
+        self._border = True
+        self._square = False
+        self._visible = False
+
+        super(ButtonScreen, self).__init__(screen, font, width, height)
 
     def draw_screen(self):
         super(ButtonScreen, self).draw_screen()
 
-        self._draw_circle(self._colour)
-
-    def _draw_circle(self, colour):
-        #draw the circle
-        self.circle_centre = (int(self.frame_rect.top + (self.frame_rect.width / 2)), int(self.frame_rect.left + (self.frame_rect.height / 2)))
+        # work out dot position
+        self.dot_centre = (int(self.frame_rect.top + (self.frame_rect.width / 2)), int(self.frame_rect.left + (self.frame_rect.height / 2)))
+        
         if self.frame_rect.width > self.frame_rect.height:
-            self.circle_radius = int(self.frame_rect.height / 2)
+            self.dot_rect = pygame.Rect(self.frame_rect.left + int((self.frame_rect.width - self.frame_rect.height) / 2), self.frame_rect.top, self.frame_rect.height, self.frame_rect.height)
+            self.dot_radius = int(self.dot_rect.height / 2)
         else:
-            self.circle_radius = int(self.frame_rect.width / 2)
+            self.dot_rect = pygame.Rect(self.frame_rect.left, self.frame_rect.top + int((self.frame_rect.height - self.frame_rect.width) / 2), self.frame_rect.width, self.frame_rect.width)
+            self.dot_radius = int(self.dot_rect.width / 2)
 
-        self.circle_rect = pygame.draw.circle(self.screen, colour, self.circle_centre, self.circle_radius, 0)
+        self._draw_dot(self._colour)
+
+    def _draw_dot(self, colour):
+            
+        # draw the dot
+        if self._square:
+            if self._visible:
+                pygame.draw.rect(self.screen, colour, self.dot_rect)
+            if self._border:
+                pygame.draw.rect(self.screen, DARKGRAY, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
+        else:
+            if self._visible:
+                pygame.draw.ellipse(self.screen, colour, self.dot_rect)
+            if self._border:
+                pygame.draw.ellipse(self.screen, DARKGRAY, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
 
     def _process(self, op, pos):
         if self.bt_client.connected:
-            x = (pos[0] - self.circle_centre[0]) / float(self.circle_radius)
+            x = (pos[0] - self.dot_centre[0]) / float(self.dot_radius)
             x = round(x, 4)
-            y = ((pos[1] - self.circle_centre[1]) / float(self.circle_radius)) * -1
+            y = ((pos[1] - self.dot_centre[1]) / float(self.dot_radius)) * -1
             y = round(y, 4)
             message = "{},{},{}\n".format(op, x, y)
-            if message == 2:
+            if op == 2:
                 if x != self.last_x or y != self.last_y:
                     self._send_message(message)
             else:
@@ -271,7 +293,7 @@ class ButtonScreen(BlueDotScreen):
             self._send_protocol_version()
         except:
             e = str(sys.exc_info()[1])
-            self.draw_error(e)
+            #self.draw_error(e)
 
         clock = pygame.time.Clock()
         pygame.event.clear()
@@ -291,16 +313,16 @@ class ButtonScreen(BlueDotScreen):
                     pos = pygame.mouse.get_pos()
 
                     #circle clicked?
-                    if self.circle_rect.collidepoint(pos):
+                    if self.dot_rect.collidepoint(pos):
 
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             mouse_pressed = True
-                            self._draw_circle(DARKBLUE)
+                            self._draw_dot(DARKBLUE)
                             self._process(1, pos)
 
                         elif event.type == pygame.MOUSEBUTTONUP:
                             mouse_pressed = False
-                            self._draw_circle(BLUE)
+                            self._draw_dot(BLUE)
                             self._process(0, pos)
 
                         elif event.type == pygame.MOUSEMOTION:
