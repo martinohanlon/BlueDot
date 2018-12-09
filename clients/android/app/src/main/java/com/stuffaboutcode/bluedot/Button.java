@@ -198,7 +198,7 @@ public class Button extends AppCompatActivity {
     }
 
     private void processMessage(String message) {
-        // sendMessage("processing " + message + "\n");
+        msg(message);
         String parameters[] = message.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
         boolean invalidMessage = false;
 
@@ -211,9 +211,16 @@ public class Button extends AppCompatActivity {
                 if (parameters[0].equals("4")) {
                     if (!parameters[1].equals("")) {
                         try {
-                            matrix.setColor(Color.parseColor(parameters[1]));
+                            // convert color from #rrggbbaa to #aarrggbb
+                            String color =
+                                parameters[1].substring(0,1) +
+                                parameters[1].substring(7,9) +
+                                parameters[1].substring(1,7);
+                            msg(color);
+
+                            matrix.setColor(Color.parseColor(color));
                         }
-                        catch(IllegalArgumentException i){
+                        catch(Exception i){
                             invalidMessage = true;
                         }
                     }
@@ -225,7 +232,6 @@ public class Button extends AppCompatActivity {
                         matrix.setVisible(parameters[4].equals("1") ? true : false);
                     matrix.update();
 
-                    // set cell
                 }  else {
                     invalidMessage = true;
                 }
