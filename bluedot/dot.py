@@ -1105,7 +1105,7 @@ class BlueDot(object):
     def _send_dot_config(self):
         if self.is_connected:
             self._server.send("4,{},{},{},{}\n".format(
-                self._color.str_argb, 
+                self._color.str_rgba, 
                 int(self._square),
                 int(self._border),
                 int(self._visible)))
