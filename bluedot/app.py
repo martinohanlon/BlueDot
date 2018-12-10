@@ -217,14 +217,15 @@ class ButtonScreen(BlueDotScreen):
     def __init__(self, screen, font, device, server, width, height):        
         self.device = device
         self.server = server
+        self._data_buffer = ""
 
         self.last_x = 0
         self.last_y = 0
 
         self._colour = BLUE
-        self._border = True
+        self._border = False
         self._square = False
-        self._visible = False
+        self._visible = True
 
         super(ButtonScreen, self).__init__(screen, font, width, height)
 
@@ -244,7 +245,19 @@ class ButtonScreen(BlueDotScreen):
         self._draw_dot(self._colour)
 
     def _draw_dot(self, colour):
-            
+
+        # clear the dot
+        pygame.draw.rect(
+            self.screen,
+            GREY, 
+            (
+                self.dot_rect.left, 
+                self.dot_rect.top, 
+                self.dot_rect.width + max(int(self.dot_rect.width * BORDER_THICKNESS), 1), 
+                self.dot_rect.height + max(int(self.dot_rect.height * BORDER_THICKNESS), 1)
+            )
+        )
+        
         # draw the dot
         if self._square:
             if self._visible:
@@ -276,24 +289,56 @@ class ButtonScreen(BlueDotScreen):
 
     def _send_protocol_version(self):
         if self.bt_client.connected:
-            self._send_message("3," + PROTOCOL_VERSION + "," + CLIENT_NAME + "\n")
-
+            self._send_message("3,{},{}\n".format(PROTOCOL_VERSION, CLIENT_NAME))
+            
     def _send_message(self, message):
+        print("sending : {}".format(message))
         try:
             self.bt_client.send(message)
         except:
             e = str(sys.exc_info()[1])
             self.draw_error(e)
 
+    def _data_received(self, data):
+        #add the data received to the buffer
+        self._data_buffer += data
+
+        #get any full commands ended by \n
+        last_command = self._data_buffer.rfind("\n")
+        if last_command != -1:
+            commands = self._data_buffer[:last_command].split("\n")
+            #remove the processed commands from the buffer
+            self._data_buffer = self._data_buffer[last_command + 1:]
+            self._process_commands(commands)
+
+    def _process_commands(self, commands):
+        for command in commands:
+            params = command.split(",")
+            invalid_command = False
+            if len(params) == 5:
+                if params[0] == "4":
+                    self._square = True if params[2] == "1" else False
+                    self._border = True if params[3] == "1" else False
+                    self._visible = True if params[4] == "1" else False
+
+                    self._draw_dot(self._colour)
+                    
+            else:
+                invalid_command = True
+
+            if invalid_command:
+                print("Error - Invalid message received '{}'".format(command))
+                
+
     def run(self):
 
-        self.bt_client = BluetoothClient(self.server, None, device = self.device, auto_connect = False)
+        self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
         try:
             self.bt_client.connect()
             self._send_protocol_version()
         except:
             e = str(sys.exc_info()[1])
-            #self.draw_error(e)
+            self.draw_error(e)
 
         clock = pygame.time.Clock()
         pygame.event.clear()
@@ -357,4 +402,5 @@ def main():
     blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
 
 if __name__ == "__main__":
+    print("new version")
     main()
