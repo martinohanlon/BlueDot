@@ -1254,8 +1254,8 @@ def parse_color(value):
             
             else:
                 # does the color exist in the dictionary of colors
-                if value in COLORS:
-                    return COLORS[value]
+                if value.casefold() in COLORS:
+                    return COLORS[value.casefold()]
                 else:
                     raise ValueError("'{}' is not a valid color value.")
 
@@ -1265,7 +1265,7 @@ def parse_color(value):
             try:
                 no_of_colors = len(value)
             except:
-                raise ValueError("A color must be a list or tuple of values (red, green, blue) or (alpha, red, green, blue)") 
+                raise ValueError("A color must be a Color object, string or list of values (red, green, blue) or (alpha, red, green, blue)") 
 
             if not (3 <= no_of_colors <= 4):
                 raise ValueError("A color must contain 3 or 4 values (red, green, blue) or (red, green, blue, alpha)")
