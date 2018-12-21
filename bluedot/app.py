@@ -3,13 +3,7 @@ import pygame
 import sys
 from .btcomm import BluetoothAdapter, BluetoothClient
 from .constants import PROTOCOL_VERSION
-
-#colours
-BLUE = (0, 0, 255)
-DARKBLUE = (0, 0, 200)
-DARKGRAY = (109,109,110)
-GREY = (220, 220, 220)
-RED = (255, 0, 0)
+from .colors import BLUE, GRAY43, GRAY86, RED, parse_color
 
 DEFAULTSIZE = (320, 240)
 BORDER = 7
@@ -71,27 +65,22 @@ class BlueDotScreen(object):
         self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2) - FONTSIZE - FONTPAD, self.height - (BORDER * 2))
         self.close_rect = pygame.Rect(self.width - FONTSIZE - FONTPAD - BORDER, BORDER, FONTSIZE + FONTPAD, FONTSIZE + FONTPAD)
 
-        # close_size = FONTSIZE + FONTPAD
-        # self.frame_rect = pygame.Rect(BORDER + close_size, BORDER + close_size, self.width - (BORDER + close_size * 2), self.height - (BORDER + close_size * 2))
-        # self.close_rect = pygame.Rect(self.width - BORDER - close_size, BORDER, close_size, close_size)
-
-
         self.draw_screen()
 
     def draw_screen(self):
         #set the screen background
-        self.screen.fill(GREY)
+        self.screen.fill(GRAY86.rgb)
 
         self.draw_close_button()
 
     def draw_close_button(self):
         #draw close button
-        pygame.draw.rect(self.screen, BLUE, self.close_rect, 2)
-        pygame.draw.line(self.screen, BLUE,
+        pygame.draw.rect(self.screen, BLUE.rgb, self.close_rect, 2)
+        pygame.draw.line(self.screen, BLUE.rgb,
                         (self.close_rect[0], self.close_rect[1]),
                         (self.close_rect[0] + self.close_rect[2], self.close_rect[1] + self.close_rect[3]),
                         1)
-        pygame.draw.line(self.screen, BLUE,
+        pygame.draw.line(self.screen, BLUE.rgb,
                         (self.close_rect[0], self.close_rect[1] + self.close_rect[3]),
                         (self.close_rect[0] + self.close_rect[2], self.close_rect[1]),
                         1)
@@ -99,10 +88,10 @@ class BlueDotScreen(object):
     def draw_error(self, e):
         message = "Error: {}".format(e)
         print(message)
-        self.draw_status_message(message, colour = RED)
+        self.draw_status_message(message, colour = RED.rgb)
 
-    def draw_status_message(self, message, colour = BLUE):
-        self.screen.fill(GREY, self.frame_rect)
+    def draw_status_message(self, message, colour = BLUE.rgb):
+        self.screen.fill(GRAY86.rgb, self.frame_rect)
         self.draw_close_button()
         self.draw_text(message, colour, self.frame_rect.height / 2, border = True, border_pad = FONTPAD)
         pygame.display.update()
@@ -166,11 +155,11 @@ class DevicesScreen(BlueDotScreen):
         super(DevicesScreen, self).draw_screen()
 
         #title
-        title_rect = self.draw_text("Connect", RED, 0)
+        title_rect = self.draw_text("Connect", RED.rgb, 0)
 
         y = title_rect.bottom
         for d in self.bt_adapter.paired_devices:
-            device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE, y, border = True, border_pad = FONTPAD)
+            device_rect = self.draw_text("{} ({})".format(d[1], d[0]), BLUE.rgb, y, border = True, border_pad = FONTPAD)
 
             self.device_rects.append(pygame.Rect(device_rect))
 
@@ -226,6 +215,7 @@ class ButtonScreen(BlueDotScreen):
         self._border = False
         self._square = False
         self._visible = True
+        self._pressed = False
 
         super(ButtonScreen, self).__init__(screen, font, width, height)
 
@@ -242,14 +232,14 @@ class ButtonScreen(BlueDotScreen):
             self.dot_rect = pygame.Rect(self.frame_rect.left, self.frame_rect.top + int((self.frame_rect.height - self.frame_rect.width) / 2), self.frame_rect.width, self.frame_rect.width)
             self.dot_radius = int(self.dot_rect.width / 2)
 
-        self._draw_dot(self._colour)
+        self._draw_dot()
 
-    def _draw_dot(self, colour):
+    def _draw_dot(self):
 
         # clear the dot
         pygame.draw.rect(
             self.screen,
-            GREY, 
+            GRAY86.rgb, 
             (
                 self.dot_rect.left, 
                 self.dot_rect.top, 
@@ -257,18 +247,19 @@ class ButtonScreen(BlueDotScreen):
                 self.dot_rect.height + max(int(self.dot_rect.height * BORDER_THICKNESS), 1)
             )
         )
-        
+        colour = self._colour if not self._pressed else self._colour.get_adjusted_color(0.85)
+
         # draw the dot
         if self._square:
             if self._visible:
-                pygame.draw.rect(self.screen, colour, self.dot_rect)
+                pygame.draw.rect(self.screen, colour.rgb, self.dot_rect)
             if self._border:
-                pygame.draw.rect(self.screen, DARKGRAY, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
+                pygame.draw.rect(self.screen, GRAY43.rgb, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
         else:
             if self._visible:
-                pygame.draw.ellipse(self.screen, colour, self.dot_rect)
+                pygame.draw.ellipse(self.screen, colour.rgb, self.dot_rect)
             if self._border:
-                pygame.draw.ellipse(self.screen, DARKGRAY, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
+                pygame.draw.ellipse(self.screen, GRAY43.rgb, self.dot_rect, max(int(self.dot_radius * BORDER_THICKNESS), 1))
 
     def _process(self, op, pos):
         if self.bt_client.connected:
@@ -292,7 +283,6 @@ class ButtonScreen(BlueDotScreen):
             self._send_message("3,{},{}\n".format(PROTOCOL_VERSION, CLIENT_NAME))
             
     def _send_message(self, message):
-        print("sending : {}".format(message))
         try:
             self.bt_client.send(message)
         except:
@@ -317,11 +307,12 @@ class ButtonScreen(BlueDotScreen):
             invalid_command = False
             if len(params) == 5:
                 if params[0] == "4":
+                    self._colour = parse_color(params[1])
                     self._square = True if params[2] == "1" else False
                     self._border = True if params[3] == "1" else False
                     self._visible = True if params[4] == "1" else False
 
-                    self._draw_dot(self._colour)
+                    self._draw_dot()
                     
             else:
                 invalid_command = True
@@ -329,7 +320,6 @@ class ButtonScreen(BlueDotScreen):
             if invalid_command:
                 print("Error - Invalid message received '{}'".format(command))
                 
-
     def run(self):
 
         self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
@@ -343,7 +333,7 @@ class ButtonScreen(BlueDotScreen):
         clock = pygame.time.Clock()
         pygame.event.clear()
 
-        mouse_pressed = False
+        self._pressed = False
         running = True
 
         while running:
@@ -354,20 +344,20 @@ class ButtonScreen(BlueDotScreen):
             for event in ev:
 
                 # handle mouse
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP or (event.type == pygame.MOUSEMOTION and mouse_pressed):
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP or (event.type == pygame.MOUSEMOTION and self._pressed):
                     pos = pygame.mouse.get_pos()
 
                     #circle clicked?
                     if self.dot_rect.collidepoint(pos):
 
                         if event.type == pygame.MOUSEBUTTONDOWN:
-                            mouse_pressed = True
-                            self._draw_dot(DARKBLUE)
+                            self._pressed = True
+                            self._draw_dot()
                             self._process(1, pos)
 
                         elif event.type == pygame.MOUSEBUTTONUP:
-                            mouse_pressed = False
-                            self._draw_dot(BLUE)
+                            self._pressed = False
+                            self._draw_dot()
                             self._process(0, pos)
 
                         elif event.type == pygame.MOUSEMOTION:

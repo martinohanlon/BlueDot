@@ -91,6 +91,15 @@ class Color(object):
         """
         return '#%02x%02x%02x%02x' % (self._alpha, self._red, self._green, self._blue)
 
+    def get_adjusted_color(self, factor):
+        """
+        Returns a new Color object based on this Color adjusted by a factor
+
+        :param float factor:
+            The value to adjust this color by. 
+        """
+        return Color(self.red * factor, self.green * factor, self.blue * factor)
+
     def __eq__(self, other):
         other = parse_color(other)
         return self._red == other._red and self._green == other._green and self._blue == other._blue and self._alpha == other._alpha
