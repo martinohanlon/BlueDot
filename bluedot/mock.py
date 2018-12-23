@@ -1,12 +1,14 @@
-from .btcomm import BluetoothServer, BluetoothAdapter
+from .btcomm import BluetoothServer, BluetoothClient, BluetoothAdapter
 from .dot import BlueDot
 from .threads import WrapThread
+from .constants import PROTOCOL_VERSION
 
+CLIENT_NAME = "Mock client"
 
 class MockBluetoothAdapter(BluetoothAdapter):
-    def __init__(self, device = "hci0"):
+    def __init__(self, device = "mock0", address = "00:00:00:00:00:00"):
         self._device = device
-        self._address = "00:00:00:00:00:00"
+        self._address = address
         self._powered = True
         self._discoverable = False
         self._pairable = False
@@ -45,7 +47,7 @@ class MockBluetoothServer(BluetoothServer):
     """
     :class:`MockBluetoothServer` inherits from
     :class:`~.btcomm.BluetoothServer` but overrides ``__init__``, :meth:`start`
-    and :meth:`stop` to create a :class:`MockBluetoothServer` which can
+    , :meth:`stop` and :meth:`send_raw` to create a :class:`MockBluetoothServer` which can
     be used for testing and debugging.
     """
     def __init__(self,
@@ -58,21 +60,17 @@ class MockBluetoothServer(BluetoothServer):
         when_client_connects = None,
         when_client_disconnects = None):
 
-        self._device = device
-        self._adapter = MockBluetoothAdapter(self._device)
+        super(MockBluetoothServer, self).__init__(
+            data_received_callback,
+            auto_start,
+            device,
+            port,
+            encoding,
+            power_up_device,
+            when_client_connects,
+            when_client_disconnects)
 
-        self._data_received_callback = data_received_callback
-        self._port = port
-        self._encoding = encoding
-        self._power_up_device = power_up_device
-        self._when_client_connects = when_client_connects
-        self._when_client_disconnects = when_client_disconnects
-
-        self._running = False
-        self._client_connected = False
-        self._server_sock = None
-        self._client_info = None
-        self._client_sock = None
+        self._mock_client = None
 
     def start(self):
         self._running = True
@@ -80,19 +78,26 @@ class MockBluetoothServer(BluetoothServer):
     def stop(self):
         self._running = False
 
-    def mock_client_connected(self, client_address = "11:11:11:11:11:11"):
+    def mock_client_connected(self, mock_client = None):
         """
         Simulates a client connected to the :class:`~.btcomm.BluetoothServer`.
-
-        :param string client_address:
-            The mock client mac address, defaults to '11:11:11:11:11:11'
+        
+        :param MockBluetoothClient mock_client:
+            The mock client to interact with, defaults to `None`. If `None`, 
+            client address is set to '99:99:99:99:99:99'
         """
+        self._mock_client = mock_client
+
         if not self._client_connected:
+            if self._mock_client is None:
+                client_address = "99:99:99:99:99:99"
+            else:
+                client_address = self._mock_client.adapter.address
             self._client_connected = True
             self._client_info = (client_address, self.port)
             #call the call back
             if self.when_client_connects:
-                self._when_client_connects()
+                WrapThread(target=self.when_client_connects).start()
 
     def mock_client_disconnected(self):
         """
@@ -103,7 +108,7 @@ class MockBluetoothServer(BluetoothServer):
             self._client_connected = False
             self._client_info = None
             if self._when_client_disconnects:
-                self._when_client_disconnects()
+                WrapThread(target=self.when_client_disconnects).start()
 
     def mock_client_sending_data(self, data):
         """
@@ -113,6 +118,63 @@ class MockBluetoothServer(BluetoothServer):
         if self._client_connected:
             self._data_received_callback(data)
 
+    def _send_data(self, data):
+        if self._mock_client is not None:
+            # call the data received callback
+            self._mock_client.mock_server_sending_data(data)
+        else:
+            print("send to client - {}".format(data))
+
+    def _setup_adapter(self, device):
+        self._adapter = MockBluetoothAdapter(device)
+
+
+class MockBluetoothClient(BluetoothClient):
+    """
+    :class:`MockBluetoothClient` inherits from
+    :class:`~.btcomm.BluetoothClient` but overrides ``__init__``, :meth:`connect`
+    and :meth:`send_raw` to create a :class:`MockBluetoothServer` which can
+    be used for testing and debugging.
+
+    Note - the `server` parameter should be an instance of :class:`MockBluetoothServer`.
+    """
+    def __init__(self,
+        server,
+        data_received_callback,
+        port = 1,
+        device = "mock1",
+        encoding = "utf-8",
+        power_up_device = False,
+        auto_connect = True):
+
+        super(MockBluetoothClient, self).__init__(
+            server,
+            data_received_callback,
+            port,
+            device,
+            encoding,
+            power_up_device,
+            auto_connect)
+
+    def connect(self):
+        self._server.mock_client_connected(self)
+        self._connected = True
+
+    def disconnect(self):
+        self._server.mock_client_disconnected()
+        self._connected = False
+
+    def mock_server_sending_data(self, data):
+        if self._connected:
+            self._data_received_callback(data)
+
+    def _send_data(self, data):
+        # send data to the server
+        self._server.mock_client_sending_data(data)
+
+    def _setup_adapter(self, device):
+        self._adapter = MockBluetoothAdapter(device, address = "11:11:11:11:11:11")
+    
 
 class MockBlueDot(BlueDot):
     """
@@ -121,6 +183,8 @@ class MockBlueDot(BlueDot):
     which can be used for testing and debugging.
     """
     def _create_server(self):
+        print("create mock server")
+        print(self._client_connected)
         self._server = MockBluetoothServer(
                 self._data_received,
                 when_client_connects = self._client_connected,
@@ -128,14 +192,16 @@ class MockBlueDot(BlueDot):
                 device = self.device,
                 port = self.port)
 
-    def mock_client_connected(self, client_address = "11:11:11:11:11:11"):
+    def mock_client_connected(self):
         """
         Simulates a client connecting to the Blue Dot.
 
         :param string client_address:
             The mock client mac address, defaults to '11:11:11:11:11:11'
         """
-        self._server.mock_client_connected(client_address)
+        self._server.mock_client_connected()
+        # send protocol version to server
+        self._server.mock_client_sending_data("3,{},{}\n".format(PROTOCOL_VERSION, CLIENT_NAME))
 
     def mock_client_disconnected(self):
         """

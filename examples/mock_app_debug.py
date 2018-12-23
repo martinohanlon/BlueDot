@@ -7,7 +7,7 @@ def pressed(pos):
     print("Pressed: x={} y={} angle={} distance={} middle={} top={} bottom={} left={} right={} time={}".format(pos.x, pos.y, pos.angle, pos.distance, pos.middle, pos.top, pos.bottom, pos.left, pos.right, time()))
 
 def released():
-    print("Released: x={} y={}".format(dot.position.x, dot.position.y))
+    print("Released: x={} y={}".format(mbd.position.x, mbd.position.y))
     print()
 
 def moved(pos):
