@@ -121,9 +121,9 @@ class MockBluetoothServer(BluetoothServer):
     def _send_data(self, data):
         if self._mock_client is not None:
             # call the data received callback
+            if self._encoding:
+                data = data.decode(self._encoding)
             self._mock_client.mock_server_sending_data(data)
-        else:
-            print("send to client - {}".format(data))
 
     def _setup_adapter(self, device):
         self._adapter = MockBluetoothAdapter(device)
@@ -170,11 +170,13 @@ class MockBluetoothClient(BluetoothClient):
 
     def _send_data(self, data):
         # send data to the server
+        # call the data received callback
+        if self._encoding:
+            data = data.decode(self._encoding)
         self._server.mock_client_sending_data(data)
 
     def _setup_adapter(self, device):
         self._adapter = MockBluetoothAdapter(device, address = "11:11:11:11:11:11")
-    
 
 class MockBlueDot(BlueDot):
     """
@@ -183,14 +185,14 @@ class MockBlueDot(BlueDot):
     which can be used for testing and debugging.
     """
     def _create_server(self):
-        print("create mock server")
-        print(self._client_connected)
         self._server = MockBluetoothServer(
                 self._data_received,
                 when_client_connects = self._client_connected,
                 when_client_disconnects = self._client_disconnected,
                 device = self.device,
-                port = self.port)
+                port = self.port,
+                power_up_device = self._power_up_device,
+                auto_start = False)
 
     def mock_client_connected(self):
         """
@@ -257,66 +259,20 @@ class MockBlueDot(BlueDot):
 
         The mock app uses pygame which will need to be installed.
         """
-        self._mock_app_thread = WrapThread(target=self._launch_mock_app)
+        self._mock_app_thread = WrapThread(target=self._launch_mock_app2)
         self._mock_app_thread.start()
 
     def _launch_mock_app(self):
         #imported here, so pygame is only a pre-requisite for the mock app
-        import pygame
+        from .app import BlueDotClient, ButtonScreen
 
-        pygame.init()
-        screen = pygame.display.set_mode((200,200))
-        pygame.display.set_caption("Blue Dot")
+        class MockBlueDotClient(BlueDotClient):
+            def _run(self):
+                button_screen = MockButtonScreen(self._screen, self._font, self._device, self._server, self._width, self._height)
+                button_screen.run()
 
-        clock = pygame.time.Clock()
+        class MockButtonScreen(ButtonScreen):
+            def _connect(self):
+                self.bt_client = MockBluetoothClient(self.server, self._data_received, device = self.device, auto_connect = True)
 
-        circle_centre = (100, 100)
-        circle_radius = 100
-        circle_rect = pygame.draw.circle(screen, (0,0, 255), circle_centre, circle_radius, 0)
-
-        self.mock_client_connected()
-
-        running = True
-        while running:
-            clock.tick(50)
-
-            # get all events
-            ev = pygame.event.get()
-
-            # proceed events
-            for event in ev:
-
-                # handle mouse
-                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP or (event.type == pygame.MOUSEMOTION and self.is_pressed):
-                    pos = pygame.mouse.get_pos()
-
-                    if circle_rect.collidepoint(pos):
-                        x = (pos[0] - circle_centre[0]) / circle_radius
-                        x = round(x, 4)
-                        y = ((pos[1] - circle_centre[1]) / circle_radius) * -1
-                        y = round(y, 4)
-
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            self.mock_blue_dot_pressed(x,y)
-
-                        elif event.type == pygame.MOUSEBUTTONUP:
-                            self.mock_blue_dot_released(x,y)
-
-                        elif event.type == pygame.MOUSEMOTION:
-                            self.mock_blue_dot_moved(x,y)
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        running = False
-
-                if event.type == pygame.QUIT:
-                    running = False
-
-                if self._mock_app_thread.stopping.is_set():
-                    running = False
-
-            pygame.display.update()
-
-        self.mock_client_disconnected()
-
-        pygame.quit()
+        MockBlueDotClient("mock2", self._server, None, None, None)

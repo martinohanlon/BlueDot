@@ -337,6 +337,7 @@ class ButtonScreen(BlueDotScreen):
     def run(self):
 
         self._connect()
+        self._send_protocol_version()
     
         clock = pygame.time.Clock()
         pygame.event.clear()
@@ -390,7 +391,6 @@ class ButtonScreen(BlueDotScreen):
         self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
         try:
             self.bt_client.connect()
-            self._send_protocol_version()
         except:
             e = str(sys.exc_info()[1])
             self.draw_error(e)

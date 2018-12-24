@@ -1085,22 +1085,23 @@ class BlueDot(object):
             self._process_callback(self.when_rotated, rotation)
 
     def _check_protocol_version(self, protocol_version, client_name):
-        if protocol_version.isnumeric():
-            self._check_protocol_event.set()
+        try:
             version_no = int(protocol_version)
-            if version_no != PROTOCOL_VERSION:
-                msg = "Client '{}' was using protocol version {}, bluedot python library is using version {}. "
-                if version_no > PROTOCOL_VERSION:
-                    msg += "Update the bluedot python library, using 'sudo pip3 --upgrade install bluedot'."
-                    msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION)
-                else:
-                    msg += "Update the {}."
-                    msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION, client_name)
-                self._server.disconnect_client()
-                print(msg)    
-        else:
-            raise TypeError("protocol version number must be numeric, received {}.".format(protocol_version)) 
-
+        except ValueError:
+            raise ValueError("protocol version number must be numeric, received {}.".format(protocol_version)) 
+        self._check_protocol_event.set()
+        
+        if version_no != PROTOCOL_VERSION:
+            msg = "Client '{}' was using protocol version {}, bluedot python library is using version {}. "
+            if version_no > PROTOCOL_VERSION:
+                msg += "Update the bluedot python library, using 'sudo pip3 --upgrade install bluedot'."
+                msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION)
+            else:
+                msg += "Update the {}."
+                msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION, client_name)
+            self._server.disconnect_client()
+            print(msg)    
+        
     # called whenever the dot is changed or a client connects
     def _send_dot_config(self):
         if self.is_connected:
