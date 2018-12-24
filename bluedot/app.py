@@ -17,11 +17,15 @@ BORDER_THICKNESS = 0.025
 class BlueDotClient(object):
     def __init__(self, device, server, fullscreen, width, height):
 
+        self._device = device
+        self._server = server
+        self._fullscreen = fullscreen
+        
         #init pygame
         pygame.init()
 
         #load font
-        font = pygame.font.SysFont(FONT, FONTSIZE)
+        self._font = pygame.font.SysFont(FONT, FONTSIZE)
 
         #setup the screen
         #set the screen caption
@@ -40,18 +44,24 @@ class BlueDotClient(object):
         if width == None: width = DEFAULTSIZE[0]
         if height == None: height = DEFAULTSIZE[1]
 
-        screen = pygame.display.set_mode((width, height), screenflags)
+        self._screen = pygame.display.set_mode((width, height), screenflags)
 
+        self._width = width
+        self._height = height
+
+        self._run()
+
+        pygame.quit()
+
+    def _run(self):
         #has a server been specified?  If so connected directly
-        if server:
-            button_screen = ButtonScreen(screen, font, device, server, width, height)
+        if self._server:
+            button_screen = ButtonScreen(self._screen, self._font, self._device, self._server, self._width, self._height)
             button_screen.run()
         else:
             #start the devices screen
-            devices_screen = DevicesScreen(screen, font, device, width, height)
+            devices_screen = DevicesScreen(self._screen, self._font, self._device, self._width, self._height)
             devices_screen.run()
-
-        pygame.quit()
 
 
 class BlueDotScreen(object):
@@ -232,19 +242,23 @@ class ButtonScreen(BlueDotScreen):
             self.dot_rect = pygame.Rect(self.frame_rect.left, self.frame_rect.top + int((self.frame_rect.height - self.frame_rect.width) / 2), self.frame_rect.width, self.frame_rect.width)
             self.dot_radius = int(self.dot_rect.width / 2)
 
+        self.border_width = max(int(self.dot_rect.width * BORDER_THICKNESS), 1)
+        self.border_height = max(int(self.dot_rect.height * BORDER_THICKNESS), 1)
+
         self._draw_dot()
 
     def _draw_dot(self):
 
         # clear the dot
+
         pygame.draw.rect(
             self.screen,
             GRAY86.rgb, 
             (
-                self.dot_rect.left, 
-                self.dot_rect.top, 
-                self.dot_rect.width + max(int(self.dot_rect.width * BORDER_THICKNESS), 1), 
-                self.dot_rect.height + max(int(self.dot_rect.height * BORDER_THICKNESS), 1)
+                self.dot_rect.left - self.border_width, 
+                self.dot_rect.top - self.border_height, 
+                self.dot_rect.width + (self.border_width * 2), 
+                self.dot_rect.height + (self.border_height * 2), 
             )
         )
         colour = self._colour if not self._pressed else self._colour.get_adjusted_color(0.85)
@@ -322,14 +336,8 @@ class ButtonScreen(BlueDotScreen):
                 
     def run(self):
 
-        self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
-        try:
-            self.bt_client.connect()
-            self._send_protocol_version()
-        except:
-            e = str(sys.exc_info()[1])
-            self.draw_error(e)
-
+        self._connect()
+    
         clock = pygame.time.Clock()
         pygame.event.clear()
 
@@ -378,6 +386,15 @@ class ButtonScreen(BlueDotScreen):
 
         self.bt_client.disconnect()
 
+    def _connect(self):
+        self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
+        try:
+            self.bt_client.connect()
+            self._send_protocol_version()
+        except:
+            e = str(sys.exc_info()[1])
+            self.draw_error(e)
+        
 def main():
     #read command line options
     parser = ArgumentParser(description="Blue Dot Python App")
@@ -392,5 +409,4 @@ def main():
     blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
 
 if __name__ == "__main__":
-    print("new version")
     main()
