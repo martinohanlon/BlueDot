@@ -198,7 +198,8 @@ public class Button extends AppCompatActivity {
     }
 
     private void processMessage(String message) {
-        msg(message);
+        // Debug
+        // msg(message);
         String parameters[] = message.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
         boolean invalidMessage = false;
 
@@ -216,7 +217,6 @@ public class Button extends AppCompatActivity {
                                 parameters[1].substring(0,1) +
                                 parameters[1].substring(7,9) +
                                 parameters[1].substring(1,7);
-                            msg(color);
 
                             matrix.setColor(Color.parseColor(color));
                         }

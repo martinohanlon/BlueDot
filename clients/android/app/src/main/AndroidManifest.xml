@@ -19,8 +19,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Devices"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,8 +27,7 @@
         </activity>
         <activity
             android:name=".Button"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:configChanges="orientation|screenSize">
         </activity>
     </application>
 
