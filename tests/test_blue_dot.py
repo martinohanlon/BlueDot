@@ -66,11 +66,11 @@ def test_when_connect_disconnect():
 
     assert not event_connect.is_set()
     mbd.mock_client_connected()
-    assert event_connect.is_set()
+    assert event_connect.wait(1)
 
     assert not event_disconnect.is_set()
     mbd.mock_client_disconnected()
-    assert event_disconnect.is_set()
+    assert event_disconnect.wait(1)
 
 def test_pressed_moved_released():
     mbd = MockBlueDot()
@@ -374,6 +374,52 @@ def test_allow_pairing():
     mbd.allow_pairing()
     assert mbd.adapter.discoverable
     assert mbd.adapter.pairable
+
+def test_dot_appearance():
+    mbd = MockBlueDot()
+    assert mbd.color == "blue"
+    assert mbd.border == False
+    assert mbd.square == False
+    assert mbd.visible == True
+    mbd.color = "red"
+    mbd.border = True
+    mbd.square = True
+    mbd.visible = False
+    assert mbd.color == "red"
+    assert mbd.border == True
+    assert mbd.square == True
+    assert mbd.visible == False
+
+def test_dot_colors():
+    from bluedot.colors import BLUE, RED, GREEN, YELLOW
+
+    mbd = MockBlueDot()
+    assert mbd.color == "blue"
+    assert mbd.color == (0,0,255)
+    assert mbd.color == BLUE
+    assert mbd.color == "#0000ff"
+    assert mbd.color == "#0000ffff"
+
+    mbd.color = RED
+    assert mbd.color == (255,0,0)
+    assert mbd.color == "red"
+    assert mbd.color == "#ff0000"
+    assert mbd.color == "#ff0000ff"
+
+    mbd.color = "green"
+    assert mbd.color == GREEN
+    assert mbd.color == (0,128,0)
+    assert mbd.color == "#008000"
+    assert mbd.color == "#008000ff"
+
+    mbd.color = "#ffff00"
+    assert mbd.color == YELLOW
+    assert mbd.color == "yellow"
+    assert mbd.color == (255,255,0)
+    assert mbd.color == "#ffff00ff"
+
+    mbd.color = "#ffffff11"
+    assert mbd.color == "#ffffff11"
 
 def delay_function(func, time):
     delayed_thread = Thread(target = _delayed_function, args = (func, time))

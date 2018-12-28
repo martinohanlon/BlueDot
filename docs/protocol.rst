@@ -63,3 +63,9 @@ The button is then released, resulting in the following message::
 
 If positions cannot be sent, *x* and *y* will still be sent but will default to
 0.
+
+
+Notes on changes:
+
+- Protocol check `3,[client protocol version],[name of the client]\n`
+- Blue Dot Setup `4,[colour - #aarrggbb],[border - 0/1],[visible -0/1]\n`

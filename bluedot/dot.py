@@ -12,9 +12,10 @@ except ImportError:
 
 from .btcomm import BluetoothServer
 from .threads import WrapThread
+from .constants import PROTOCOL_VERSION, CHECK_PROTOCOL_TIMEOUT
+from .colors import parse_color, BLUE
 
-
-class BlueDotPosition():
+class BlueDotPosition(object):
     """
     Represents a position of where the blue dot is pressed, released or held.
 
@@ -120,7 +121,7 @@ class BlueDotPosition():
         return self._time
 
 
-class BlueDotInteraction():
+class BlueDotInteraction(object):
     """
     Represents an interaction with the Blue Dot, from when it was pressed to
     when it was released.
@@ -237,7 +238,7 @@ class BlueDotInteraction():
         self._positions.append(released_position)
 
 
-class BlueDotSwipe():
+class BlueDotSwipe(object):
     """
     Represents a Blue Dot swipe interaction.
 
@@ -342,7 +343,7 @@ class BlueDotSwipe():
         return self.valid and (45 < self.angle <= 135)
 
 
-class BlueDotRotation():
+class BlueDotRotation(object):
     def __init__(self, interaction, no_of_segments):
         """
         Represents a Blue Dot rotation.
@@ -417,7 +418,7 @@ class BlueDotRotation():
         return self._value == 1
 
 
-class BlueDot():
+class BlueDot(object):
     """
     Interacts with a Blue Dot client application, communicating when and where it
     has been pressed, released or held.
@@ -483,6 +484,8 @@ class BlueDot():
         self._is_swiped_event = Event()
         self._is_double_pressed_event = Event()
 
+        self._check_protocol_event = Event()
+
         self._waiting_for_press = Event()
 
         self._when_pressed = None
@@ -498,6 +501,11 @@ class BlueDot():
         self._interaction = None
         self._double_press_time = 0.3
         self._rotation_segments = 8
+
+        self._color = BLUE
+        self._square = False
+        self._border = False
+        self._visible = True
 
         self._create_server()
 
@@ -515,7 +523,7 @@ class BlueDot():
     def port(self):
         """
         The port the server is using. This defaults to 1.
-            """
+        """
         return self._port
 
     @property
@@ -785,6 +793,67 @@ class BlueDot():
         """
         return self._server.running
 
+    @property
+    def color(self):
+        """
+        Sets or returns the color of the dot. Defaults to BLUE.
+        
+        An instance of :class:`.colors.Color` is returned.
+
+        Value can be set as a :class:`.colors.Color` object, a hex color value
+        in the format `#rrggbb` or `#rrggbbaa` or a text description of the 
+        color, e.g. "red". 
+        
+        A dictionary of available colors can be obtained from `bluedot.COLORS`.
+        """
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = parse_color(value)
+        self._send_dot_config()
+
+    @property
+    def square(self):
+        """
+        When set to `True` the 'dot' is made square. Default is `False`.
+        """
+        return self._square
+
+    @square.setter
+    def square(self, value):
+        self._square = value
+        self._send_dot_config()
+
+    @property
+    def border(self):
+        """
+        When set to `True` adds a border to the dot. Default is `False`.
+        """
+        return self._border
+
+    @border.setter
+    def border(self, value):
+        self._border = value
+        self._send_dot_config()
+
+    @property
+    def visible(self):
+        """
+        When set to `True` makes the dot invisible. Default is `False`.
+
+        .. note::
+
+            Events (press, release, moved) are still sent from the dot
+            when it is not visible.
+        """
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        self._visible = value
+        self._send_dot_config()
+        
     def start(self):
         """
         Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
@@ -890,11 +959,18 @@ class BlueDot():
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
+        self._send_dot_config()
         if self.when_client_connects:
             self._process_callback(self.when_client_connects, None)
+        
+        # wait for the protocol version to be checked.
+        if not self._check_protocol_event.wait(CHECK_PROTOCOL_TIMEOUT):
+            self._print_message("Protocol version not received from client - update the client to the latest version.")
+            self._server.disconnect_client()
 
     def _client_disconnected(self):
         self._is_connected_event.clear()
+        self._check_protocol_event.clear()
         self._print_message("Client disconnected")
         if self.when_client_disconnects:
             self._process_callback(self.when_client_disconnects, None)
@@ -914,15 +990,16 @@ class BlueDot():
     def _process_commands(self, commands):
         for command in commands:
             try:
-                operation, x, y = command.split(",")
-                position = BlueDotPosition(x, y)
+                position = None
+                operation, param1, param2 = command.split(",")
+                if operation != "3":
+                    position = BlueDotPosition(param1, param2)
+                    self._position = position
+
             except ValueError:
                 # ignore the occasional corrupt command; XXX warn here?
                 pass
             else:
-                #update the current position
-                self._position = position
-
                 #dot released
                 if operation == "0":
                     self._released(position)
@@ -931,10 +1008,14 @@ class BlueDot():
                 elif operation == "1":
                     self._pressed(position)
 
-                #dot pressed position moved
+                #dot pressed position moved 
                 elif operation == "2":
                     self._moved(position)
 
+                #protocol check
+                elif operation == "3":
+                    self._check_protocol_version(param1, param2)
+                    
     def _pressed(self, position):
         self._is_pressed = True
         self._is_pressed_event.set()
@@ -1002,6 +1083,33 @@ class BlueDot():
         rotation = BlueDotRotation(self._interaction, self._rotation_segments)
         if rotation.valid:
             self._process_callback(self.when_rotated, rotation)
+
+    def _check_protocol_version(self, protocol_version, client_name):
+        try:
+            version_no = int(protocol_version)
+        except ValueError:
+            raise ValueError("protocol version number must be numeric, received {}.".format(protocol_version)) 
+        self._check_protocol_event.set()
+        
+        if version_no != PROTOCOL_VERSION:
+            msg = "Client '{}' was using protocol version {}, bluedot python library is using version {}. "
+            if version_no > PROTOCOL_VERSION:
+                msg += "Update the bluedot python library, using 'sudo pip3 --upgrade install bluedot'."
+                msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION)
+            else:
+                msg += "Update the {}."
+                msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION, client_name)
+            self._server.disconnect_client()
+            print(msg)    
+        
+    # called whenever the dot is changed or a client connects
+    def _send_dot_config(self):
+        if self.is_connected:
+            self._server.send("4,{},{},{},{}\n".format(
+                self._color.str_rgba, 
+                int(self._square),
+                int(self._border),
+                int(self._visible)))
 
     def _print_message(self, message):
         if self.print_messages:
