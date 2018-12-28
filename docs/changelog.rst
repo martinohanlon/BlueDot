@@ -14,6 +14,7 @@ Bluedot Python library
  * minor threading changes in btcomm
  * updates to the Blue Dot Python app
  * rewrite of the mock app
+ * support for protocol version 1
  
 1.2.3 - 2018-02-22
 ~~~~~~~~~~~~~~~~~~
@@ -154,6 +155,8 @@ Android app
  * Rewrite of the Bluetooth comms layer
  * Support for colours, square and border
  * Landscape (and portrait) views
+ * added protocol version checking
+ * support for protocol version 1
 
 3 (1.1.1) - 2018-09-21
 ~~~~~~~~~~~~~~~~~~~~~~~~

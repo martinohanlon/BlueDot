@@ -16,37 +16,69 @@ port 1, using UUID "00001101-0000-1000-8000-00805f9b34fb".
 Specification
 -------------
 
-The transmission is a 1-way stream from client to server; the server sends
-no acknowledgements or data back to the client.
+The transmission of data from client to server or server to client is a 
+simple stream no acknowledgements or data is sent in response to commands.
 
-All messages between client and server conform to the same format::
+All messages between conform to the same format::
 
-    [operation],[x],[y]\n
+    [operation],[param1],[param2],[*]\n
 
-Where:
+Messages are sent when:
 
-* *operation* is either 0, 1 or 2:
+Blue Dot is released, pressed or moved - ``[0,1,2],[x],[y]\n``:
 
-   - Blue Dot released.
+    * client to server.
 
-   - Blue Dot pressed.
+    * *operation*:
 
-   - Blue Dot pressed position moved.
+        0. Blue Dot released.
 
-* *x* & *y* specify the position on the Blue Dot that was pressed,
-  released, and/or moved.
+        1. Blue Dot pressed.
 
-  - Positions are values between -1 and +1, with 0 being the centre and 1 being
-    the radius of the Blue Dot.
+        2. Blue Dot pressed position moved.
 
-  - *x* is the horizontal position where +1 is far right.
+    * *x* & *y* specify the position on the Blue Dot that was pressed, 
+    released, and/or moved:
 
-  - *y* is the vertical position where +1 is the top.
+        - Positions are values between -1 and +1, with 0 being the centre and 1 being
+            the radius of the Blue Dot.
+
+        - *x* is the horizontal position where +1 is far right.
+
+        - *y* is the vertical position where +1 is the top.
+
+At connection the client sends a handshake - ``[3],[protocol version],[client name]``
+
+    * client to server.
+
+    * *operation* 3.
+
+    * *protocol version* is sent and corresponds to the version of protocol the client supports.
+
+    * *client name* is a string value used in exceptions to report what client has connected.
+
+When the setup (or appearance) of the Blue Dot changes - ``[4],[color],[square],[border],[visible]``:
+
+    * server to client.
+
+    * *operation* 4.
+
+    * *color* a hex value in the format #rrggbbaa representing red, green, blue, alpha values.
+
+    * *square* 0 or 1, 1 if the dot should be a square.
+
+    * *border* 0 or 1, 1 if the dot should have a border.
+
+    * *visible* 0 or 1, 1 if the dot should be visible.
 
 * *\\n* represents the ASCII new-line character (ASCII character 10).
 
 Example
 -------
+
+When the Android client connects using protocol version 1::
+
+    3,1,Android Blue Dot app\n
 
 If the blue dot is pressed at the top, the following message will be sent::
 
@@ -61,11 +93,12 @@ The button is then released, resulting in the following message::
 
     0,1.0,0.0\n
 
-If positions cannot be sent, *x* and *y* will still be sent but will default to
-0.
+The color of the dot is changed to "red" to server sends to the client::
 
+    4,#ff0000ff,0,0,1\n
 
-Notes on changes:
+Protocol versions
+-----------------
 
-- Protocol check `3,[client protocol version],[name of the client]\n`
-- Blue Dot Setup `4,[colour - #aarrggbb],[border - 0/1],[visible -0/1]\n`
+0 - initial version
+1 - introduction of operation 3, 4

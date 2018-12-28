@@ -801,8 +801,9 @@ class BlueDot(object):
         An instance of :class:`.colors.Color` is returned.
 
         Value can be set as a :class:`.colors.Color` object, a hex color value
-        in the format `#rrggbb` or `#rrggbbaa` or a text description of the 
-        color, e.g. "red". 
+        in the format `#rrggbb` or `#rrggbbaa`, a tuple of `(red, green, blue)`
+        or `(red, green, blue, alpha)` values between `0` & `255` or a text 
+        description of the color, e.g. "red". 
         
         A dictionary of available colors can be obtained from `bluedot.COLORS`.
         """
