@@ -12,6 +12,8 @@ Bluedot Python library
  * added ability to change the color, border, shape and visibility of the dot (:attr:`~BlueDot.color`, :attr:`~BlueDot.border`, :attr:`~BlueDot.square`, :attr:`~BlueDot.visible`)
  * added protocol version checking
  * minor threading changes in btcomm
+ * updates to the Blue Dot Python app
+ * rewrite of the mock app
  
 1.2.3 - 2018-02-22
 ~~~~~~~~~~~~~~~~~~
@@ -145,10 +147,18 @@ Alpha - initial testing
 Android app
 -----------
 
+4 (1.2) - ?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * Rewrite of the Button view
+ * Rewrite of the Bluetooth comms layer
+ * Support for colours, square and border
+ * Landscape (and portrait) views
+
 3 (1.1.1) - 2018-09-21
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
- * Android SDK version uplift (due to google play store minimum requirements change).
+ * Android SDK version uplift (due to google play store minimum requirements change)
 
 2 (1.1) - 2017-11-05
 ~~~~~~~~~~~~~~~~~~~~~~~~
