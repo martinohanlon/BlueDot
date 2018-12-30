@@ -1265,8 +1265,8 @@ def parse_color(value):
             
             else:
                 # does the color exist in the dictionary of colors
-                if value.casefold() in COLORS:
-                    return COLORS[value.casefold()]
+                if value.lower() in COLORS:
+                    return COLORS[value.lower()]
                 else:
                     raise ValueError("'{}' is not a valid color value.")
 
