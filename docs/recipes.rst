@@ -215,7 +215,7 @@ Appearance
 
 The dot doesn't have to be blue or a dot, you can change how it looks, or make it completely invisible.
 
-.. image:: images/bluedot_color_changing.gif
+.. image:: images/bluedot_color_changing_smaller.gif
    :alt: Animation of blue dot app cycling through colors and changing to a square
 
 Colo(u)r
