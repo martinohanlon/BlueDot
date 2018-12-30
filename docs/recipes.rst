@@ -222,6 +222,8 @@ To change the color of the dot use the :attr:`~BlueDot.color`: property:
 
 .. literalinclude:: examples/looks_color.py
 
+A dictionary of available colors can be obtained from ``bluedot.COLORS``.
+
 The color can also be set using a hex value of `#rrggbb` or `#rrggbbaa` value::
 
     bd.color = "#00ff00"
