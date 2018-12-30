@@ -6,7 +6,7 @@ Change log
 Bluedot Python library
 ----------------------
 
-1.3.0 - tbc
+1.3.0 - 2018-12-30
 ~~~~~~~~~~~~~~~~~~
 
  * added ability to change the color, border, shape and visibility of the dot (:attr:`~BlueDot.color`, :attr:`~BlueDot.border`, :attr:`~BlueDot.square`, :attr:`~BlueDot.visible`)
@@ -148,7 +148,7 @@ Alpha - initial testing
 Android app
 -----------
 
-4 (1.2) - ?
+4 (1.2) - 2018-12-30
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
  * Rewrite of the Button view

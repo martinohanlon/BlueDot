@@ -32,7 +32,7 @@ Run tests::
 Deploy
 ------
 
-Create :file:`.pypirc` credentials file::
+Create :file:`.pypirc` credentials file (optional)::
 
     nano ~/.pypirc
 
