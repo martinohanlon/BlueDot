@@ -210,6 +210,52 @@ property which changes the number of segments the Blue Dot is split into::
 
     bd.rotation_segments = 16
 
+Appearance
+----------
+
+The dot doesn't have to be blue or a dot, you can change how it looks, or make it completely invisible.
+
+.. image:: images/bluedot_color_changing_smaller.gif
+   :alt: Animation of blue dot app cycling through colors and changing to a square
+
+Colo(u)r
+~~~~~~~~
+
+To change the color of the dot use the :attr:`~BlueDot.color`: property:
+
+.. literalinclude:: examples/looks_color.py
+
+A dictionary of available colors can be obtained from ``bluedot.COLORS``.
+
+The color can also be set using a hex value of `#rrggbb` or `#rrggbbaa` value::
+
+    bd.color = "#00ff00"
+
+Or a tuple of 3 or 4 integers between `0` and `255` either (red, gree, blue) or (red, green, blue, alpha)::
+
+    bd.color = (0, 255, 0)
+
+Square
+~~~~~~
+
+The dot can also be made square using the :attr:`~BlueDot.square`: property:
+
+.. literalinclude:: examples/looks_square.py
+
+Border
+~~~~~~
+
+A border can also been added to the dot (or the square) by setting the :attr:`~BlueDot.border`: property to `True`:
+
+.. literalinclude:: examples/looks_border.py
+
+(In)visible
+~~~~~~~~~~~
+
+The dot can be hidden and shown using the :attr:`~BlueDot.visible`: property:
+
+.. literalinclude:: examples/looks_visible.py
+
 Bluetooth
 ---------
 

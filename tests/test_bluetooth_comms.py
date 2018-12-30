@@ -168,3 +168,33 @@ def test_send_receive():
     
     btc.disconnect()
     bts.stop()
+
+def test_volume_data():
+
+    from random import choice, randint
+    import string
+
+    no_of_transmissions = randint(100, 200)
+    test_data = ''
+    received = Event()
+
+    def data_received_server(data):
+        assert data == test_data
+        bts.send(test_data)
+
+    def data_received_client(data):
+        assert data == test_data
+        received.set()
+
+    bts = BluetoothServer(data_received_server, device = "hci0")
+    btc = BluetoothClient(bta0.address, data_received_client, device = "hci1")
+
+    for test_no in range(no_of_transmissions):
+        test_data = ''.join(choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(randint(30,100)))
+        print(test_data)
+        btc.send(test_data)
+        assert received.wait(1)
+        received.clear()
+        
+    btc.disconnect()
+    bts.stop()

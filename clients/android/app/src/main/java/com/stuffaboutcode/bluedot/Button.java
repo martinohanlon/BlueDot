@@ -1,8 +1,10 @@
 package com.stuffaboutcode.bluedot;
 
+import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,26 +12,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.os.AsyncTask;
+
 import android.app.ProgressDialog;
 
-import java.util.UUID;
-import java.io.IOException;
+import com.stuffaboutcode.logger.Log;
 
 public class Button extends AppCompatActivity {
+
+    private String mConnectedDeviceName = null;
+    private StringBuffer mOutStringBuffer;
+    private StringBuffer mInStringBuffer;
+
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private BluetoothChatService mChatService = null;
 
     String address = null;
     String deviceName = null;
 
-    BluetoothAdapter myBluetooth = null;
-    BluetoothSocket btSocket = null;
-    private boolean isBtConnected = false;
-    private boolean connectionLost = false;
-    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
     private ProgressDialog progress;
     private double last_x = 0;
     private double last_y = 0;
+
+    private DynamicMatrix matrix;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,56 +47,77 @@ public class Button extends AppCompatActivity {
 
         TextView statusView = (TextView)findViewById(R.id.status);
 
-        final View roundButton = (View)findViewById(R.id.roundButton);
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        statusView.setText("Connecting to " + deviceName);
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(getApplicationContext(), "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            this.finish();
+        }
 
-        new ConnectBT().execute();
+        // Initialize the BluetoothChatService to perform bluetooth connections
+        mChatService = new BluetoothChatService(this, mHandler);
 
-        roundButton.setOnTouchListener(new View.OnTouchListener() {
+        // Initialize the buffer for outgoing messages
+        mOutStringBuffer = new StringBuffer("");
+        // Initialize the buffer for incoming messages
+        mInStringBuffer = new StringBuffer("");
+
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        mChatService.connect(device, true);
+
+        matrix = findViewById(R.id.matrix);
+
+        // Once connected setup the listener
+        matrix.setOnUseListener(new DynamicMatrix.DynamicMatrixListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    pressed(roundButton, event);
-
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    released(roundButton, event);
-
-                } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    moved(roundButton, event);
-                }
-                return false;
+            public void onPress(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                send(buildMessage("1", x, y));
+                last_x = x;
+                last_y = y;
             }
+
+            @Override
+            public void onMove(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                if ((x != last_x) || (y != last_y)) {
+                    send(buildMessage("2", x, y));
+                    last_x = x;
+                    last_y = y;
+                }
+            }
+
+            @Override
+            public void onRelease(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
+                double x = calcX(cell, actual_x);
+                double y = calcY(cell, actual_y);
+                send(buildMessage("0", x, y));
+                last_x = x;
+                last_y = y;
+            }
+
         });
 
     }
 
-    private void pressed(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        send(buildMessage("1", x, y));
-        last_x = x;
-        last_y = y;
+    private double calcX(DynamicMatrix.MatrixCell cell, float actual_x) {
+
+        double relative_x = actual_x - cell.getBounds().left;
+        relative_x = (relative_x - (cell.getWidth() / 2)) / (cell.getWidth() / 2);
+        return (double)Math.round(relative_x * 10000d) / 10000d;
     }
 
-    private void released(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        send(buildMessage("0", x, y));
-        last_x = x;
-        last_y = y;
-    }
+    private double calcY(DynamicMatrix.MatrixCell cell, float actual_y) {
 
-    private void moved(View roundButton, MotionEvent event) {
-        double x = calcX(roundButton, event);
-        double y = calcY(roundButton, event);
-        //has x or y changed?
-        if ((x != last_x) || (y != last_y)) {
-            send(buildMessage("2", x, y));
-            last_x = x;
-            last_y = y;
-        }
+        double relative_y = actual_y - cell.getBounds().top;
+        relative_y = (relative_y - (cell.getHeight() / 2)) / (cell.getHeight() / 2) * -1;
+        return (double)Math.round(relative_y * 10000d) / 10000d;
     }
 
     private double calcX(View roundButton, MotionEvent event) {
@@ -111,29 +136,29 @@ public class Button extends AppCompatActivity {
         return (operation + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
     }
 
-    private void send(String message) {
-        if (btSocket!=null) {
-            try {
-                btSocket.getOutputStream().write(message.getBytes());
-            } catch (IOException e) {
-                msg("Error : " + e.getMessage());
-                if(e.getMessage().contains("Broken pipe")) Disconnect();
-            }
-        } else {
-            msg("Error : btSocket == null");
+    public void send(String message) {
+        // Check that we're actually connected before trying anything
+        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+            Toast.makeText(this, "cant send message - not connected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mChatService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            mOutStringBuffer.setLength(0);
         }
     }
 
-    private void Disconnect() {
-        if (btSocket!=null) {
-            try {
-                isBtConnected = false;
-                btSocket.close();
-            } catch (IOException e) {
-                msg("Error");
-            }
-        }
-        Toast.makeText(getApplicationContext(),"Disconnected",Toast.LENGTH_LONG).show();
+    private void disconnect() {
+        if (mChatService != null) {
+            mChatService.stop();
+        };
+
         finish();
     }
 
@@ -142,85 +167,147 @@ public class Button extends AppCompatActivity {
         statusView.setText(message);
     }
 
-    private class ConnectBT extends AsyncTask<Void, Void, Void> {
-        private boolean ConnectSuccess = true;
+    private void parseData(String data) {
+        //msg(data);
 
-        @Override
-        protected void onPreExecute() {
-            progress = ProgressDialog.show(Button.this, "Connecting", "Please wait...");  //show a progress dialog
+        // add the message to the buffer
+        mInStringBuffer.append(data);
+
+        // debug - log data and buffer
+        //Log.d("data", data);
+        //Log.d("mInStringBuffer", mInStringBuffer.toString());
+        //msg(data.toString());
+
+        // find any complete messages
+        String[] messages = mInStringBuffer.toString().split("\\n");
+        int noOfMessages = messages.length;
+        // does the last message end in a \n, if not its incomplete and should be ignored
+        if (!mInStringBuffer.toString().endsWith("\n")) {
+            noOfMessages = noOfMessages - 1;
         }
 
-        @Override
-        protected Void doInBackground(Void... devices) { //while the progress dialog is shown, the connection is done in background
-            try {
-                if (btSocket == null || !isBtConnected) {
-                    myBluetooth = BluetoothAdapter.getDefaultAdapter();//get the mobile bluetooth device
-                    BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(address);//connects to the device's address and checks if it's available
-                    btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(myUUID);//create a RFCOMM (SPP) connection
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    btSocket.connect();//start connection
+        // clean the data buffer of any processed messages
+        if (mInStringBuffer.lastIndexOf("\n") > -1)
+            mInStringBuffer.delete(0, mInStringBuffer.lastIndexOf("\n") + 1);
+
+        // process messages
+        for (int messageNo = 0; messageNo < noOfMessages; messageNo++) {
+            processMessage(messages[messageNo]);
+        }
+
+    }
+
+    private void processMessage(String message) {
+        // Debug
+        // msg(message);
+        String parameters[] = message.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        boolean invalidMessage = false;
+
+        // Check the message
+        if (parameters.length > 0) {
+            // check length
+            if (parameters.length == 5) {
+
+                // set matrix
+                if (parameters[0].equals("4")) {
+                    if (!parameters[1].equals("")) {
+                        try {
+                            // convert color from #rrggbbaa to #aarrggbb
+                            String color =
+                                parameters[1].substring(0,1) +
+                                parameters[1].substring(7,9) +
+                                parameters[1].substring(1,7);
+
+                            matrix.setColor(Color.parseColor(color));
+                        }
+                        catch(Exception i){
+                            invalidMessage = true;
+                        }
+                    }
+                    if (!parameters[2].equals(""))
+                        matrix.setSquare(parameters[2].equals("1") ? true : false);
+                    if (!parameters[3].equals(""))
+                        matrix.setBorder(parameters[3].equals("1") ? true : false);
+                    if (!parameters[4].equals(""))
+                        matrix.setVisible(parameters[4].equals("1") ? true : false);
+                    matrix.update();
+
+                }  else {
+                    invalidMessage = true;
                 }
-            } catch (IOException e) {
-                ConnectSuccess = false;//if the try failed, you can check the exception here
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) { //after the doInBackground, it checks if everything went fine
-            super.onPostExecute(result);
-
-            if (!ConnectSuccess) {
-                Toast.makeText(getApplicationContext(), "Failed to connect", Toast.LENGTH_LONG).show();
-                finish();
             } else {
-                msg("Connected to " + deviceName);
-                isBtConnected = true;
-                // start the connection monitor
-                new MonitorConnection().execute();
+                invalidMessage = true;
             }
-            progress.dismiss();
+        } else {
+            invalidMessage = true;
+        }
+
+        if (invalidMessage) {
+            msg("Error - Invalid message received '" + message +"'");
         }
     }
 
-    private class MonitorConnection extends AsyncTask<Void, Void, Void> {
 
+    private final Handler mHandler = new Handler() {
         @Override
-        protected Void doInBackground(Void... devices) {
-            while (!connectionLost) {
-                try {
-                    //read from the buffer, when this errors the connection is lost
-                    // this was the only reliable way I found of monitoring the connection
-                    // .isConnected didnt work
-                    // BluetoothDevice.ACTION_ACL_DISCONNECTED didnt fire
-                    btSocket.getInputStream().read();
-                } catch (IOException e) {
-                    connectionLost = true;
-                }
-            }
-            return null;
-        }
+        public void handleMessage(Message msg) {
 
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-            // if the bt is still connected, the connection must have been lost
-            if (isBtConnected) {
-                try {
-                    isBtConnected = false;
-                    btSocket.close();
-                } catch (IOException e) {
-                    // nothing doing, we are ending anyway!
-                }
-                Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_LONG).show();
-                finish();
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothChatService.STATE_CONNECTED:
+                            Log.d("status","connected");
+                            msg("Connected to " + deviceName);
+                            matrix.setVisibility(View.VISIBLE);
+                            // send the protocol version to the server
+                            send("3," + Constants.PROTOCOL_VERSION + "," + Constants.CLIENT_NAME + "\n");
+                            break;
+                        case BluetoothChatService.STATE_CONNECTING:
+                            Log.d("status","connecting");
+                            msg("Connecting to " + deviceName);
+                            matrix.setVisibility(View.INVISIBLE);
+                            break;
+                        case BluetoothChatService.STATE_LISTEN:
+                        case BluetoothChatService.STATE_NONE:
+                            Log.d("status","not connected");
+                            msg("Not connected");
+                            disconnect();
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    break;
+                case Constants.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readData = new String(readBuf, 0, msg.arg1);
+                    // message received
+                    parseData(readData);
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != this) {
+                        Toast.makeText(getApplicationContext(), "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if (null != this) {
+                        Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
+
         }
-    }
+    };
 
     @Override
     public void onBackPressed() {
-        Disconnect();
+        disconnect();
     }
 }

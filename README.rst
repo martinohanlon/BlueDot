@@ -44,6 +44,8 @@ Why be restricted by such vague positions like top and bottom though: you can ge
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
+The dot doesn't have to be blue, or a dot, you can change its colour, make it square or give it a border.
+
 You can press it, `slide it`_, `swipe it`_, `rotate it`_ - one blue circle can do a lot!
 
 Even more
