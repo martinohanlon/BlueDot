@@ -19,7 +19,7 @@ mbd.when_moved = moved
 mbd.start()
 
 #launch a mock app
-mbd.launch_mock_app2()
+mbd.launch_mock_app()
 
 try:
     while True:

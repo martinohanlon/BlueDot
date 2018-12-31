@@ -259,7 +259,7 @@ class MockBlueDot(BlueDot):
 
         The mock app uses pygame which will need to be installed.
         """
-        self._mock_app_thread = WrapThread(target=self._launch_mock_app2)
+        self._mock_app_thread = WrapThread(target=self._launch_mock_app)
         self._mock_app_thread.start()
 
     def _launch_mock_app(self):
