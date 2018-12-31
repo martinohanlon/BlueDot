@@ -14,6 +14,7 @@ Table of Contents
    bluedotpythonapp
    dotapi
    btcommapi
+   mockapi
    protocol
    build
    changelog
