@@ -27,8 +27,3 @@ BlueDotRotation
 ---------------
 
 .. autoclass:: BlueDotRotation
-
-MockBlueDot
------------
-
-.. autoclass:: MockBlueDot

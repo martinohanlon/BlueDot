@@ -157,14 +157,24 @@ class MockBluetoothClient(BluetoothClient):
             auto_connect)
 
     def connect(self):
+        """
+        Connect to a Bluetooth server.
+        """
         self._server.mock_client_connected(self)
         self._connected = True
 
     def disconnect(self):
+        """
+        Disconnect from a Bluetooth server.
+        """
         self._server.mock_client_disconnected()
         self._connected = False
 
     def mock_server_sending_data(self, data):
+        """
+        Simulates a server sending data to the
+        :class:`~.btcomm.BluetoothClient`.
+        """
         if self._connected:
             self._data_received_callback(data)
 
@@ -259,7 +269,7 @@ class MockBlueDot(BlueDot):
 
         The mock app uses pygame which will need to be installed.
         """
-        self._mock_app_thread = WrapThread(target=self._launch_mock_app2)
+        self._mock_app_thread = WrapThread(target=self._launch_mock_app)
         self._mock_app_thread.start()
 
     def _launch_mock_app(self):

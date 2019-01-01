@@ -6,6 +6,11 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.3.1 - 2019-01-01
+~~~~~~~~~~~~~~~~~~
+
+ * minor bug fix to launch_mock_app
+
 1.3.0 - 2018-12-30
 ~~~~~~~~~~~~~~~~~~
 

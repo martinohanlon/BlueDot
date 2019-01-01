@@ -25,9 +25,3 @@ BluetoothAdapter
 
 .. autoclass:: BluetoothAdapter
 
-MockBluetoothServer
--------------------
-
-.. module:: bluedot.mock
-
-.. autoclass:: MockBluetoothServer

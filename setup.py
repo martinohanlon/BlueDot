@@ -12,7 +12,7 @@ else:
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'
@@ -49,7 +49,7 @@ __long_description__ = """# Blue Dot
 
 1. Install
 
-```bash
+```
 sudo pip3 install bluedot
 ```
 
@@ -57,7 +57,7 @@ sudo pip3 install bluedot
 
 3. Pair your Raspberry Pi
 
-4. Write some code:
+4. Write some code
 
 ```python
 from bluedot import BlueDot
@@ -82,7 +82,7 @@ You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
 
 ## Even more
 
-The [online documentation](http://bluedot.readthedocs.io/en/latest/) describes how to use Blue Dot and the Python library including Recipes and ideas.
+The [online documentation](http://bluedot.readthedocs.io/en/latest/) describes how to use Blue Dot and the Python library including recipes and ideas.
 
 """
 
@@ -97,6 +97,7 @@ if __name__ == '__main__':
           author_email = __author_email__,
           license= __license__,
           keywords=__keywords__,
+          classifiers=__classifiers__,
           packages = [__project__],
           #install_requires = __requires__,
           entry_points={
