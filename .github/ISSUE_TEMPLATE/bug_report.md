@@ -1,13 +1,13 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Having trouble with BlueDot?
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-Got a problem with BlueDot? Fill in the details or delete as appropriate :)
+Fill in the details or delete as appropriate :)
 
 **Describe the bug**
 A clear and concise description of what the bug is.
