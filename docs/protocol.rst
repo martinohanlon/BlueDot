@@ -91,7 +91,7 @@ The button is then released, resulting in the following message::
 
     0,1.0,0.0\n
 
-The color of the dot is changed to "red" to server sends to the client::
+The color of the dot is changed to "red" the server sends to the client::
 
     4,#ff0000ff,0,0,1\n
 
