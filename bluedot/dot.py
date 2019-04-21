@@ -489,13 +489,21 @@ class BlueDot(object):
         self._waiting_for_press = Event()
 
         self._when_pressed = None
+        self._when_pressed_background = False
         self._when_double_pressed = None
+        self._when_double_pressed_background = False
         self._when_released = None
+        self._when_released_background = False
         self._when_moved = None
+        self._when_moved_background = False
         self._when_swiped = None
+        self._when_swiped_background = False
         self._when_rotated = None
+        self._when_rotated_background = False
         self._when_client_connects = None
+        self._when_client_connects_background = False
         self._when_client_disconnects = None
+        self._when_client_disconnects_background = False
 
         self._position = None
         self._interaction = None
@@ -643,12 +651,28 @@ class BlueDot(object):
             bd = BlueDot()
             bd.when_pressed = dot_was_pressed
 
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_pressed(function, background=True)`
         """
         return self._when_pressed
 
     @when_pressed.setter
     def when_pressed(self, value):
-        self._when_pressed = value
+        self.set_when_pressed(value)
+        
+    def set_when_pressed(self, callback, background=False):
+        """
+        Sets the function which is called when the Blue Dot is pressed.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_pressed = callback
+        self._when_pressed_background = background
 
     @property
     def when_double_pressed(self):
@@ -659,6 +683,9 @@ class BlueDot(object):
         instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was
         pressed the second time.
 
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_double_pressed(function, background=True)`
+
         Note - the double press event is fired before the 2nd press event e.g. events would be
         appear in the order, pressed, released, double pressed, pressed.
         """
@@ -666,7 +693,21 @@ class BlueDot(object):
 
     @when_double_pressed.setter
     def when_double_pressed(self, value):
-        self._when_double_pressed = value
+        self.set_when_double_pressed(value)
+
+    def set_when_double_pressed(self, callback, background=False):
+        """
+        Sets the function which is called when the Blue Dot is double pressed.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_double_pressed = callback
+        self._when_double_pressed_background = background
 
     @property
     def double_press_time(self):
@@ -687,12 +728,29 @@ class BlueDot(object):
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
         instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was held
         when it was released.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_released(function, background=True)`
         """
         return self._when_released
 
     @when_released.setter
     def when_released(self, value):
-        self._when_released = value
+        self.set_when_released(value)
+
+    def set_when_released(self, callback, background=False):
+        """
+        Sets the function which is called when the Blue Dot is released.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_released = callback
+        self._when_released_background = background
 
     @property
     def when_moved(self):
@@ -702,12 +760,29 @@ class BlueDot(object):
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
         instance of :class:`BlueDotPosition` will be returned representing the new position of where the
         Blue Dot is held.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_moved(function, background=True)`
         """
         return self._when_moved
 
     @when_moved.setter
     def when_moved(self, value):
-        self._when_moved = value
+        self.set_when_moved(value)
+
+    def set_when_moved(self, callback, background=False):
+        """
+        Sets the function which is called when the position the Blue Dot is pressed is moved.
+
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_moved = callback
+        self._when_moved_background = background
 
     @property
     def when_swiped(self):
@@ -717,12 +792,29 @@ class BlueDot(object):
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
         instance of :class:`BlueDotSwipe` will be returned representing the how the Blue Dot was
         swiped.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_swiped(function, background=True)`
         """
         return self._when_swiped
 
     @when_swiped.setter
     def when_swiped(self, value):
-        self._when_swiped = value
+        self.set_when_swiped(value)
+
+    def set_when_swiped(self, callback, background=False):
+        """
+        Sets the function which is called when the position the Blue Dot is swiped.
+
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_swiped = callback
+        self._when_swiped_background = background
 
     @property
     def rotation_segments(self):
@@ -745,34 +837,86 @@ class BlueDot(object):
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
         instance of :class:`BlueDotRotation` will be returned representing how the Blue Dot was
         rotated.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_rotated(function, background=True)`
         """
         return self._when_rotated
 
     @when_rotated.setter
     def when_rotated(self, value):
-        self._when_rotated = value
+        self.set_when_rotated(value)
+
+    def set_when_rotated(self, callback, background=False):
+        """
+        Sets the function which is called when the position the Blue Dot is rotated (like an
+        iPod clock wheel).
+
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_rotated = callback
+        self._when_rotated_background = background
 
     @property
     def when_client_connects(self):
         """
         Sets or returns the function which is called when a Blue Dot connects.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_client_connects(function, background=True)`
         """
         return self._when_client_connects
 
     @when_client_connects.setter
     def when_client_connects(self, value):
-        self._when_client_connects = value
+        self.set_when_client_connects(value)
+
+    def set_when_client_connects(self, callback, background=False):
+        """
+        Sets the function which is called when a Blue Dot connects.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_client_connects = callback
+        self._when_client_connects_background = background
 
     @property
     def when_client_disconnects(self):
         """
         Sets or returns the function which is called when a Blue Dot disconnects.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_client_disconnects(function, background=True)`
         """
         return self._when_client_disconnects
 
     @when_client_disconnects.setter
     def when_client_disconnects(self, value):
-        self._when_client_disconnects = value
+        self.set_when_client_disconnects(value)
+
+    def set_when_client_disconnects(self, callback, background=False):
+        """
+        Sets the function which is called when a Blue Dot disconnects.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_client_disconnects = callback
+        self._when_client_disconnects_background = background
 
     @property
     def print_messages(self):
@@ -962,7 +1106,7 @@ class BlueDot(object):
         self._print_message("Client connected {}".format(self.server.client_address))
         self._send_dot_config()
         if self.when_client_connects:
-            self._process_callback(self.when_client_connects, None)
+            self._process_callback(self.when_client_connects, None, self._when_client_connects_background)
         
         # wait for the protocol version to be checked.
         if not self._check_protocol_event.wait(CHECK_PROTOCOL_TIMEOUT):
@@ -974,7 +1118,7 @@ class BlueDot(object):
         self._check_protocol_event.clear()
         self._print_message("Client disconnected")
         if self.when_client_disconnects:
-            self._process_callback(self.when_client_disconnects, None)
+            self._process_callback(self.when_client_disconnects, None, self._when_client_disconnects_background)
 
     def _data_received(self, data):
         #add the data received to the buffer
@@ -1027,19 +1171,21 @@ class BlueDot(object):
         #create new interaction
         self._interaction = BlueDotInteraction(position)
 
-        self._process_callback(self.when_pressed, position)
+        self._process_callback(self.when_pressed, position, self._when_pressed_background)
 
     def _double_pressed(self, position):
         #was there a previous interaction
         if self._interaction:
-            #was it less than the time threshold (0.3 seconds)
-            if self._interaction.duration < self._double_press_time:
-                #was the dot pressed again in less than the threshold
-                if time() - self._interaction.released_position.time < self._double_press_time:
-                    self._is_double_pressed_event.set()
-                    self._is_double_pressed_event.clear()
+            # was the previous interaction complete (i.e. had it been released)
+            if not self._interaction.active:
+                # was it less than the time threshold (0.3 seconds)
+                if self._interaction.duration < self._double_press_time:
+                    #was the dot pressed again in less than the threshold
+                    if time() - self._interaction.released_position.time < self._double_press_time:
+                        self._is_double_pressed_event.set()
+                        self._is_double_pressed_event.clear()
 
-                    self._process_callback(self.when_double_pressed, position)
+                        self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
 
     def _released(self, position):
         self._is_pressed = False
@@ -1048,7 +1194,7 @@ class BlueDot(object):
 
         self._interaction.released(position)
 
-        self._process_callback(self.when_released, position)
+        self._process_callback(self.when_released, position, self._when_released_background)
 
         self._process_swipe()
 
@@ -1058,18 +1204,31 @@ class BlueDot(object):
 
         self._interaction.moved(position)
 
-        self._process_callback(self.when_moved, position)
+        self._process_callback(self.when_moved, position, self._when_moved_background)
 
         if self.when_rotated:
             self._process_rotation()
 
-    def _process_callback(self, callback, arg):
+    def _process_callback(self, callback, arg, background):
         if callback:
-            if len(getfullargspec(callback).args) == 0:
+            args_expected = getfullargspec(callback).args
+            no_args_expected = len(args_expected)
+            if len(args_expected) > 0:
+                # if someone names the first arg of a class function to something
+                # other than self, this will fail! or if they name the first argument
+                # of a non class function to self this will fail!
+                if args_expected[0] == "self":
+                    no_args_expected -= 1
+
+            if no_args_expected == 0:
                 call_back_t = WrapThread(target=callback)
             else:
                 call_back_t = WrapThread(target=callback, args=(arg, ))
             call_back_t.start()
+
+            # if this callback is not running in the background wait for it
+            if not background:
+                call_back_t.join()
 
     def _process_swipe(self):
         #was the Blue Dot swiped?
@@ -1078,12 +1237,12 @@ class BlueDot(object):
             self._is_swiped_event.set()
             self._is_swiped_event.clear()
             if self.when_swiped:
-                self._process_callback(self.when_swiped, swipe)
+                self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
 
     def _process_rotation(self):
         rotation = BlueDotRotation(self._interaction, self._rotation_segments)
         if rotation.valid:
-            self._process_callback(self.when_rotated, rotation)
+            self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
 
     def _check_protocol_version(self, protocol_version, client_name):
         try:

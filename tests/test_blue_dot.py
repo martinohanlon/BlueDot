@@ -72,6 +72,26 @@ def test_when_connect_disconnect():
     mbd.mock_client_disconnected()
     assert event_disconnect.wait(1)
 
+def test_when_connect_disconnect_background():
+    mbd = MockBlueDot()
+
+    event_connect = Event()
+    mbd.set_when_client_connects(lambda: delay_function(event_connect.set, 0.2), background=True)
+    
+    event_disconnect = Event()
+    mbd.set_when_client_disconnects(lambda: delay_function(event_disconnect.set, 0.2), background=True)
+    mbd.when_client_disconnects = lambda: event_disconnect.set()
+
+    assert not event_connect.is_set()
+    mbd.mock_client_connected()
+    assert not event_connect.is_set()
+    assert event_connect.wait(1)
+
+    assert not event_disconnect.is_set()
+    mbd.mock_client_disconnected()
+    assert not event_disconnect.is_set()
+    assert event_disconnect.wait(1)
+
 def test_pressed_moved_released():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
@@ -132,13 +152,13 @@ def test_double_press():
 
     # wait for double press
     # double press the blue dot
-    delay_function(simulate_double_press, 0.5)
+    delay_function(simulate_double_press, 0.2)
 
     # wait for double press
     assert mbd.wait_for_double_press(1)
 
     # dont double press the blue dot
-    delay_function(simulate_failed_double_press, 0.5)
+    delay_function(simulate_failed_double_press, 0.2)
     assert not mbd.wait_for_double_press(1)
 
 
@@ -177,6 +197,54 @@ def test_when_pressed_moved_released():
     assert not event_double_pressed.is_set()
     mbd.mock_blue_dot_pressed(0,0)
     assert event_double_pressed.is_set()
+
+def test_when_pressed_moved_released_background():
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+
+    #when_pressed
+    event_pressed = Event()
+    mbd.set_when_pressed(lambda: delay_function(event_pressed.set, 0.2), background=True)
+
+    #when_double_pressed
+    event_double_pressed = Event()
+    mbd.set_when_double_pressed(lambda: delay_function(event_double_pressed.set, 0.2), background=True)
+    
+    #when_moved
+    event_moved = Event()
+    mbd.set_when_moved(lambda: delay_function(event_moved.set, 0.2), background=True)
+
+    #when_released
+    event_released = Event()
+    mbd.set_when_released(lambda: delay_function(event_released.set, 0.2), background=True)
+    
+    # test that the events dont block
+    assert not event_pressed.is_set()
+    mbd.mock_blue_dot_pressed(0,0)
+    assert not event_pressed.is_set()
+    assert event_pressed.wait(1)
+
+    assert not event_moved.is_set()
+    mbd.mock_blue_dot_moved(1,1)
+    assert not event_moved.is_set()
+    assert event_moved.wait(1)
+
+    assert not event_released.is_set()
+    mbd.mock_blue_dot_released(0,0)
+    assert not event_released.is_set()
+    assert event_released.wait(1)
+
+    # set pressed, moved, released to None so they dont wait
+    mbd.set_when_pressed(None)
+    mbd.set_when_moved(None)
+    mbd.set_when_released(None)
+    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_moved(1,1)
+    mbd.mock_blue_dot_released(0,0)
+    assert not event_double_pressed.is_set()
+    mbd.mock_blue_dot_pressed(0,0)
+    assert not event_double_pressed.is_set()
+    assert event_double_pressed.wait(1)
 
 def test_position():
     mbd = MockBlueDot()
@@ -329,6 +397,44 @@ def test_swipe():
     assert not swipe.up
     assert swipe.down
 
+    # background
+    event_swiped.clear()
+    mbd.set_when_swiped(lambda: delay_function(event_swiped.set, 0.2), background=True)
+    simulate_swipe(0,1,0,0,0,-1)
+    assert not event_swiped.is_set()
+    assert event_swiped.wait(1)
+
+def test_callback_in_class():
+
+    class CallbackClass():
+        def __init__(self):
+            self.event = Event()
+
+        def no_pos(self):
+            self.event.set()
+            self.pos = None
+
+        def with_pos(self, pos):
+            self.event.set()
+            self.pos = pos
+
+    cc = CallbackClass()
+    mbd = MockBlueDot()
+    mbd.mock_client_connected()
+
+    mbd.when_pressed = cc.no_pos
+    mbd.mock_blue_dot_pressed(0,0)
+    assert cc.event.is_set()
+    assert cc.pos is None
+    
+    mbd.mock_blue_dot_released(0,0)
+    cc.event.clear()
+
+    mbd.when_pressed = cc.with_pos
+    mbd.mock_blue_dot_pressed(0,0)
+    assert cc.event.is_set()
+    assert cc.pos.middle
+
 def test_rotation():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
@@ -366,6 +472,14 @@ def test_rotation():
     assert not r.clockwise
     assert r.anti_clockwise
 
+    # background
+    # rotate clockwise again
+    event_rotated.clear()
+    mbd.set_when_rotated(lambda: delay_function(event_rotated.set, 0.2), background=True)
+    mbd.mock_blue_dot_moved(0.1,1)
+    assert not event_rotated.is_set()
+    assert event_rotated.wait(1)
+    
 def test_allow_pairing():
     mbd = MockBlueDot()
     assert not mbd.adapter.discoverable
