@@ -6,6 +6,12 @@ Change log
 Bluedot Python library
 ----------------------
 
+1.3.2 - 2019-04-22
+~~~~~~~~~~~~~~~~~~
+
+ * change to how callbacks are called
+ * added `set_when_pressed`, `set_when_released`, etc to allow callbacks to be called in their own threads.
+
 1.3.1 - 2019-01-01
 ~~~~~~~~~~~~~~~~~~
 

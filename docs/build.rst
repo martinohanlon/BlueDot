@@ -32,18 +32,6 @@ Run tests::
 Deploy
 ------
 
-Create :file:`.pypirc` credentials file (optional)::
-
-    nano ~/.pypirc
-
-    [distutils]
-    index-servers =
-        pypi
-
-    [pypi]
-    username:
-    password:
-
 Build for deployment::
 
     python3 setup.py sdist

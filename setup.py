@@ -12,7 +12,7 @@ else:
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'
@@ -85,23 +85,21 @@ You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
 The [online documentation](http://bluedot.readthedocs.io/en/latest/) describes how to use Blue Dot and the Python library including recipes and ideas.
 
 """
-
-if __name__ == '__main__':
-    setup(name='bluedot',
-          version = __version__,
-          description = __desc__,
-          long_description=__long_description__,
-          long_description_content_type='text/markdown',
-          url = __url__,
-          author = __author__,
-          author_email = __author_email__,
-          license= __license__,
-          keywords=__keywords__,
-          classifiers=__classifiers__,
-          packages = [__project__],
-          #install_requires = __requires__,
-          entry_points={
-              'console_scripts': [
-                  'bluedotapp = bluedot.app:main'
-                  ]},
-          zip_safe=False)
+setup(name='bluedot',
+        version = __version__,
+        description = __desc__,
+        long_description=__long_description__,
+        long_description_content_type='text/markdown',
+        url = __url__,
+        author = __author__,
+        author_email = __author_email__,
+        license= __license__,
+        keywords=__keywords__,
+        classifiers=__classifiers__,
+        packages = [__project__],
+        #install_requires = __requires__,
+        entry_points={
+            'console_scripts': [
+                'bluedotapp = bluedot.app:main'
+                ]},
+        zip_safe=False)
