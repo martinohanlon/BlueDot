@@ -686,8 +686,9 @@ class BlueDot(object):
         The function will be run in the same thread and block, to run in a separate 
         thread use `set_when_double_pressed(function, background=True)`
 
-        Note - the double press event is fired before the 2nd press event e.g. events would be
-        appear in the order, pressed, released, double pressed, pressed.
+        .. note::
+            The double press event is fired before the 2nd press event e.g. events would be
+            appear in the order, pressed, released, double pressed, pressed.
         """
         return self._when_double_pressed
 
