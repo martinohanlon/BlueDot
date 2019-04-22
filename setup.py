@@ -85,7 +85,8 @@ You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
 The [online documentation](http://bluedot.readthedocs.io/en/latest/) describes how to use Blue Dot and the Python library including recipes and ideas.
 
 """
-setup(name='bluedot',
+if __name__ == '__main__':
+    setup(name='bluedot',
         version = __version__,
         description = __desc__,
         long_description=__long_description__,
