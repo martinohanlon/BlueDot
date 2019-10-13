@@ -986,7 +986,7 @@ class BlueDot(object):
     @property
     def visible(self):
         """
-        When set to `True` makes the dot invisible. Default is `False`.
+        When set to `False` makes the dot invisible. Default is `True`.
 
         .. note::
 
