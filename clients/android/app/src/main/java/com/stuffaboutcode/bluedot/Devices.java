@@ -1,6 +1,6 @@
 package com.stuffaboutcode.bluedot;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -39,7 +39,10 @@ public class Devices extends AppCompatActivity {
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
 
         if(myBluetooth == null) {
-            Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Bluetooth Device Not Available",
+                    Toast.LENGTH_LONG).show();
 
             //finish apk
             this.finish();
@@ -59,13 +62,17 @@ public class Devices extends AppCompatActivity {
             }
         });
 
-        pairedDevicesList();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pairedDevicesList();
     }
 
     private void pairedDevicesList() {
         pairedDevices = myBluetooth.getBondedDevices();
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
 
         if (pairedDevices.size()>0) {
             // create a list of paired bluetooth devices
