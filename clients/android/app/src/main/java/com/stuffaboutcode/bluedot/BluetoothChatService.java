@@ -421,9 +421,16 @@ public class BluetoothChatService {
 
             // Make a connection to the BluetoothSocket
             try {
-                // This is a blocking call and will only return on a
-                // successful connection or an exception
-                mmSocket.connect();
+                if (mmSocket != null) {
+                    // This is a blocking call and will only return on a
+                    // successful connection or an exception
+                    mmSocket.connect();
+                }
+                else {
+                    // This shouldn't happen, but was reported as an ANR so sometimes it must!
+                    connectionFailed();
+                    return;
+                }
             } catch (IOException e) {
                 // Close the socket
                 try {
