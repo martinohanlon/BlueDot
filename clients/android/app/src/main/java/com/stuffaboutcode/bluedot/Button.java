@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.MotionEvent;
@@ -45,7 +47,12 @@ public class Button extends AppCompatActivity {
         deviceName = newint.getStringExtra(Devices.EXTRA_NAME);
         address = newint.getStringExtra(Devices.EXTRA_ADDRESS);
 
-        TextView statusView = (TextView)findViewById(R.id.status);
+        // Get the port number
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String port_value = sharedPreferences.getString("port", "auto");
+        port_value = port_value.equals("auto") ? "0" : port_value;
+        int port_number = Integer.parseInt(port_value);
+        Toast.makeText(this, "Using port " + port_value, Toast.LENGTH_SHORT).show();
 
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -67,7 +74,7 @@ public class Button extends AppCompatActivity {
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
-        mChatService.connect(device, true);
+        mChatService.connect(device, port_number,true);
 
         matrix = findViewById(R.id.matrix);
 
