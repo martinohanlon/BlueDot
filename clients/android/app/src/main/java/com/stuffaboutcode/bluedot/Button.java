@@ -55,7 +55,6 @@ public class Button extends AppCompatActivity {
             String port_value = sharedPreferences.getString("port", "auto");
             port_number = Integer.parseInt(port_value);
         }
-        Toast.makeText(this, "Using port " + port_number, Toast.LENGTH_SHORT).show();
 
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
