@@ -47,12 +47,15 @@ public class Button extends AppCompatActivity {
         deviceName = newint.getStringExtra(Devices.EXTRA_NAME);
         address = newint.getStringExtra(Devices.EXTRA_ADDRESS);
 
-        // Get the port number
+        // Get the bluetooth port number from preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String port_value = sharedPreferences.getString("port", "auto");
-        port_value = port_value.equals("auto") ? "0" : port_value;
-        int port_number = Integer.parseInt(port_value);
-        Toast.makeText(this, "Using port " + port_value, Toast.LENGTH_SHORT).show();
+        int port_number = 0;
+        // if auto port discovery is not used, get the port
+        if (!sharedPreferences.getBoolean("auto_port", true)) {
+            String port_value = sharedPreferences.getString("port", "auto");
+            port_number = Integer.parseInt(port_value);
+        }
+        Toast.makeText(this, "Using port " + port_number, Toast.LENGTH_SHORT).show();
 
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

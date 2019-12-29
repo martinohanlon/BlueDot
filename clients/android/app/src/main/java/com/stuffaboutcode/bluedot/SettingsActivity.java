@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.Preference;
 import androidx.preference.ListPreference;
-import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
 import android.content.SharedPreferences;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -38,9 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            Preference port = findPreference("port");
-            ListPreference port_list = (ListPreference) port;
-            if (port_list != null) port.setSummary(port_list.getEntry());
+            setupPreferences();
         }
 
         @Override
@@ -61,11 +59,24 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) {
-            Preference port = findPreference("port");
-            ListPreference port_list = (ListPreference) port;
-            if (port_list != null) port.setSummary(port_list.getEntry());
+            setupPreferences();
         }
 
+        private void setupPreferences() {
+            Preference auto_port = findPreference("auto_port");
+            SwitchPreferenceCompat auto_port_switch = (SwitchPreferenceCompat)auto_port;
+            Preference port = findPreference("port");
+            ListPreference port_list = (ListPreference) port;
+            if (auto_port_switch != null) {
+                if (port_list != null) {
+                    // disable the port if the auto_port is enabled
+                    if (auto_port_switch.isChecked()) port.setVisible(false);
+                    else port.setVisible(true);
+                    // set the port summary
+                    port.setSummary(port_list.getEntry());
+                }
+            }
+        }
 
     }
 }
