@@ -159,6 +159,13 @@ Alpha - initial testing
 Android app
 -----------
 
+5 (1.3) - 2019-12-29
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * Added settings menu so a specific bluetooth port can be selected
+ * Using specific bluetooth ports, multiple apps can now connect to a single BT devices
+ * Minor bugs fixes
+
 4 (1.2) - 2018-12-30
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

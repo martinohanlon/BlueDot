@@ -1,6 +1,6 @@
 package com.stuffaboutcode.bluedot;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,11 +13,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.view.View;
 import android.net.Uri;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.preference.PreferenceManager;
+import android.content.SharedPreferences;
 
 import java.util.Set;
 import java.util.ArrayList;
 
-public class Devices extends AppCompatActivity {
+public class Devices
+        extends AppCompatActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     ListView devicelist;
     ImageButton infoButton;
@@ -33,13 +40,15 @@ public class Devices extends AppCompatActivity {
         setContentView(R.layout.activity_devices);
 
         devicelist = (ListView)findViewById(R.id.listView);
-        infoButton = (ImageButton) findViewById(R.id.infoButton);
 
         //if the device has bluetooth
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
 
         if(myBluetooth == null) {
-            Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Bluetooth Device Not Available",
+                    Toast.LENGTH_LONG).show();
 
             //finish apk
             this.finish();
@@ -51,21 +60,69 @@ public class Devices extends AppCompatActivity {
             startActivityForResult(turnBTon,1);
         }
 
-        infoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Uri uri = Uri.parse("https://bluedot.readthedocs.io");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-            }
-        });
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setConnectMsg();
         pairedDevicesList();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.settings) {
+            Intent intent = new Intent(Devices.this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.help) {
+            Uri uri = Uri.parse("https://bluedot.readthedocs.io");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if (key.equals("port")) {
+            setConnectMsg(sharedPreferences);
+        }
+    }
+
+    private void setConnectMsg() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setConnectMsg(sharedPreferences);
+    }
+
+    private void setConnectMsg(SharedPreferences sharedPreferences) {
+        String message = "Connect";
+        Boolean auto_port = sharedPreferences.getBoolean("auto_port", true);
+        String port_value = sharedPreferences.getString("port", "1");
+
+        if (!auto_port) {
+            message = message + " on port " + port_value;
+        }
+
+        TextView connectView = findViewById(R.id.connect);
+        connectView.setText(message);
     }
 
     private void pairedDevicesList() {
         pairedDevices = myBluetooth.getBondedDevices();
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
 
         if (pairedDevices.size()>0) {
             // create a list of paired bluetooth devices
@@ -74,7 +131,10 @@ public class Devices extends AppCompatActivity {
                 list.add(bt.getName() + "\n" + bt.getAddress()); //Get the device's name and the address
             }
         } else {
-            Toast.makeText(getApplicationContext(), "No Paired Bluetooth Devices Found.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "No Paired Bluetooth Devices Found.",
+                    Toast.LENGTH_LONG).show();
         }
 
         final ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, list);
@@ -100,5 +160,7 @@ public class Devices extends AppCompatActivity {
             startActivity(i);
         }
     };
+
+
 }
 
