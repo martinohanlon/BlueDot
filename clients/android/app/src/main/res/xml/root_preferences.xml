@@ -28,7 +28,7 @@
             />
 
         <ListPreference
-            android:defaultValue="auto"
+            android:defaultValue="1"
             android:entries="@array/ports"
             android:entryValues="@array/ports"
             android:key="port"
