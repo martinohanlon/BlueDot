@@ -1,17 +1,16 @@
 from bluedot import BlueDot
 from signal import pause
-import sys
-
-def bd0_pressed():
-    print("bd0 pressed")
 
 def bd1_pressed():
-    print("bd1 pressed")
+    print("BlueDot 1 pressed")
 
-# 2 bluetooth adapters are required, each must be paired to a remote
-bd0 = BlueDot(device = "hci0")
-bd1 = BlueDot(device = "hci1")
-bd0.when_pressed = bd0_pressed
+def bd2_pressed():
+    print("BlueDot 2 pressed")
+
+bd1 = BlueDot(port = 1)
+bd2 = BlueDot(port = 2)
+
 bd1.when_pressed = bd1_pressed
+bd2.when_pressed = bd2_pressed
 
 pause()

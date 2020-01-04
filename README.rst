@@ -33,7 +33,7 @@ Getting Started
 
 5. Press the Blue Dot
 
-See the `getting started`_ guide to 'get statred'!
+See the `getting started`_ guide to 'get started'!
 
 More
 ----
