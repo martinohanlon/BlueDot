@@ -256,6 +256,31 @@ The dot can be hidden and shown using the :attr:`~BlueDot.visible`: property:
 
 .. literalinclude:: examples/looks_visible.py
 
+Multiple Blue Dots
+------------------
+
+You can connect multiple Blue Dot clients (apps) to a single server (python 
+program) by using different Bluetooth ports for each app.
+
+Create multiple `BlueDot` servers using specific ports:
+
+.. literalinclude:: examples/multiple_dots.py
+
+Change the BlueDot app to use the specific port by:
+
+1. Opening settings from the menu
+2. Turning *Auto port discovery* off
+3. Selecting the *Bluetooth port*
+
+.. image:: images/bluedotandroid_settings.png
+   :alt: Android blue dot app showing the settings option on the menu
+
+.. image:: images/bluedotandroid_settings_autoport.png
+   :alt: Android blue dot app showing the settings page and auto port discovery turned on
+
+.. image:: images/bluedotandroid_settings_port.png
+   :alt: Android blue dot app showing the settings page, auto port discovery turned off and bluetooth port 1 selected
+
 Bluetooth
 ---------
 
