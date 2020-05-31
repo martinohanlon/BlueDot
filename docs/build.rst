@@ -8,21 +8,27 @@ Develop
 
 Install / upgrade tools::
 
-    sudo python3 -m pip install --upgrade pip setuptools wheel twine
+    sudo python3 -m pip install --upgrade pip setuptools wheel twine virtualenv
+
+Create a virtual environment (recommended)::
+
+    virtualenv --system-site-packages bluedot-dev
+    cd bluedot-dev
+    source bin/activate 
 
 Clone repo and install for dev::
 
     git clone https://github.com/martinohanlon/BlueDot
     cd BlueDot
     git checkout dev
-    sudo python3 setup.py develop
+    python3 setup.py develop
 
 Test
 ----
 
 Install `pytest`_::
 
-    sudo pip3 install -U pytest
+    pip3 install -U pytest
 
 Run tests::
 
