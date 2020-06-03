@@ -510,6 +510,8 @@ class BlueDot(object):
         self._double_press_time = 0.3
         self._rotation_segments = 8
 
+        self._cols = 1
+        self._rows = 1
         self._color = BLUE
         self._square = False
         self._border = False
@@ -999,7 +1001,12 @@ class BlueDot(object):
     def visible(self, value):
         self._visible = value
         self._send_dot_config()
-        
+
+    def resize(self, cols, rows):
+        self._cols = cols
+        self._rows = rows
+        self._send_dot_config()
+
     def start(self):
         """
         Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
@@ -1133,7 +1140,7 @@ class BlueDot(object):
             self._data_buffer = self._data_buffer[last_command + 1:]
             self._process_commands(commands)
 
-    def _process_commands(self, commands):
+    def _process_commands_old(self, commands):
         for command in commands:
             try:
                 position = None
@@ -1161,7 +1168,39 @@ class BlueDot(object):
                 #protocol check
                 elif operation == "3":
                     self._check_protocol_version(param1, param2)
-                    
+    
+    def _process_commands(self, commands):
+        for command in commands:
+
+            operation = command.split(",")[0]
+            params = command.split(",")[1:]
+            
+            # dot change operation?
+            if operation in ["0", "1", "2"]:
+
+                position = None
+                try:
+                    position = BlueDotPosition(params[2], params[3])
+                    self._position = position
+                except ValueError:
+                    # ignore the occasional corrupt command; XXX warn here?
+                    pass
+                else:    
+                    if operation == "0":
+                        self._released(position)
+
+                    #dot pressed
+                    elif operation == "1":
+                        self._pressed(position)
+
+                    #dot pressed position moved 
+                    elif operation == "2":
+                        self._moved(position)
+
+            # protocol check
+            elif operation == "3":
+                self._check_protocol_version(params[0], params[1])
+
     def _pressed(self, position):
         self._is_pressed = True
         self._is_pressed_event.set()
@@ -1266,11 +1305,16 @@ class BlueDot(object):
     # called whenever the dot is changed or a client connects
     def _send_dot_config(self):
         if self.is_connected:
-            self._server.send("4,{},{},{},{}\n".format(
-                self._color.str_rgba, 
-                int(self._square),
-                int(self._border),
-                int(self._visible)))
+            self._server.send(
+                "4,{},{},{},{},{},{}\n".format(
+                    self._color.str_rgba, 
+                    int(self._square),
+                    int(self._border),
+                    int(self._visible),
+                    self._cols,
+                    self._rows
+                    )
+                )
 
     def _print_message(self, message):
         if self.print_messages:
