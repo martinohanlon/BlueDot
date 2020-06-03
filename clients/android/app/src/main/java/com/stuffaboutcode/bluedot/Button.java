@@ -86,7 +86,7 @@ public class Button extends AppCompatActivity {
             public void onPress(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
                 double x = calcX(cell, actual_x);
                 double y = calcY(cell, actual_y);
-                send(buildMessage("1", x, y));
+                send(buildMessage("1", cell.getCol(), cell.getRow(), x, y));
                 last_x = x;
                 last_y = y;
             }
@@ -96,7 +96,7 @@ public class Button extends AppCompatActivity {
                 double x = calcX(cell, actual_x);
                 double y = calcY(cell, actual_y);
                 if ((x != last_x) || (y != last_y)) {
-                    send(buildMessage("2", x, y));
+                    send(buildMessage("2", cell.getCol(), cell.getRow(), x, y));
                     last_x = x;
                     last_y = y;
                 }
@@ -106,7 +106,7 @@ public class Button extends AppCompatActivity {
             public void onRelease(DynamicMatrix.MatrixCell cell, int pointerId, float actual_x, float actual_y) {
                 double x = calcX(cell, actual_x);
                 double y = calcY(cell, actual_y);
-                send(buildMessage("0", x, y));
+                send(buildMessage("0", cell.getCol(), cell.getRow(), x, y));
                 last_x = x;
                 last_y = y;
             }
@@ -141,8 +141,8 @@ public class Button extends AppCompatActivity {
         return y;
     }
 
-    private String buildMessage(String operation, double x, double y) {
-        return (operation + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
+    private String buildMessage(String operation, int col, int row, double x, double y) {
+        return (operation + "," + String.valueOf(col) + "," + String.valueOf(row) + "," + String.valueOf(x) + "," + String.valueOf(y) + "\n");
     }
 
     public void send(String message) {
@@ -210,50 +210,84 @@ public class Button extends AppCompatActivity {
         // Debug
         // msg(message);
         String parameters[] = message.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-        boolean invalidMessage = false;
+        boolean invalid = false;
 
         // Check the message
         if (parameters.length > 0) {
-            // check length
-            if (parameters.length == 5) {
-
-                // set matrix
-                if (parameters[0].equals("4")) {
-                    if (!parameters[1].equals("")) {
-                        try {
-                            // convert color from #rrggbbaa to #aarrggbb
-                            String color =
-                                parameters[1].substring(0,1) +
-                                parameters[1].substring(7,9) +
-                                parameters[1].substring(1,7);
-
-                            matrix.setColor(Color.parseColor(color));
-                        }
-                        catch(Exception i){
-                            invalidMessage = true;
-                        }
-                    }
-                    if (!parameters[2].equals(""))
-                        matrix.setSquare(parameters[2].equals("1") ? true : false);
-                    if (!parameters[3].equals(""))
-                        matrix.setBorder(parameters[3].equals("1") ? true : false);
-                    if (!parameters[4].equals(""))
-                        matrix.setVisible(parameters[4].equals("1") ? true : false);
-                    matrix.update();
-
-                }  else {
-                    invalidMessage = true;
-                }
-            } else {
-                invalidMessage = true;
+            switch (parameters[0]) {
+                case "4":
+                    invalid = processSetMatrixMessage(parameters);
+                    break;
+                default:
+                    invalid = true;
             }
-        } else {
-            invalidMessage = true;
         }
 
-        if (invalidMessage) {
+        if (invalid) {
             msg("Error - Invalid message received '" + message +"'");
         }
+    }
+
+    private boolean processSetMatrixMessage(String parameters[]) {
+        boolean invalid = false;
+
+        // check length
+        if (parameters.length == 7) {
+            // is it invisible
+            if (parameters[4].equals("0")) {
+                matrix.setVisible(false);
+            } else {
+                //color
+                if (!parameters[1].equals("")) {
+                    String color = convertColor(parameters[1]);
+                    if (!color.equals("")) {
+                        matrix.setColor(Color.parseColor(color));
+                    } else {
+                        invalid = true;
+                    }
+                }
+
+                // square
+                if (!parameters[2].equals(""))
+                    matrix.setSquare(parameters[2].equals("1"));
+
+                // border
+                if (!parameters[3].equals(""))
+                    matrix.setBorder(parameters[3].equals("1"));
+
+                // visible
+                if (!parameters[4].equals(""))
+                    matrix.setVisible(parameters[4].equals("1"));
+
+                // cols
+                if (!parameters[5].equals(""))
+                    matrix.setCols(Integer.parseInt(parameters[5]));
+
+                // rows
+                if (!parameters[6].equals(""))
+                    matrix.setRows(Integer.parseInt(parameters[6]));
+            }
+
+            matrix.update();
+
+        } else {
+            invalid = true;
+        }
+        return invalid;
+    }
+
+    private String convertColor(String color) {
+        // convert color from #rrggbbaa to #aarrggbb
+        String new_color;
+        try {
+            new_color = color.substring(0, 1) +
+                    color.substring(7, 9) +
+                    color.substring(1, 7);
+        } catch (Exception i) {
+            // return an empty string if the color is invalid
+            new_color = "";
+        }
+        return new_color;
     }
 
 
