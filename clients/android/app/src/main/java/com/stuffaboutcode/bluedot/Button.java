@@ -218,6 +218,9 @@ public class Button extends AppCompatActivity {
                 case "4":
                     invalid = processSetMatrixMessage(parameters);
                     break;
+                case "5":
+                    invalid = processSetCellMessage(parameters);
+                    break;
                 default:
                     invalid = true;
             }
@@ -229,6 +232,7 @@ public class Button extends AppCompatActivity {
     }
 
     private boolean processSetMatrixMessage(String parameters[]) {
+        // "4,[color],[square],[border],[visible],[cols],[rows]"
         boolean invalid = false;
 
         // check length
@@ -266,6 +270,58 @@ public class Button extends AppCompatActivity {
                 // rows
                 if (!parameters[6].equals(""))
                     matrix.setRows(Integer.parseInt(parameters[6]));
+            }
+
+            matrix.update();
+
+        } else {
+            invalid = true;
+        }
+        return invalid;
+    }
+
+    private boolean processSetCellMessage(String parameters[]) {
+        // "5,[color],[square],[border],[visible],[col],[row]"
+
+        boolean invalid = false;
+        int col;
+        int row;
+
+        // check length
+        if (parameters.length == 7) {
+
+            // get the col and row
+            col = Integer.parseInt(parameters[5]);
+            row = Integer.parseInt(parameters[6]);
+
+            // get the cell
+            DynamicMatrix.MatrixCell cell = matrix.getCell(col, row);
+
+            // is it invisible
+            if (parameters[4].equals("0")) {
+                cell.setVisible(false);
+            } else {
+                //color
+                if (!parameters[1].equals("")) {
+                    String color = convertColor(parameters[1]);
+                    if (!color.equals("")) {
+                        cell.setColor(Color.parseColor(color));
+                    } else {
+                        invalid = true;
+                    }
+                }
+
+                // square
+                if (!parameters[2].equals(""))
+                    cell.setSquare(parameters[2].equals("1"));
+
+                // border
+                if (!parameters[3].equals(""))
+                    cell.setBorder(parameters[3].equals("1"));
+
+                // visible
+                if (!parameters[4].equals(""))
+                    cell.setVisible(parameters[4].equals("1"));
             }
 
             matrix.update();
