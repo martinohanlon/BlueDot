@@ -57,7 +57,7 @@ class BlueDotPosition(object):
     def angle(self):
         """
         The angle from centre of where the Blue Dot is pressed, held or released.
-        0 degress is up, 0..180 degrees clockwise, -180..0 degrees anti-clockwise.
+        0 degrees is up, 0..180 degrees clockwise, -180..0 degrees anti-clockwise.
         """
         if self._angle is None:
             self._angle = degrees(atan2(self.x, self.y))
@@ -286,7 +286,7 @@ class BlueDotSwipe(object):
         Returns the distance of the swipe (i.e. the distance between the pressed
         and released positions)
         """
-        #should this be the total lenght of the swipe. All the points? It might be slow to calculate
+        # should this be the total length of the swipe. All the points? It might be slow to calculate
         if self._distance == None:
             self._distance = hypot(
                 self.interaction.released_position.x - self.interaction.pressed_position.x,
@@ -418,66 +418,10 @@ class BlueDotRotation(object):
         return self._value == 1
 
 
-class BlueDot(object):
-    """
-    Interacts with a Blue Dot client application, communicating when and where it
-    has been pressed, released or held.
-
-    This class starts an instance of :class:`.btcomm.BluetoothServer`
-    which manages the connection with the Blue Dot client.
-
-    This class is intended for use with the Blue Dot client application.
-
-    The following example will print a message when the Blue Dot is pressed::
-
-        from bluedot import BlueDot
-        bd = BlueDot()
-        bd.wait_for_press()
-        print("The blue dot was pressed")
-
-    :param str device:
-        The Bluetooth device the server should use, the default is "hci0", if
-        your device only has 1 Bluetooth adapter this shouldn't need to be changed.
-
-    :param int port:
-        The Bluetooth port the server should use, the default is 1, and under
-        normal use this should never need to change.
-
-    :param bool auto_start_server:
-        If ``True`` (the default), the Bluetooth server will be automatically
-        started on initialisation; if ``False``, the method :meth:`start` will
-        need to be called before connections will be accepted.
-
-    :param bool power_up_device:
-        If ``True``, the Bluetooth device will be powered up (if required) when the
-        server starts. The default is ``False``.
-
-        Depending on how Bluetooth has been powered down, you may need to use :command:`rfkill`
-        to unblock Bluetooth to give permission to bluez to power on Bluetooth::
-
-            sudo rfkill unblock bluetooth
-
-    :param bool print_messages:
-        If ``True`` (the default), server status messages will be printed stating
-        when the server has started and when clients connect / disconect.
-
-    """
-    def __init__(self,
-        device = "hci0",
-        port = 1,
-        auto_start_server = True,
-        power_up_device = False,
-        print_messages = True):
-
-        self._data_buffer = ""
-        self._device = device
-        self._port = port
-        self._power_up_device = power_up_device
-        self._print_messages = print_messages
-
+class Dot(object):
+    def __init__(self):
         self._is_pressed = False
 
-        self._is_connected_event = Event()
         self._is_pressed_event = Event()
         self._is_released_event = Event()
         self._is_moved_event = Event()
@@ -500,78 +444,18 @@ class BlueDot(object):
         self._when_swiped_background = False
         self._when_rotated = None
         self._when_rotated_background = False
-        self._when_client_connects = None
-        self._when_client_connects_background = False
-        self._when_client_disconnects = None
-        self._when_client_disconnects_background = False
-
+        
         self._position = None
         self._interaction = None
         self._double_press_time = 0.3
         self._rotation_segments = 8
 
-        self._cols = 1
-        self._rows = 1
-        self._color = BLUE
-        self._square = False
-        self._border = False
-        self._visible = True
+        self._color = None
+        self._square = None
+        self._border = None
+        self._visible = None
 
-        self._create_server()
-
-        if auto_start_server:
-            self.start()
-
-    @property
-    def device(self):
-        """
-        The Bluetooth device the server is using. This defaults to "hci0".
-        """
-        return self._device
-
-    @property
-    def port(self):
-        """
-        The port the server is using. This defaults to 1.
-        """
-        return self._port
-
-    @property
-    def server(self):
-        """
-        The :class:`.btcomm.BluetoothServer` instance that is being used to communicate
-        with clients.
-        """
-        return self._server
-
-    @property
-    def adapter(self):
-        """
-        The :class:`.btcomm.BluetoothAdapter` instance that is being used.
-        """
-        return self._server.adapter
-
-    @property
-    def paired_devices(self):
-        """
-        Returns a sequence of devices paired with this adapter
-        :code:`[(mac_address, name), (mac_address, name), ...]`::
-
-            bd = BlueDot()
-            devices = bd.paired_devices
-            for d in devices:
-                device_address = d[0]
-                device_name = d[1]
-        """
-        return self._server.adapter.paired_devices
-
-    @property
-    def is_connected(self):
-        """
-        Returns ``True`` if a Blue Dot client is connected.
-        """
-        return self._is_connected_event.is_set()
-
+    
     @property
     def is_pressed(self):
         """
@@ -922,25 +806,6 @@ class BlueDot(object):
         self._when_client_disconnects_background = background
 
     @property
-    def print_messages(self):
-        """
-        When set to ``True`` results in messages relating to the status of the Bluetooth server
-        to be printed.
-        """
-        return self._print_messages
-
-    @print_messages.setter
-    def print_messages(self, value):
-        self._print_messages = value
-
-    @property
-    def running(self):
-        """
-        Returns a ``True`` if the server is running.
-        """
-        return self._server.running
-
-    @property
     def color(self):
         """
         Sets or returns the color of the dot. Defaults to BLUE.
@@ -1001,36 +866,6 @@ class BlueDot(object):
     def visible(self, value):
         self._visible = value
         self._send_dot_config()
-
-    def resize(self, cols, rows):
-        self._cols = cols
-        self._rows = rows
-        self._send_dot_config()
-
-    def start(self):
-        """
-        Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
-        initialisation.
-        """
-        self._server.start()
-        self._print_message("Server started {}".format(self.server.server_address))
-        self._print_message("Waiting for connection")
-
-    def _create_server(self):
-        self._server = BluetoothServer(
-                self._data_received,
-                when_client_connects = self._client_connected,
-                when_client_disconnects = self._client_disconnected,
-                device = self.device,
-                port = self.port,
-                power_up_device = self._power_up_device,
-                auto_start = False)
-
-    def stop(self):
-        """
-        Stop the Bluetooth server.
-        """
-        self._server.stop()
 
     def wait_for_connection(self, timeout = None):
         """
@@ -1098,6 +933,242 @@ class BlueDot(object):
         """
         return self._is_swiped_event.wait(timeout)
 
+
+class BlueDot(Dot):
+    """
+    Interacts with a Blue Dot client application, communicating when and where it
+    has been pressed, released or held.
+
+    This class starts an instance of :class:`.btcomm.BluetoothServer`
+    which manages the connection with the Blue Dot client.
+
+    This class is intended for use with the Blue Dot client application.
+
+    The following example will print a message when the Blue Dot is pressed::
+
+        from bluedot import BlueDot
+        bd = BlueDot()
+        bd.wait_for_press()
+        print("The blue dot was pressed")
+
+    :param str device:
+        The Bluetooth device the server should use, the default is "hci0", if
+        your device only has 1 Bluetooth adapter this shouldn't need to be changed.
+
+    :param int port:
+        The Bluetooth port the server should use, the default is 1, and under
+        normal use this should never need to change.
+
+    :param bool auto_start_server:
+        If ``True`` (the default), the Bluetooth server will be automatically
+        started on initialisation; if ``False``, the method :meth:`start` will
+        need to be called before connections will be accepted.
+
+    :param bool power_up_device:
+        If ``True``, the Bluetooth device will be powered up (if required) when the
+        server starts. The default is ``False``.
+
+        Depending on how Bluetooth has been powered down, you may need to use :command:`rfkill`
+        to unblock Bluetooth to give permission to bluez to power on Bluetooth::
+
+            sudo rfkill unblock bluetooth
+
+    :param bool print_messages:
+        If ``True`` (the default), server status messages will be printed stating
+        when the server has started and when clients connect / disconect.
+
+    """
+    def __init__(self,
+        device = "hci0",
+        port = 1,
+        auto_start_server = True,
+        power_up_device = False,
+        print_messages = True):
+
+        self._data_buffer = ""
+        self._device = device
+        self._port = port
+        self._power_up_device = power_up_device
+        self._print_messages = print_messages
+
+        self._is_connected_event = Event()
+        self._when_client_connects = None
+        self._when_client_connects_background = False
+        self._when_client_disconnects = None
+        self._when_client_disconnects_background = False
+
+        self._cols = 1
+        self._rows = 1
+
+        super().__init__()
+
+        # setup defaults 
+        self.color = BLUE
+        self.square = False
+        self.border = False
+        self.visible = True
+
+        self._create_server()
+
+        if auto_start_server:
+            self.start()
+
+    @property
+    def device(self):
+        """
+        The Bluetooth device the server is using. This defaults to "hci0".
+        """
+        return self._device
+
+    @property
+    def port(self):
+        """
+        The port the server is using. This defaults to 1.
+        """
+        return self._port
+
+    @property
+    def server(self):
+        """
+        The :class:`.btcomm.BluetoothServer` instance that is being used to communicate
+        with clients.
+        """
+        return self._server
+
+    @property
+    def adapter(self):
+        """
+        The :class:`.btcomm.BluetoothAdapter` instance that is being used.
+        """
+        return self._server.adapter
+
+    @property
+    def paired_devices(self):
+        """
+        Returns a sequence of devices paired with this adapter
+        :code:`[(mac_address, name), (mac_address, name), ...]`::
+
+            bd = BlueDot()
+            devices = bd.paired_devices
+            for d in devices:
+                device_address = d[0]
+                device_name = d[1]
+        """
+        return self._server.adapter.paired_devices
+
+    @property
+    def print_messages(self):
+        """
+        When set to ``True`` results in messages relating to the status of the Bluetooth server
+        to be printed.
+        """
+        return self._print_messages
+
+    @print_messages.setter
+    def print_messages(self, value):
+        self._print_messages = value
+
+    @property
+    def running(self):
+        """
+        Returns a ``True`` if the server is running.
+        """
+        return self._server.running
+
+    @property
+    def is_connected(self):
+        """
+        Returns ``True`` if a Blue Dot client is connected.
+        """
+        return self._is_connected_event.is_set()
+
+    @property
+    def color(self):
+        """
+        Sets or returns the color of the dot. Defaults to BLUE.
+        
+        An instance of :class:`.colors.Color` is returned.
+
+        Value can be set as a :class:`.colors.Color` object, a hex color value
+        in the format `#rrggbb` or `#rrggbbaa`, a tuple of `(red, green, blue)`
+        or `(red, green, blue, alpha)` values between `0` & `255` or a text 
+        description of the color, e.g. "red". 
+        
+        A dictionary of available colors can be obtained from `bluedot.COLORS`.
+        """
+        return super(BlueDot, self.__class__).color.fget(self)
+        
+    @color.setter
+    def color(self, value):
+        super(BlueDot, self.__class__).color.fset(self, value)
+        self._send_dot_config()
+
+    @property
+    def square(self):
+        """
+        When set to `True` the 'dot' is made square. Default is `False`.
+        """
+        return super(BlueDot, self.__class__).square.fget(self)
+
+    @square.setter
+    def square(self, value):
+        super(BlueDot, self.__class__).square.fset(self, value)
+        self._send_dot_config()
+
+    @property
+    def border(self):
+        """
+        When set to `True` adds a border to the dot. Default is `False`.
+        """
+        return super(BlueDot, self.__class__).border.fget(self)
+
+    @border.setter
+    def border(self, value):
+        super(BlueDot, self.__class__).border.fset(self, value)
+        self._send_dot_config()
+
+    @property
+    def visible(self):
+        """
+        When set to `True` makes the dot invisible. Default is `False`.
+
+        .. note::
+
+            Events (press, release, moved) are still sent from the dot
+            when it is not visible.
+        """
+        return super(BlueDot, self.__class__).visible.fget(self)
+
+    @visible.setter
+    def visible(self, value):
+        super(BlueDot, self.__class__).visible.fset(self, value)
+        self._send_dot_config()
+        
+    def start(self):
+        """
+        Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
+        initialisation.
+        """
+        self._server.start()
+        self._print_message("Server started {}".format(self.server.server_address))
+        self._print_message("Waiting for connection")
+
+    def _create_server(self):
+        self._server = BluetoothServer(
+                self._data_received,
+                when_client_connects = self._client_connected,
+                when_client_disconnects = self._client_disconnected,
+                device = self.device,
+                port = self.port,
+                power_up_device = self._power_up_device,
+                auto_start = False)
+
+    def stop(self):
+        """
+        Stop the Bluetooth server.
+        """
+        self._server.stop()
+
     def allow_pairing(self, timeout = 60):
         """
         Allow a Bluetooth device to pair with your Raspberry Pi by Putting the adapter
@@ -1108,6 +1179,11 @@ class BlueDot(object):
             the device will be discoverable and pairable indefinetly.
         """
         self.server.adapter.allow_pairing(timeout = timeout)
+
+    def resize(self, cols, rows):
+        self._cols = cols
+        self._rows = rows
+        self._send_dot_config()
 
     def _client_connected(self):
         self._is_connected_event.set()
@@ -1140,35 +1216,6 @@ class BlueDot(object):
             self._data_buffer = self._data_buffer[last_command + 1:]
             self._process_commands(commands)
 
-    def _process_commands_old(self, commands):
-        for command in commands:
-            try:
-                position = None
-                operation, param1, param2 = command.split(",")
-                if operation != "3":
-                    position = BlueDotPosition(param1, param2)
-                    self._position = position
-
-            except ValueError:
-                # ignore the occasional corrupt command; XXX warn here?
-                pass
-            else:
-                #dot released
-                if operation == "0":
-                    self._released(position)
-
-                #dot pressed
-                elif operation == "1":
-                    self._pressed(position)
-
-                #dot pressed position moved 
-                elif operation == "2":
-                    self._moved(position)
-
-                #protocol check
-                elif operation == "3":
-                    self._check_protocol_version(param1, param2)
-    
     def _process_commands(self, commands):
         for command in commands:
 
@@ -1200,7 +1247,7 @@ class BlueDot(object):
             # protocol check
             elif operation == "3":
                 self._check_protocol_version(params[0], params[1])
-
+                    
     def _pressed(self, position):
         self._is_pressed = True
         self._is_pressed_event.set()
@@ -1313,6 +1360,19 @@ class BlueDot(object):
                     int(self._visible),
                     self._cols,
                     self._rows
+                    )
+                )
+
+    def _send_cell_config(self, col, row, color, square, border, visible):
+        if self.is_connected:
+            self._server.send(
+                "5,{},{},{},{},{},{}\n".format(
+                    color, 
+                    int(square),
+                    int(border),
+                    int(visible),
+                    col,
+                    row
                     )
                 )
 
