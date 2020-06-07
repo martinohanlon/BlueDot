@@ -419,7 +419,15 @@ class BlueDotRotation(object):
 
 
 class Dot(object):
-    def __init__(self):
+    def __init__(self, color, square, border, visible):
+        """
+        Abstract class for the implementation of a single cell or "dot" which can be pressed.
+        """
+        self._color = color
+        self._square = square
+        self._border = border
+        self._visible = visible
+
         self._is_pressed = False
 
         self._is_pressed_event = Event()
@@ -427,8 +435,6 @@ class Dot(object):
         self._is_moved_event = Event()
         self._is_swiped_event = Event()
         self._is_double_pressed_event = Event()
-
-        self._check_protocol_event = Event()
 
         self._waiting_for_press = Event()
 
@@ -449,12 +455,6 @@ class Dot(object):
         self._interaction = None
         self._double_press_time = 0.3
         self._rotation_segments = 8
-
-        self._color = None
-        self._square = None
-        self._border = None
-        self._visible = None
-
     
     @property
     def is_pressed(self):
@@ -824,8 +824,7 @@ class Dot(object):
     @color.setter
     def color(self, value):
         self._color = parse_color(value)
-        self._send_dot_config()
-
+        
     @property
     def square(self):
         """
@@ -836,7 +835,6 @@ class Dot(object):
     @square.setter
     def square(self, value):
         self._square = value
-        self._send_dot_config()
 
     @property
     def border(self):
@@ -848,7 +846,6 @@ class Dot(object):
     @border.setter
     def border(self, value):
         self._border = value
-        self._send_dot_config()
 
     @property
     def visible(self):
@@ -865,7 +862,6 @@ class Dot(object):
     @visible.setter
     def visible(self, value):
         self._visible = value
-        self._send_dot_config()
 
     def wait_for_connection(self, timeout = None):
         """
@@ -933,6 +929,90 @@ class Dot(object):
         """
         return self._is_swiped_event.wait(timeout)
 
+class Cell(Dot):
+    def __init__(self, bd, col, row, color, square, border, visible):
+        self._bd = bd
+        self.col = col
+        self.row = row
+        
+        # setup the "dot"
+        super().__init__(color, square, border, visible)
+
+    @property
+    def color(self):
+        """
+        Sets or returns the color of the dot. Defaults to BLUE.
+        
+        An instance of :class:`.colors.Color` is returned.
+
+        Value can be set as a :class:`.colors.Color` object, a hex color value
+        in the format `#rrggbb` or `#rrggbbaa`, a tuple of `(red, green, blue)`
+        or `(red, green, blue, alpha)` values between `0` & `255` or a text 
+        description of the color, e.g. "red". 
+        
+        A dictionary of available colors can be obtained from `bluedot.COLORS`.
+        """
+        return super(Cell, self.__class__).color.fget(self)
+        
+    @color.setter
+    def color(self, value):
+        super(Cell, self.__class__).color.fset(self, value)
+        self._send_cell_config()
+
+    @property
+    def square(self):
+        """
+        When set to `True` the 'dot' is made square. Default is `False`.
+        """
+        return super(Cell, self.__class__).square.fget(self)
+
+    @square.setter
+    def square(self, value):
+        super(Cell, self.__class__).square.fset(self, value)
+        self._send_cell_config()
+
+    @property
+    def border(self):
+        """
+        When set to `True` adds a border to the dot. Default is `False`.
+        """
+        return super(Cell, self.__class__).border.fget(self)
+
+    @border.setter
+    def border(self, value):
+        super(Cell, self.__class__).border.fset(self, value)
+        self._send_cell_config()
+
+    @property
+    def visible(self):
+        """
+        When set to `True` makes the dot invisible. Default is `False`.
+
+        .. note::
+
+            Events (press, release, moved) are still sent from the dot
+            when it is not visible.
+        """
+        return super(Cell, self.__class__).visible.fget(self)
+
+    @visible.setter
+    def visible(self, value):
+        super(Cell, self.__class__).visible.fset(self, value)
+        self._send_cell_config()
+
+    def _send_cell_config(self):
+        if self._bd.is_connected:
+            self._bd._server.send(
+                "5,{},{},{},{},{},{}\n".format(
+                    self.color,
+                    int(self.square),
+                    int(self.border),
+                    int(self.visible),
+                    self.col,
+                    self.row
+                    )
+                )
+
 
 class BlueDot(Dot):
     """
@@ -991,27 +1071,28 @@ class BlueDot(Dot):
         self._power_up_device = power_up_device
         self._print_messages = print_messages
 
+        self._check_protocol_event = Event()
         self._is_connected_event = Event()
         self._when_client_connects = None
         self._when_client_connects_background = False
         self._when_client_disconnects = None
         self._when_client_disconnects_background = False
 
+        self._cells = {}
         self._cols = 1
         self._rows = 1
 
-        super().__init__()
-
-        # setup defaults 
-        self.color = BLUE
-        self.square = False
-        self.border = False
-        self.visible = True
+        # setup the "dot"
+        super().__init__(BLUE, False, False, True)
 
         self._create_server()
 
         if auto_start_server:
             self.start()
+
+    @property
+    def cells(self):
+        return self._cells
 
     @property
     def device(self):
@@ -1101,7 +1182,7 @@ class BlueDot(Dot):
     @color.setter
     def color(self, value):
         super(BlueDot, self.__class__).color.fset(self, value)
-        self._send_dot_config()
+        self._send_bluedot_config()
 
     @property
     def square(self):
@@ -1113,7 +1194,7 @@ class BlueDot(Dot):
     @square.setter
     def square(self, value):
         super(BlueDot, self.__class__).square.fset(self, value)
-        self._send_dot_config()
+        self._send_bluedot_config()
 
     @property
     def border(self):
@@ -1125,7 +1206,7 @@ class BlueDot(Dot):
     @border.setter
     def border(self, value):
         super(BlueDot, self.__class__).border.fset(self, value)
-        self._send_dot_config()
+        self._send_bluedot_config()
 
     @property
     def visible(self):
@@ -1142,7 +1223,7 @@ class BlueDot(Dot):
     @visible.setter
     def visible(self, value):
         super(BlueDot, self.__class__).visible.fset(self, value)
-        self._send_dot_config()
+        self._send_bluedot_config()
         
     def start(self):
         """
@@ -1183,12 +1264,26 @@ class BlueDot(Dot):
     def resize(self, cols, rows):
         self._cols = cols
         self._rows = rows
-        self._send_dot_config()
+
+        # create new cells
+        new_cells = {}
+
+        for c in range(cols):
+            for r in range(rows):
+                # if cell already exist, reuse it
+                if (c,r) in self._cells.keys():
+                    new_cells[c,r] = self._cells[(c,r)]
+                else:   
+                    new_cells[c,r] = Cell(self, c, r, self._color, self._square, self._border, self._visible)
+                
+        self._cells = new_cells
+
+        self._send_bluedot_config()
 
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
-        self._send_dot_config()
+        self._send_bluedot_config()
         if self.when_client_connects:
             self._process_callback(self.when_client_connects, None, self._when_client_connects_background)
         
@@ -1350,7 +1445,7 @@ class BlueDot(Dot):
             print(msg)    
         
     # called whenever the dot is changed or a client connects
-    def _send_dot_config(self):
+    def _send_bluedot_config(self):
         if self.is_connected:
             self._server.send(
                 "4,{},{},{},{},{},{}\n".format(
@@ -1363,18 +1458,6 @@ class BlueDot(Dot):
                     )
                 )
 
-    def _send_cell_config(self, col, row, color, square, border, visible):
-        if self.is_connected:
-            self._server.send(
-                "5,{},{},{},{},{},{}\n".format(
-                    color, 
-                    int(square),
-                    int(border),
-                    int(visible),
-                    col,
-                    row
-                    )
-                )
 
     def _print_message(self, message):
         if self.print_messages:
