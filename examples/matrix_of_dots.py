@@ -1,5 +1,6 @@
-from bluedot import BlueDot
+from bluedot import BlueDot, COLORS
 from signal import pause
+from random import choice
 
 bd = BlueDot()
 bd.resize(3,3)
@@ -9,12 +10,14 @@ def increase_matrix():
     # bd._send_cell_config(2, 2, "#ff0000ff", False, False, True)
 
 def change_color():
-    bd.cells[(1,1)].color = "yellow"
-    bd.cells[(1,0)].border = True
-    bd.cells[(0,1)].visible = False
-    
-    print(bd.cells)
+    increase_matrix()
+    # bd[bd.cols - 1, bd.rows - 1].color = "green"
+    for c in range(bd.cols):
+        for r in range(bd.rows):
+            bd[c,r].color = choice(list(COLORS.keys()))
 
+    #print(bd.cells)
+    
 # bd.when_pressed = increase_matrix
 bd.when_pressed = change_color
 

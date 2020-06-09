@@ -957,7 +957,7 @@ class Cell(Dot):
     @color.setter
     def color(self, value):
         super(Cell, self.__class__).color.fset(self, value)
-        self._send_cell_config()
+        self._send_config()
 
     @property
     def square(self):
@@ -969,7 +969,7 @@ class Cell(Dot):
     @square.setter
     def square(self, value):
         super(Cell, self.__class__).square.fset(self, value)
-        self._send_cell_config()
+        self._send_config()
 
     @property
     def border(self):
@@ -981,7 +981,7 @@ class Cell(Dot):
     @border.setter
     def border(self, value):
         super(Cell, self.__class__).border.fset(self, value)
-        self._send_cell_config()
+        self._send_config()
 
     @property
     def visible(self):
@@ -998,12 +998,23 @@ class Cell(Dot):
     @visible.setter
     def visible(self, value):
         super(Cell, self.__class__).visible.fset(self, value)
-        self._send_cell_config()
+        self._send_config()
 
-    def _send_cell_config(self):
-        if self._bd.is_connected:
-            self._bd._server.send(
-                "5,{},{},{},{},{},{}\n".format(
+    @property
+    def modified(self):
+        """
+        Returns True if the cells appearance has been modified (or is 
+        different) from the default.  
+        """
+        return not (
+            self.color == self._bd.color and 
+            self.visible == self._bd.visible and
+            self.border == self._bd.border and
+            self.square == self._bd.square
+            )
+
+    def build_config_msg(self):
+        return "5,{},{},{},{},{},{}\n".format(
                     self.color,
                     int(self.square),
                     int(self.border),
@@ -1011,8 +1022,10 @@ class Cell(Dot):
                     self.col,
                     self.row
                     )
-                )
 
+    def _send_config(self):
+        if self._bd.is_connected:
+            self._bd._server.send(self.build_config_msg())
 
 class BlueDot(Dot):
     """
@@ -1093,6 +1106,22 @@ class BlueDot(Dot):
     @property
     def cells(self):
         return self._cells
+
+    @property
+    def cols(self):
+        return self._cols
+    
+    @cols.setter
+    def cols(self, value):
+        self.resize(value, self._rows)
+
+    @property
+    def rows(self):
+        return self._rows
+    
+    @cols.setter
+    def rows(self, value):
+        self.resize(self._cols, value)
 
     @property
     def device(self):
@@ -1272,7 +1301,7 @@ class BlueDot(Dot):
             for r in range(rows):
                 # if cell already exist, reuse it
                 if (c,r) in self._cells.keys():
-                    new_cells[c,r] = self._cells[(c,r)]
+                    new_cells[c,r] = self._cells[c,r]
                 else:   
                     new_cells[c,r] = Cell(self, c, r, self._color, self._square, self._border, self._visible)
                 
@@ -1444,7 +1473,7 @@ class BlueDot(Dot):
             self._server.disconnect_client()
             print(msg)    
         
-    # called whenever the dot is changed or a client connects
+    # called whenever the BlueDot configuration is changed or a client connects
     def _send_bluedot_config(self):
         if self.is_connected:
             self._server.send(
@@ -1458,7 +1487,19 @@ class BlueDot(Dot):
                     )
                 )
 
+            # send the configuration for the individual cells
+            cell_config_msg = ""
+            for cell in self.cells.values():
+                if cell.modified:
+                    cell_config_msg += cell.build_config_msg()
+
+            if cell_config_msg != "":
+                self._server.send(cell_config_msg)
 
     def _print_message(self, message):
         if self.print_messages:
             print(message)
+
+    def __getitem__(self, key):
+        # KeyError will be raised if the cell doesn't exist
+        return self.cells[key]

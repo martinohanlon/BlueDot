@@ -395,7 +395,7 @@ class BluetoothServer(object):
         :param bytes data:
             The data to be sent.
         """
-        self._client_sock.send(data)
+        self._client_sock.sendall(data)
 
     def disconnect_client(self):
         """
@@ -703,7 +703,7 @@ class BluetoothClient():
         :param bytes data:
             The data to be sent.
         """
-        self._client_sock.send(data)
+        self._client_sock.sendall(data)
 
     def _read(self):
         #read until the client is stopped or the client disconnects
