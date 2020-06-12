@@ -27,8 +27,10 @@ class BlueDotPosition(object):
         The y position of the Blue Dot, 0 being centre, -1 being at the
         bottom and 1 being at the top.
     """
-    def __init__(self, x, y):
+    def __init__(self, col, row, x, y):
         self._time = time()
+        self._col = col
+        self._row = row
         self._x = self._clamped(float(x))
         self._y = self._clamped(float(y))
         self._angle = None
@@ -36,6 +38,20 @@ class BlueDotPosition(object):
 
     def _clamped(self, v):
         return max(-1, min(1, v))
+
+    @property
+    def col(self):
+        """
+        The column.
+        """
+        return self._col
+
+    @property
+    def row(self):
+        """
+        The row.
+        """
+        return self._row
 
     @property
     def x(self):
@@ -119,6 +135,11 @@ class BlueDotPosition(object):
             not the time it was sent.
         """
         return self._time
+
+    def __str__(self):
+        return "BlueDotPosition - col={}, row={}, x={}, y={}".format(
+            self.col, self.row, self.x, self.y
+        )
 
 
 class BlueDotInteraction(object):
@@ -1342,6 +1363,8 @@ class BlueDot(Dot):
 
     def _process_commands(self, commands):
         for command in commands:
+            # debug - print each command
+            # print(command)
 
             operation = command.split(",")[0]
             params = command.split(",")[1:]
@@ -1351,7 +1374,7 @@ class BlueDot(Dot):
 
                 position = None
                 try:
-                    position = BlueDotPosition(params[2], params[3])
+                    position = BlueDotPosition(params[0], params[1], params[2], params[3])
                     self._position = position
                 except ValueError:
                     # ignore the occasional corrupt command; XXX warn here?
