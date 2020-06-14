@@ -29,8 +29,8 @@ class BlueDotPosition(object):
     """
     def __init__(self, col, row, x, y):
         self._time = time()
-        self._col = col
-        self._row = row
+        self._col = int(col)
+        self._row = int(row)
         self._x = self._clamped(float(x))
         self._y = self._clamped(float(y))
         self._angle = None
@@ -442,22 +442,18 @@ class BlueDotRotation(object):
 class Dot(object):
     def __init__(self, color, square, border, visible):
         """
-        Abstract class for the implementation of a single cell or "dot" which can be pressed.
+        Abstract class for the implementation of a "dot" or "dots".
         """
         self._color = color
         self._square = square
         self._border = border
         self._visible = visible
 
-        self._is_pressed = False
-
         self._is_pressed_event = Event()
         self._is_released_event = Event()
         self._is_moved_event = Event()
         self._is_swiped_event = Event()
         self._is_double_pressed_event = Event()
-
-        self._waiting_for_press = Event()
 
         self._when_pressed = None
         self._when_pressed_background = False
@@ -472,22 +468,22 @@ class Dot(object):
         self._when_rotated = None
         self._when_rotated_background = False
         
+        self._is_pressed = False
         self._position = None
-        self._interaction = None
         self._double_press_time = 0.3
         self._rotation_segments = 8
-    
+
     @property
     def is_pressed(self):
         """
-        Returns ``True`` if the Blue Dot is pressed (or held).
+        Returns ``True`` if the Dot is pressed (or held).
         """
         return self._is_pressed
 
     @property
     def value(self):
         """
-        Returns a 1 if the Blue Dot is pressed, 0 if released.
+        Returns a 1 if Dot.is_pressed, 0 if not.
         """
         return 1 if self.is_pressed else 0
 
@@ -514,21 +510,6 @@ class Dot(object):
             return ``None``.
         """
         return self._position
-
-    @property
-    def interaction(self):
-        """
-        Returns an instance of :class:`BlueDotInteraction` representing the
-        current or last interaction with the Blue Dot.
-
-        .. note::
-
-            If the Blue Dot is released (and inactive), :attr:`interaction`
-            will return the interaction when it was released, until it is
-            pressed again.  If the Blue Dot has never been pressed
-            :attr:`interaction` will return ``None``.
-        """
-        return self._interaction
 
     @property
     def when_pressed(self):
@@ -771,62 +752,6 @@ class Dot(object):
         self._when_rotated_background = background
 
     @property
-    def when_client_connects(self):
-        """
-        Sets or returns the function which is called when a Blue Dot connects.
-
-        The function will be run in the same thread and block, to run in a separate 
-        thread use `set_when_client_connects(function, background=True)`
-        """
-        return self._when_client_connects
-
-    @when_client_connects.setter
-    def when_client_connects(self, value):
-        self.set_when_client_connects(value)
-
-    def set_when_client_connects(self, callback, background=False):
-        """
-        Sets the function which is called when a Blue Dot connects.
-        
-        :param function callback:
-            The function to call, setting to `None` will stop the callback.
-
-        :param bool background:
-            If set to `True` the function will be run in a separate thread 
-            and it will return immediately. The default is `False`.
-        """
-        self._when_client_connects = callback
-        self._when_client_connects_background = background
-
-    @property
-    def when_client_disconnects(self):
-        """
-        Sets or returns the function which is called when a Blue Dot disconnects.
-
-        The function will be run in the same thread and block, to run in a separate 
-        thread use `set_when_client_disconnects(function, background=True)`
-        """
-        return self._when_client_disconnects
-
-    @when_client_disconnects.setter
-    def when_client_disconnects(self, value):
-        self.set_when_client_disconnects(value)
-
-    def set_when_client_disconnects(self, callback, background=False):
-        """
-        Sets the function which is called when a Blue Dot disconnects.
-        
-        :param function callback:
-            The function to call, setting to `None` will stop the callback.
-
-        :param bool background:
-            If set to `True` the function will be run in a separate thread 
-            and it will return immediately. The default is `False`.
-        """
-        self._when_client_disconnects = callback
-        self._when_client_disconnects_background = background
-
-    @property
     def color(self):
         """
         Sets or returns the color of the dot. Defaults to BLUE.
@@ -884,17 +809,6 @@ class Dot(object):
     def visible(self, value):
         self._visible = value
 
-    def wait_for_connection(self, timeout = None):
-        """
-        Waits until a Blue Dot client connects.
-        Returns ``True`` if a client connects.
-
-        :param float timeout:
-            Number of seconds to wait for a wait connections, if ``None`` (the default),
-            it will wait indefinetly for a connection from a Blue Dot client.
-        """
-        return self._is_connected_event.wait(timeout)
-
     def wait_for_press(self, timeout = None):
         """
         Waits until a Blue Dot is pressed.
@@ -950,12 +864,85 @@ class Dot(object):
         """
         return self._is_swiped_event.wait(timeout)
 
+    def press(self, position):
+        """
+        Processes any "pressed" events associated with this dot.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the dot was pressed.
+        """
+        self._position = position
+        self._is_pressed = True
+        self._is_pressed_event.set()
+        self._is_pressed_event.clear()
+
+        self._process_callback(self.when_pressed, position, self._when_pressed_background)
+
+    def release(self, position):
+        """
+        Processes any "released" events associated with this dot.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
+        """
+        self._position = position
+        self._is_pressed = False
+        self._is_released_event.set()
+        self._is_released_event.clear()
+
+        self._process_callback(self.when_released, position, self._when_released_background)
+
+    def move(self, position):
+        """
+        Processes any "released" events associated with this dot.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
+        """
+        self._is_moved_event.set()
+        self._is_moved_event.clear()
+
+        self._process_callback(self.when_moved, position, self._when_moved_background)
+
+    def double_press(self, position):
+        """
+        Processes any "double press" events associated with this dot.
+        """
+        self._is_double_pressed_event.set()
+        self._is_double_pressed_event.clear()
+
+        self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
+
+    def _process_callback(self, callback, arg, background):
+        if callback:
+            args_expected = getfullargspec(callback).args
+            no_args_expected = len(args_expected)
+            if len(args_expected) > 0:
+                # if someone names the first arg of a class function to something
+                # other than self, this will fail! or if they name the first argument
+                # of a non class function to self this will fail!
+                if args_expected[0] == "self":
+                    no_args_expected -= 1
+
+            if no_args_expected == 0:
+                call_back_t = WrapThread(target=callback)
+            else:
+                call_back_t = WrapThread(target=callback, args=(arg, ))
+            call_back_t.start()
+
+            # if this callback is not running in the background wait for it
+            if not background:
+                call_back_t.join()
+
+
 class Cell(Dot):
     def __init__(self, bd, col, row, color, square, border, visible):
         self._bd = bd
         self.col = col
         self.row = row
         
+        self._interaction = None
+   
         # setup the "dot"
         super().__init__(color, square, border, visible)
 
@@ -1033,6 +1020,78 @@ class Cell(Dot):
             self.border == self._bd.border and
             self.square == self._bd.square
             )
+
+    @property
+    def interaction(self):
+        """
+        Returns an instance of :class:`BlueDotInteraction` representing the
+        current or last interaction with the Blue Dot.
+
+        .. note::
+
+            If the Blue Dot is released (and inactive), :attr:`interaction`
+            will return the interaction when it was released, until it is
+            pressed again.  If the Blue Dot has never been pressed
+            :attr:`interaction` will return ``None``.
+        """
+        return self._interaction
+
+    def press(self, position):
+        """
+        Processes any "pressed" events associated with this cell.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the dot was pressed.
+        """
+        super().press(position)
+
+        # create new interaction
+        self._interaction = BlueDotInteraction(position)
+
+    def release(self, position):
+        """
+        Processes any "released" events associated with this cell.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
+        """
+        super().release(position)
+
+        self._interaction.released(position)
+
+    def move(self, position):
+        """
+        Processes any "released" events associated with this cell.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
+        """
+        super().move(position)
+
+        self._interaction.moved(position)
+
+    def is_double_press(self, position):
+        """
+        Returns True if the position passed represents a double press.
+
+        i.e. The last interaction was the cell was to release it, and
+        the time to press is less than the double_press_time.
+
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
+        """
+        double_press = False
+        #was there a previous interaction
+        if self._interaction:
+            # was the previous interaction complete (i.e. had it been released)
+            if not self._interaction.active:
+                # was it less than the time threshold (0.3 seconds)
+                if self._interaction.duration < self._double_press_time:
+                    #was the dot pressed again in less than the threshold
+                    if time() - self._interaction.released_position.time < self._double_press_time:
+                        double_press = True
+        
+        return double_press
 
     def build_config_msg(self):
         return "5,{},{},{},{},{},{}\n".format(
@@ -1214,6 +1273,30 @@ class BlueDot(Dot):
         return self._is_connected_event.is_set()
 
     @property
+    def is_pressed(self):
+        """
+        Returns ``True`` if the Blue Dot is pressed (or held).
+        """
+        # todo - needs implementing - if any cell pressed
+        return None
+
+    @property
+    def interaction(self):
+        """
+        Returns an instance of :class:`BlueDotInteraction` representing the
+        current or last interaction with the Blue Dot.
+
+        .. note::
+
+            If the Blue Dot is released (and inactive), :attr:`interaction`
+            will return the interaction when it was released, until it is
+            pressed again.  If the Blue Dot has never been pressed
+            :attr:`interaction` will return ``None``.
+        """
+        # todo - needs depreciating, return cell[0,0].interaction
+        return None
+
+    @property
     def color(self):
         """
         Sets or returns the color of the dot. Defaults to BLUE.
@@ -1274,7 +1357,74 @@ class BlueDot(Dot):
     def visible(self, value):
         super(BlueDot, self.__class__).visible.fset(self, value)
         self._send_bluedot_config()
+
+    @property
+    def when_client_connects(self):
+        """
+        Sets or returns the function which is called when a Blue Dot connects.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_client_connects(function, background=True)`
+        """
+        return self._when_client_connects
+
+    @when_client_connects.setter
+    def when_client_connects(self, value):
+        self.set_when_client_connects(value)
+
+    def set_when_client_connects(self, callback, background=False):
+        """
+        Sets the function which is called when a Blue Dot connects.
         
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_client_connects = callback
+        self._when_client_connects_background = background
+
+    @property
+    def when_client_disconnects(self):
+        """
+        Sets or returns the function which is called when a Blue Dot disconnects.
+
+        The function will be run in the same thread and block, to run in a separate 
+        thread use `set_when_client_disconnects(function, background=True)`
+        """
+        return self._when_client_disconnects
+
+    @when_client_disconnects.setter
+    def when_client_disconnects(self, value):
+        self.set_when_client_disconnects(value)
+
+    def set_when_client_disconnects(self, callback, background=False):
+        """
+        Sets the function which is called when a Blue Dot disconnects.
+        
+        :param function callback:
+            The function to call, setting to `None` will stop the callback.
+
+        :param bool background:
+            If set to `True` the function will be run in a separate thread 
+            and it will return immediately. The default is `False`.
+        """
+        self._when_client_disconnects = callback
+        self._when_client_disconnects_background = background
+
+    def wait_for_connection(self, timeout = None):
+        """
+        Waits until a Blue Dot client connects.
+        Returns ``True`` if a client connects.
+
+        :param float timeout:
+            Number of seconds to wait for a wait connections, if ``None`` (the default),
+            it will wait indefinetly for a connection from a Blue Dot client.
+        """
+        return self._is_connected_event.wait(timeout)
+
     def start(self):
         """
         Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
@@ -1330,6 +1480,9 @@ class BlueDot(Dot):
 
         self._send_bluedot_config()
 
+    def _get_cell(self, col, row):
+        return self.cells[col, row]
+
     def _client_connected(self):
         self._is_connected_event.set()
         self._print_message("Client connected {}".format(self.server.client_address))
@@ -1374,28 +1527,56 @@ class BlueDot(Dot):
 
                 position = None
                 try:
-                    position = BlueDotPosition(params[0], params[1], params[2], params[3])
+                    col = int(params[0])
+                    row = int(params[1])
+                    position = BlueDotPosition(col, row, params[2], params[3])
                     self._position = position
+                    cell = self._get_cell(col, row)
                 except ValueError:
                     # ignore the occasional corrupt command; XXX warn here?
                     pass
+                except KeyError:
+                    # cell could not be found...  todo?
+                    pass
                 else:    
                     if operation == "0":
-                        self._released(position)
+                        # set the cell as released
+                        self.release(position)
+                        cell.release(position)
+                        # set the blue dot as released
+                        # if the dot was swiped
+                            # set the cell as swiped
+                            # set the blue dot as swiped
+                        # release the interaction
+
+                        # self._released(position)
 
                     #dot pressed
                     elif operation == "1":
-                        self._pressed(position)
+                        # was the cell double pressed?
+                        if cell.is_double_press(position):
+                            self.double_press(position)
+                            cell.double_press(position)
+                        
+                        self.press(position)
+                        cell.press(position)
 
                     #dot pressed position moved 
                     elif operation == "2":
-                        self._moved(position)
+                        # set the cell as moved
+                        cell.move(position)
+                        # set the blue dot as moved
+                        # if the cell was rotated
+                            # set the cell as rotated
+                            # set the blue dot as rotated
+
+                        # self._moved(position)
 
             # protocol check
             elif operation == "3":
                 self._check_protocol_version(params[0], params[1])
-                    
-    def _pressed(self, position):
+
+    def _pressed_old(self, position):
         self._is_pressed = True
         self._is_pressed_event.set()
         self._is_pressed_event.clear()
@@ -1407,7 +1588,7 @@ class BlueDot(Dot):
 
         self._process_callback(self.when_pressed, position, self._when_pressed_background)
 
-    def _double_pressed(self, position):
+    def _double_pressed_old(self, position):
         #was there a previous interaction
         if self._interaction:
             # was the previous interaction complete (i.e. had it been released)
@@ -1421,7 +1602,7 @@ class BlueDot(Dot):
 
                         self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
 
-    def _released(self, position):
+    def _released_old(self, position):
         self._is_pressed = False
         self._is_released_event.set()
         self._is_released_event.clear()
@@ -1432,7 +1613,7 @@ class BlueDot(Dot):
 
         self._process_swipe()
 
-    def _moved(self, position):
+    def _moved_old(self, position):
         self._is_moved_event.set()
         self._is_moved_event.clear()
 
@@ -1443,26 +1624,7 @@ class BlueDot(Dot):
         if self.when_rotated:
             self._process_rotation()
 
-    def _process_callback(self, callback, arg, background):
-        if callback:
-            args_expected = getfullargspec(callback).args
-            no_args_expected = len(args_expected)
-            if len(args_expected) > 0:
-                # if someone names the first arg of a class function to something
-                # other than self, this will fail! or if they name the first argument
-                # of a non class function to self this will fail!
-                if args_expected[0] == "self":
-                    no_args_expected -= 1
-
-            if no_args_expected == 0:
-                call_back_t = WrapThread(target=callback)
-            else:
-                call_back_t = WrapThread(target=callback, args=(arg, ))
-            call_back_t.start()
-
-            # if this callback is not running in the background wait for it
-            if not background:
-                call_back_t.join()
+    
 
     def _process_swipe(self):
         #was the Blue Dot swiped?
@@ -1470,14 +1632,13 @@ class BlueDot(Dot):
         if swipe.valid:
             self._is_swiped_event.set()
             self._is_swiped_event.clear()
-            if self.when_swiped:
-                self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
+            self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
 
     def _process_rotation(self):
         rotation = BlueDotRotation(self._interaction, self._rotation_segments)
         if rotation.valid:
             self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
-
+                    
     def _check_protocol_version(self, protocol_version, client_name):
         try:
             version_no = int(protocol_version)

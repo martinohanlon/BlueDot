@@ -6,13 +6,16 @@ bd = BlueDot()
 bd.resize(1,2)
 
 def pressed(pos):
-    print("Pressed  : {}".format(pos))
+    print("Pressed      : {}".format(pos))
 
 def moved(pos):
-    print("Moved    : {}".format(pos))
+    print("Moved        : {}".format(pos))
 
 def released(pos):
-    print("Released : {}".format(pos))
+    print("Released     : {}".format(pos))
+
+def double_press(pos):
+    print("Double press : {}".format(pos))
 
 def increase_matrix():
     bd.resize(bd._cols + 1, bd._rows + 1)
@@ -30,8 +33,15 @@ def change_color():
 change_color()
 
 # bd.when_pressed = increase_matrix
+bd[0,0].when_pressed = pressed
+bd[0,0].when_moved = moved
+bd[0,0].when_released = released
+bd[0,0].when_double_pressed = double_press
+
 bd.when_pressed = pressed
 bd.when_moved = moved
 bd.when_released = released
+bd.when_double_pressed = double_press
+
 
 pause()
