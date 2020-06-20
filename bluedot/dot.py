@@ -272,6 +272,8 @@ class BlueDotSwipe(object):
     """
     def __init__(self, interaction):
         self._interaction = interaction
+        self._col = interaction.current_position.col
+        self._col = interaction.current_position.col
         self._speed_threshold = 2
         self._angle = None
         self._distance = None
@@ -286,6 +288,20 @@ class BlueDotSwipe(object):
             return True
         else:
             return False
+
+    @property
+    def col(self):
+        """
+        The column.
+        """
+        return self.interaction.current_position.col
+
+    @property
+    def row(self):
+        """
+        The row.
+        """
+        return self.interaction.current_position.row
 
     @property
     def interaction(self):
@@ -363,6 +379,28 @@ class BlueDotSwipe(object):
         """
         return self.valid and (45 < self.angle <= 135)
 
+    @property
+    def direction(self):
+        """
+        Returns the direction ("up", "down", "left", "right") of the swipe.
+        If the swipe is not valid `None` is returned. 
+        """
+        if self.up:
+            return "up"
+        elif self.down:
+            return "down"
+        elif self.right:
+            return "right"
+        elif self.left:
+            return "left"
+        else:
+            return None
+
+    def __str__(self):
+        return "BlueDotSwipe - col={}, row={}, direction={}".format(
+            self.col, self.row, self.direction
+        )
+
 
 class BlueDotRotation(object):
     def __init__(self, interaction, no_of_segments):
@@ -376,6 +414,7 @@ class BlueDotRotation(object):
             The object to be used to determine whether the interaction
             was a rotation.
         """
+        self._interaction = interaction
         self._value = 0
         self._clockwise = False
         self._anti_clockwise = False
@@ -411,11 +450,32 @@ class BlueDotRotation(object):
                             self._value = -1
 
     @property
+    def col(self):
+        """
+        The column.
+        """
+        return self.interaction.current_position.col
+
+    @property
+    def row(self):
+        """
+        The row.
+        """
+        return self.interaction.current_position.row
+
+    @property
     def valid(self):
         """
         Returns ``True`` if the Blue Dot was rotated.
         """
         return self._value != 0
+
+    @property
+    def interaction(self):
+        """
+        The :class:`BlueDotInteraction` object relating to this rotation.
+        """
+        return self._interaction
 
     @property
     def value(self):
@@ -438,12 +498,17 @@ class BlueDotRotation(object):
         """
         return self._value == 1
 
+    def __str__(self):
+        return "BlueDotRotation - col={}, row={}, value={}".format(
+            self.col, self.row, self.value
+        )
+
 
 class Dot(object):
+    """
+    The internal base class for the implementation of a "button" or "buttons".
+    """
     def __init__(self, color, square, border, visible):
-        """
-        Abstract class for the implementation of a "dot" or "dots".
-        """
         self._color = color
         self._square = square
         self._border = border
@@ -796,7 +861,7 @@ class Dot(object):
     @property
     def visible(self):
         """
-        When set to `True` makes the dot invisible. Default is `False`.
+        When set to `False` the dot will be hidden. Default is `True`.
 
         .. note::
 
@@ -907,12 +972,37 @@ class Dot(object):
     def double_press(self, position):
         """
         Processes any "double press" events associated with this dot.
+        
+        :param BlueDotPosition position:
+            The BlueDotPosition where the Dot was pressed.
         """
         self._is_double_pressed_event.set()
         self._is_double_pressed_event.clear()
 
         self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
 
+    def swipe(self, swipe):
+        """
+        Processes any "swipe" events associated with this dot.
+        
+        :param BlueDotSwipe swipe:
+            The BlueDotSwipe representing how the dot was swiped.
+        """
+        self._is_swiped_event.set()
+        self._is_swiped_event.clear()
+
+        self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
+
+    def rotate(self, rotation):
+        """
+        Processes any "rotation" events associated with this dot.
+        
+        :param BlueDotRotation rotation:
+            The BlueDotRotation representing how the dot was rotated.
+        """
+        # print("rotating - when_rotated {}")
+        self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
+        
     def _process_callback(self, callback, arg, background):
         if callback:
             args_expected = getfullargspec(callback).args
@@ -935,7 +1025,54 @@ class Dot(object):
                 call_back_t.join()
 
 
-class Cell(Dot):
+class BlueDotButton(Dot):
+    """
+    Represents a single button on the Blue Dot client applications. It keeps 
+    tracks of when and where the button has been pressed and processes any 
+    events.
+
+    This class is intended for use via :class:`BlueDot` and should not be 
+    instantiated "manually".
+
+    A button can be interacted with individually via :class:`BlueDot` by 
+    stating its position in the grid e.g. ::
+
+        from bluedot import BlueDot
+        bd = BlueDot()
+
+        first_button = bd[0,0].wait_for_press
+
+        first_button.wait_for_press()
+        print("The first button was pressed")
+
+    :param BlueDot bd:
+        The BlueDot object this button belongs too.
+
+    :param int col:
+        The column position for this button in the grid.
+
+    :param int col:
+        The row position for this button in the grid.
+
+    :param string color
+        The color of the button.
+        
+        Can be set as a :class:`.colors.Color` object, a hex color value
+        in the format `#rrggbb` or `#rrggbbaa`, a tuple of `(red, green, blue)`
+        or `(red, green, blue, alpha)` values between `0` & `255` or a text 
+        description of the color, e.g. "red". 
+        
+        A dictionary of available colors can be obtained from `bluedot.COLORS`.
+
+    :param bool square:
+        When set to `True` the button is made square.
+
+    :param bool border:
+        When set to `True` adds a border to the button.
+
+    :param bool visible:
+        When set to `False` the button will be hidden.
+    """
     def __init__(self, bd, col, row, color, square, border, visible):
         self._bd = bd
         self.col = col
@@ -960,11 +1097,11 @@ class Cell(Dot):
         
         A dictionary of available colors can be obtained from `bluedot.COLORS`.
         """
-        return super(Cell, self.__class__).color.fget(self)
+        return super(BlueDotButton, self.__class__).color.fget(self)
         
     @color.setter
     def color(self, value):
-        super(Cell, self.__class__).color.fset(self, value)
+        super(BlueDotButton, self.__class__).color.fset(self, value)
         self._send_config()
 
     @property
@@ -972,11 +1109,11 @@ class Cell(Dot):
         """
         When set to `True` the 'dot' is made square. Default is `False`.
         """
-        return super(Cell, self.__class__).square.fget(self)
+        return super(BlueDotButton, self.__class__).square.fget(self)
 
     @square.setter
     def square(self, value):
-        super(Cell, self.__class__).square.fset(self, value)
+        super(BlueDotButton, self.__class__).square.fset(self, value)
         self._send_config()
 
     @property
@@ -984,11 +1121,11 @@ class Cell(Dot):
         """
         When set to `True` adds a border to the dot. Default is `False`.
         """
-        return super(Cell, self.__class__).border.fget(self)
+        return super(BlueDotButton, self.__class__).border.fget(self)
 
     @border.setter
     def border(self, value):
-        super(Cell, self.__class__).border.fset(self, value)
+        super(BlueDotButton, self.__class__).border.fset(self, value)
         self._send_config()
 
     @property
@@ -1001,18 +1138,18 @@ class Cell(Dot):
             Events (press, release, moved) are still sent from the dot
             when it is not visible.
         """
-        return super(Cell, self.__class__).visible.fget(self)
+        return super(BlueDotButton, self.__class__).visible.fget(self)
 
     @visible.setter
     def visible(self, value):
-        super(Cell, self.__class__).visible.fset(self, value)
+        super(BlueDotButton, self.__class__).visible.fset(self, value)
         self._send_config()
 
     @property
     def modified(self):
         """
-        Returns True if the cells appearance has been modified (or is 
-        different) from the default.  
+        Returns True if the button's appearance has been modified [is 
+        different] from the default.  
         """
         return not (
             self.color == self._bd.color and 
@@ -1038,7 +1175,7 @@ class Cell(Dot):
 
     def press(self, position):
         """
-        Processes any "pressed" events associated with this cell.
+        Processes any "pressed" events associated with this button.
 
         :param BlueDotPosition position:
             The BlueDotPosition where the dot was pressed.
@@ -1050,7 +1187,7 @@ class Cell(Dot):
 
     def release(self, position):
         """
-        Processes any "released" events associated with this cell.
+        Processes any "released" events associated with this button.
 
         :param BlueDotPosition position:
             The BlueDotPosition where the Dot was pressed.
@@ -1061,7 +1198,7 @@ class Cell(Dot):
 
     def move(self, position):
         """
-        Processes any "released" events associated with this cell.
+        Processes any "released" events associated with this button.
 
         :param BlueDotPosition position:
             The BlueDotPosition where the Dot was pressed.
@@ -1074,7 +1211,7 @@ class Cell(Dot):
         """
         Returns True if the position passed represents a double press.
 
-        i.e. The last interaction was the cell was to release it, and
+        i.e. The last interaction was the button was to release it, and
         the time to press is less than the double_press_time.
 
         :param BlueDotPosition position:
@@ -1092,6 +1229,23 @@ class Cell(Dot):
                         double_press = True
         
         return double_press
+
+    def get_swipe(self):
+        """
+        Returns an instance of :class:`BlueDotRotation` if the last interaction
+        with the button was a swipe. Returns `None` if the button was not swiped. 
+        """
+        swipe = BlueDotSwipe(self.interaction)
+        if swipe.valid:
+            return swipe
+
+    def get_rotation(self):
+        # only bother checking to see if its a rotation if `when_rotated`
+        # as been set. Performance thang!
+        if self.when_rotated or self._bd.when_rotated:
+            rotation = BlueDotRotation(self._interaction, self._rotation_segments)
+            if rotation.valid:
+                return rotation
 
     def build_config_msg(self):
         return "5,{},{},{},{},{},{}\n".format(
@@ -1171,7 +1325,7 @@ class BlueDot(Dot):
         self._when_client_disconnects = None
         self._when_client_disconnects_background = False
 
-        self._cells = {}
+        self._buttons = {}
         self._cols = 1
         self._rows = 1
 
@@ -1184,8 +1338,8 @@ class BlueDot(Dot):
             self.start()
 
     @property
-    def cells(self):
-        return self._cells
+    def buttons(self):
+        return self._buttons
 
     @property
     def cols(self):
@@ -1277,7 +1431,7 @@ class BlueDot(Dot):
         """
         Returns ``True`` if the Blue Dot is pressed (or held).
         """
-        # todo - needs implementing - if any cell pressed
+        # todo - needs implementing - if any button pressed
         return None
 
     @property
@@ -1293,7 +1447,7 @@ class BlueDot(Dot):
             pressed again.  If the Blue Dot has never been pressed
             :attr:`interaction` will return ``None``.
         """
-        # todo - needs depreciating, return cell[0,0].interaction
+        # todo - needs depreciating, return button[0,0].interaction
         return None
 
     @property
@@ -1465,23 +1619,23 @@ class BlueDot(Dot):
         self._cols = cols
         self._rows = rows
 
-        # create new cells
-        new_cells = {}
+        # create new buttons
+        new_buttons = {}
 
         for c in range(cols):
             for r in range(rows):
-                # if cell already exist, reuse it
-                if (c,r) in self._cells.keys():
-                    new_cells[c,r] = self._cells[c,r]
+                # if button already exist, reuse it
+                if (c,r) in self._buttons.keys():
+                    new_buttons[c,r] = self._buttons[c,r]
                 else:   
-                    new_cells[c,r] = Cell(self, c, r, self._color, self._square, self._border, self._visible)
+                    new_buttons[c,r] = BlueDotButton(self, c, r, self._color, self._square, self._border, self._visible)
                 
-        self._cells = new_cells
+        self._buttons = new_buttons
 
         self._send_bluedot_config()
 
-    def _get_cell(self, col, row):
-        return self.cells[col, row]
+    def _get_button(self, col, row):
+        return self.buttons[col, row]
 
     def _client_connected(self):
         self._is_connected_event.set()
@@ -1531,113 +1685,115 @@ class BlueDot(Dot):
                     row = int(params[1])
                     position = BlueDotPosition(col, row, params[2], params[3])
                     self._position = position
-                    cell = self._get_cell(col, row)
+                    button = self._get_button(col, row)
                 except ValueError:
                     # ignore the occasional corrupt command; XXX warn here?
                     pass
                 except KeyError:
-                    # cell could not be found...  todo?
+                    # button could not be found...  todo?
                     pass
-                else:    
+                else:
+                    # dot released
                     if operation == "0":
-                        # set the cell as released
-                        self.release(position)
-                        cell.release(position)
                         # set the blue dot as released
-                        # if the dot was swiped
-                            # set the cell as swiped
-                            # set the blue dot as swiped
-                        # release the interaction
+                        self.release(position)
+                        # set the button as released
+                        button.release(position)
+                        
+                        # was it a swipe?
+                        swipe = button.get_swipe()
+                        if swipe is not None:
+                            self.swipe(swipe)
+                            button.swipe(swipe)
 
-                        # self._released(position)
-
-                    #dot pressed
+                    # dot pressed
                     elif operation == "1":
-                        # was the cell double pressed?
-                        if cell.is_double_press(position):
+                        # was the button double pressed?
+                        if button.is_double_press(position):
                             self.double_press(position)
-                            cell.double_press(position)
+                            button.double_press(position)
                         
                         self.press(position)
-                        cell.press(position)
+                        button.press(position)
 
-                    #dot pressed position moved 
+                    # dot pressed position moved 
                     elif operation == "2":
-                        # set the cell as moved
-                        cell.move(position)
                         # set the blue dot as moved
-                        # if the cell was rotated
-                            # set the cell as rotated
-                            # set the blue dot as rotated
-
-                        # self._moved(position)
+                        self.move(position)
+                        # set the button as moved
+                        button.move(position)
+                        # was it a rotation
+                        rotation = button.get_rotation()
+                        if rotation is not None:
+                            self.rotate(rotation)
+                            button.rotate(rotation)
 
             # protocol check
             elif operation == "3":
                 self._check_protocol_version(params[0], params[1])
 
-    def _pressed_old(self, position):
-        self._is_pressed = True
-        self._is_pressed_event.set()
-        self._is_pressed_event.clear()
+    # def _pressed_old(self, position):
+    #     self._is_pressed = True
+    #     self._is_pressed_event.set()
+    #     self._is_pressed_event.clear()
 
-        self._double_pressed(position)
+    #     self._double_pressed(position)
 
-        #create new interaction
-        self._interaction = BlueDotInteraction(position)
+    #     #create new interaction
+    #     self._interaction = BlueDotInteraction(position)
 
-        self._process_callback(self.when_pressed, position, self._when_pressed_background)
+    #     self._process_callback(self.when_pressed, position, self._when_pressed_background)
 
-    def _double_pressed_old(self, position):
-        #was there a previous interaction
-        if self._interaction:
-            # was the previous interaction complete (i.e. had it been released)
-            if not self._interaction.active:
-                # was it less than the time threshold (0.3 seconds)
-                if self._interaction.duration < self._double_press_time:
-                    #was the dot pressed again in less than the threshold
-                    if time() - self._interaction.released_position.time < self._double_press_time:
-                        self._is_double_pressed_event.set()
-                        self._is_double_pressed_event.clear()
+    # def _double_pressed_old(self, position):
+    #     #was there a previous interaction
+    #     if self._interaction:
+    #         # was the previous interaction complete (i.e. had it been released)
+    #         if not self._interaction.active:
+    #             # was it less than the time threshold (0.3 seconds)
+    #             if self._interaction.duration < self._double_press_time:
+    #                 #was the dot pressed again in less than the threshold
+    #                 if time() - self._interaction.released_position.time < self._double_press_time:
+    #                     self._is_double_pressed_event.set()
+    #                     self._is_double_pressed_event.clear()
 
-                        self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
+    #                     self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
 
-    def _released_old(self, position):
-        self._is_pressed = False
-        self._is_released_event.set()
-        self._is_released_event.clear()
+    # def _released_old(self, position):
+    #     self._is_pressed = False
+    #     self._is_released_event.set()
+    #     self._is_released_event.clear()
 
-        self._interaction.released(position)
+    #     self._interaction.released(position)
 
-        self._process_callback(self.when_released, position, self._when_released_background)
+    #     self._process_callback(self.when_released, position, self._when_released_background)
 
-        self._process_swipe()
+    #     self._process_swipe()
 
-    def _moved_old(self, position):
-        self._is_moved_event.set()
-        self._is_moved_event.clear()
+    # def _moved_old(self, position):
+    #     self._is_moved_event.set()
+    #     self._is_moved_event.clear()
 
-        self._interaction.moved(position)
+    #     self._interaction.moved(position)
 
-        self._process_callback(self.when_moved, position, self._when_moved_background)
+    #     self._process_callback(self.when_moved, position, self._when_moved_background)
 
-        if self.when_rotated:
-            self._process_rotation()
+    #     if self.when_rotated:
+    #         self._process_rotation()
 
     
 
-    def _process_swipe(self):
-        #was the Blue Dot swiped?
-        swipe = BlueDotSwipe(self._interaction)
-        if swipe.valid:
-            self._is_swiped_event.set()
-            self._is_swiped_event.clear()
-            self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
+    # def _process_swipe(self):
+    #     #was the Blue Dot swiped?
+    #     swipe = BlueDotSwipe(self._interaction)
+    #     if swipe.valid:
+    #         self._is_swiped_event.set()
+    #         self._is_swiped_event.clear()
+    #         self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
 
-    def _process_rotation(self):
-        rotation = BlueDotRotation(self._interaction, self._rotation_segments)
-        if rotation.valid:
-            self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
+    # def _process_rotation(self):
+    #     rotation = BlueDotRotation(self._interaction, self._rotation_segments)
+    #     if rotation.valid:
+    #         self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
                     
     def _check_protocol_version(self, protocol_version, client_name):
         try:
@@ -1671,19 +1827,19 @@ class BlueDot(Dot):
                     )
                 )
 
-            # send the configuration for the individual cells
-            cell_config_msg = ""
-            for cell in self.cells.values():
-                if cell.modified:
-                    cell_config_msg += cell.build_config_msg()
+            # send the configuration for the individual buttons
+            button_config_msg = ""
+            for button in self.buttons.values():
+                if button.modified:
+                    button_config_msg += button.build_config_msg()
 
-            if cell_config_msg != "":
-                self._server.send(cell_config_msg)
+            if button_config_msg != "":
+                self._server.send(button_config_msg)
 
     def _print_message(self, message):
         if self.print_messages:
             print(message)
 
     def __getitem__(self, key):
-        # KeyError will be raised if the cell doesn't exist
-        return self.cells[key]
+        # KeyError will be raised if the button doesn't exist
+        return self.buttons[key]
