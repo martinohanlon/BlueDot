@@ -6,6 +6,16 @@ Change log
 Bluedot Python library
 ----------------------
 
+2.0.0 - tbc
+~~~~~~~~~~~~~~~~~~
+
+ * implementation of multiple buttons in a matrix
+ * refactor of significant portions of the code base
+ * improvement to btcomm to manage large messages 
+ * deprecated BlueDot.interaction
+ * support for protocol version 2
+
+
 1.3.2 - 2019-04-22
 ~~~~~~~~~~~~~~~~~~
 
@@ -158,6 +168,12 @@ Alpha - initial testing
 
 Android app
 -----------
+
+7 (2.0) - tbc
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * implemenaton of multiple buttons in a matrix
+ * support for protocol version 2
 
 6 (1.3.1) - 2019-12-30
 ~~~~~~~~~~~~~~~~~~~~~~~~

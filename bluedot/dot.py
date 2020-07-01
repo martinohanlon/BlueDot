@@ -53,14 +53,14 @@ class Dot(object):
     @property
     def is_pressed(self):
         """
-        Returns ``True`` if the Dot is pressed (or held).
+        Returns ``True`` if the button is pressed (or held).
         """
         return self._is_pressed
 
     @property
     def value(self):
         """
-        Returns a 1 if Dot.is_pressed, 0 if not.
+        Returns a 1 if ``.is_pressed``, 0 if not.
         """
         return 1 if self.is_pressed else 0
 
@@ -76,14 +76,14 @@ class Dot(object):
     def position(self):
         """
         Returns an instance of :class:`BlueDotPosition` representing the
-        current or last position the Blue Dot was pressed, held or
+        current or last position the button was pressed, held or
         released.
 
         .. note::
 
-            If the Blue Dot is released (and inactive), :attr:`position` will
+            If the button is released (and inactive), :attr:`position` will
             return the position where it was released, until it is pressed
-            again. If the Blue Dot has never been pressed :attr:`position` will
+            again. If the button has never been pressed :attr:`position` will
             return ``None``.
         """
         return self._position
@@ -91,27 +91,27 @@ class Dot(object):
     @property
     def when_pressed(self):
         """
-        Sets or returns the function which is called when the Blue Dot is pressed.
+        Sets or returns the function which is called when the button is pressed.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was pressed.
+        instance of :class:`BlueDotPosition` will be returned representing where the button was pressed.
 
         The following example will print a message to the screen when the button is pressed::
 
             from bluedot import BlueDot
 
             def dot_was_pressed():
-                print("The Blue Dot was pressed")
+                print("The button was pressed")
 
             bd = BlueDot()
             bd.when_pressed = dot_was_pressed
 
-        This example shows how the position of where the dot was pressed can be obtained::
+        This example shows how the position of where the button was pressed can be obtained::
 
             from bluedot import BlueDot
 
             def dot_was_pressed(pos):
-                print("The Blue Dot was pressed at pos x={} y={}".format(pos.x, pos.y))
+                print("The button was pressed at pos x={} y={}".format(pos.x, pos.y))
 
             bd = BlueDot()
             bd.when_pressed = dot_was_pressed
@@ -127,7 +127,7 @@ class Dot(object):
         
     def set_when_pressed(self, callback, background=False):
         """
-        Sets the function which is called when the Blue Dot is pressed.
+        Sets the function which is called when the button is pressed.
         
         :param function callback:
             The function to call, setting to `None` will stop the callback.
@@ -142,10 +142,10 @@ class Dot(object):
     @property
     def when_double_pressed(self):
         """
-        Sets or returns the function which is called when the Blue Dot is double pressed.
+        Sets or returns the function which is called when the button is double pressed.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was
+        instance of :class:`BlueDotPosition` will be returned representing where the button was
         pressed the second time.
 
         The function will be run in the same thread and block, to run in a separate 
@@ -163,7 +163,7 @@ class Dot(object):
 
     def set_when_double_pressed(self, callback, background=False):
         """
-        Sets the function which is called when the Blue Dot is double pressed.
+        Sets the function which is called when the button is double pressed.
         
         :param function callback:
             The function to call, setting to `None` will stop the callback.
@@ -189,10 +189,10 @@ class Dot(object):
     @property
     def when_released(self):
         """
-        Sets or returns the function which is called when the Blue Dot is released.
+        Sets or returns the function which is called when the button is released.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of :class:`BlueDotPosition` will be returned representing where the Blue Dot was held
+        instance of :class:`BlueDotPosition` will be returned representing where the button was held
         when it was released.
 
         The function will be run in the same thread and block, to run in a separate 
@@ -206,7 +206,7 @@ class Dot(object):
 
     def set_when_released(self, callback, background=False):
         """
-        Sets the function which is called when the Blue Dot is released.
+        Sets the function which is called when the button is released.
         
         :param function callback:
             The function to call, setting to `None` will stop the callback.
@@ -221,7 +221,7 @@ class Dot(object):
     @property
     def when_moved(self):
         """
-        Sets or returns the function which is called when the position the Blue Dot is pressed is moved.
+        Sets or returns the function which is called when the position the button is pressed is moved.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
         instance of :class:`BlueDotPosition` will be returned representing the new position of where the
@@ -238,7 +238,7 @@ class Dot(object):
 
     def set_when_moved(self, callback, background=False):
         """
-        Sets the function which is called when the position the Blue Dot is pressed is moved.
+        Sets the function which is called when the position the button is pressed is moved.
 
         :param function callback:
             The function to call, setting to `None` will stop the callback.
@@ -253,10 +253,10 @@ class Dot(object):
     @property
     def when_swiped(self):
         """
-        Sets or returns the function which is called when the Blue Dot is swiped.
+        Sets or returns the function which is called when the button is swiped.
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of :class:`BlueDotSwipe` will be returned representing the how the Blue Dot was
+        instance of :class:`BlueDotSwipe` will be returned representing the how the button was
         swiped.
 
         The function will be run in the same thread and block, to run in a separate 
@@ -270,7 +270,7 @@ class Dot(object):
 
     def set_when_swiped(self, callback, background=False):
         """
-        Sets the function which is called when the position the Blue Dot is swiped.
+        Sets the function which is called when the position the button is swiped.
 
         :param function callback:
             The function to call, setting to `None` will stop the callback.
@@ -285,7 +285,7 @@ class Dot(object):
     @property
     def rotation_segments(self):
         """
-        Sets or returns the number of virtual segments the Blue Dot is split into for  rotating.
+        Sets or returns the number of virtual segments the button is split into for  rotating.
         Defaults to 8.
         """
         return self._rotation_segments
@@ -297,11 +297,11 @@ class Dot(object):
     @property
     def when_rotated(self):
         """
-        Sets or returns the function which is called when the Blue Dot is rotated (like an
+        Sets or returns the function which is called when the button is rotated (like an
         iPod clock wheel).
 
         The function should accept 0 or 1 parameters, if the function accepts 1 parameter an
-        instance of :class:`BlueDotRotation` will be returned representing how the Blue Dot was
+        instance of :class:`BlueDotRotation` will be returned representing how the button was
         rotated.
 
         The function will be run in the same thread and block, to run in a separate 
@@ -315,7 +315,7 @@ class Dot(object):
 
     def set_when_rotated(self, callback, background=False):
         """
-        Sets the function which is called when the position the Blue Dot is rotated (like an
+        Sets the function which is called when the position the button is rotated (like an
         iPod clock wheel).
 
         :param function callback:
@@ -389,7 +389,7 @@ class Dot(object):
     def wait_for_press(self, timeout = None):
         """
         Waits until a Blue Dot is pressed.
-        Returns ``True`` if the Blue Dot was pressed.
+        Returns ``True`` if the button was pressed.
 
         :param float timeout:
             Number of seconds to wait for a Blue Dot to be pressed, if ``None``
@@ -400,7 +400,7 @@ class Dot(object):
     def wait_for_double_press(self, timeout = None):
         """
         Waits until a Blue Dot is double pressed.
-        Returns ``True`` if the Blue Dot was double pressed.
+        Returns ``True`` if the button was double pressed.
 
         :param float timeout:
             Number of seconds to wait for a Blue Dot to be double pressed, if ``None``
@@ -411,7 +411,7 @@ class Dot(object):
     def wait_for_release(self, timeout = None):
         """
         Waits until a Blue Dot is released.
-        Returns ``True`` if the Blue Dot was released.
+        Returns ``True`` if the button was released.
 
         :param float timeout:
             Number of seconds to wait for a Blue Dot to be released, if ``None``
@@ -421,22 +421,22 @@ class Dot(object):
 
     def wait_for_move(self, timeout = None):
         """
-        Waits until the position where the Blue Dot is pressed is moved.
-        Returns ``True`` if the position pressed on the Blue Dot was moved.
+        Waits until the position where the button is pressed is moved.
+        Returns ``True`` if the position pressed on the button was moved.
 
         :param float timeout:
-            Number of seconds to wait for the position that the Blue Dot
+            Number of seconds to wait for the position that the button
             is pressed to move, if ``None`` (the default), it will wait indefinetly.
         """
         return self._is_moved_event.wait(timeout)
 
     def wait_for_swipe(self, timeout = None):
         """
-        Waits until the Blue Dot is swiped.
-        Returns ``True`` if the Blue Dot was swiped.
+        Waits until the button is swiped.
+        Returns ``True`` if the button was swiped.
 
         :param float timeout:
-            Number of seconds to wait for the Blue Dot to be swiped, if ``None``
+            Number of seconds to wait for the button to be swiped, if ``None``
             (the default), it will wait indefinetly.
         """
         return self._is_swiped_event.wait(timeout)
@@ -539,7 +539,7 @@ class Dot(object):
 
 class BlueDotButton(Dot):
     """
-    Represents a single button on the Blue Dot client applications. It keeps 
+    Represents a single button on the button client applications. It keeps 
     tracks of when and where the button has been pressed and processes any 
     events.
 
@@ -648,13 +648,13 @@ class BlueDotButton(Dot):
     def interaction(self):
         """
         Returns an instance of :class:`BlueDotInteraction` representing the
-        current or last interaction with the Blue Dot.
+        current or last interaction with the button.
 
         .. note::
 
-            If the Blue Dot is released (and inactive), :attr:`interaction`
+            If the button is released (and inactive), :attr:`interaction`
             will return the interaction when it was released, until it is
-            pressed again.  If the Blue Dot has never been pressed
+            pressed again.  If the button has never been pressed
             :attr:`interaction` will return ``None``.
         """
         return self._interaction
@@ -761,14 +761,14 @@ class BlueDot(Dot):
     This class starts an instance of :class:`.btcomm.BluetoothServer`
     which manages the connection with the Blue Dot client.
 
-    This class is intended for use with the Blue Dot client application.
+    This class is intended for use with a Blue Dot client application.
 
-    The following example will print a message when the Blue Dot is pressed::
+    The following example will print a message when the Blue Dot button is pressed::
 
         from bluedot import BlueDot
         bd = BlueDot()
         bd.wait_for_press()
-        print("The blue dot was pressed")
+        print("The button was pressed")
 
     :param str device:
         The Bluetooth device the server should use, the default is "hci0", if
@@ -944,7 +944,7 @@ class BlueDot(Dot):
     @property
     def is_pressed(self):
         """
-        Returns ``True`` if the Blue Dot is pressed (or held).
+        Returns ``True`` if the button is pressed (or held).
 
         .. note::
 
@@ -1233,11 +1233,8 @@ class BlueDot(Dot):
 
                 position = None
                 try:
-                    col = int(params[0])
-                    row = int(params[1])
-                    position = BlueDotPosition(col, row, params[2], params[3])
+                    button, position = self._parse_interaction_msg(operation, params)
                     self._position = position
-                    button = self._get_button(col, row)
                 except ValueError:
                     # ignore the occasional corrupt command; XXX warn here?
                     pass
@@ -1247,105 +1244,69 @@ class BlueDot(Dot):
                 else:
                     # dot released
                     if operation == "0":
-                        # set the blue dot as released
-                        self.release(position)
-                        # set the button as released
-                        button.release(position)
+                        self._process_release(button, position)
                         
-                        # was it a swipe?
-                        swipe = button.get_swipe()
-                        if swipe is not None:
-                            self.swipe(swipe)
-                            button.swipe(swipe)
-
                     # dot pressed
                     elif operation == "1":
-                        # was the button double pressed?
-                        if button.is_double_press(position):
-                            self.double_press(position)
-                            button.double_press(position)
+                        self._process_press(button, position)
                         
-                        self.press(position)
-                        button.press(position)
-
                     # dot pressed position moved 
                     elif operation == "2":
-                        # set the blue dot as moved
-                        self.move(position)
-                        # set the button as moved
-                        button.move(position)
-                        # was it a rotation
-                        rotation = button.get_rotation()
-                        if rotation is not None:
-                            self.rotate(rotation)
-                            button.rotate(rotation)
-
+                        self._process_move(button, position)
+                        
             # protocol check
             elif operation == "3":
                 self._check_protocol_version(params[0], params[1])
 
-    # def _pressed_old(self, position):
-    #     self._is_pressed = True
-    #     self._is_pressed_event.set()
-    #     self._is_pressed_event.clear()
+            else:
+                # operation not identified...  todo?
+                pass
 
-    #     self._double_pressed(position)
+    def _parse_interaction_msg(self, operation, params):
+        """
+        Parses an interaction (press, move, release) message and returns 
+        the component parts
+        """
+        # parse message
+        col = int(params[0])
+        row = int(params[1])
+        position = BlueDotPosition(col, row, params[2], params[3])
+        button = self._get_button(col, row)
+        
+        return button, position
 
-    #     #create new interaction
-    #     self._interaction = BlueDotInteraction(position)
+    def _process_press(self, button, position):
+        # was the button double pressed?
+        if button.is_double_press(position):
+            self.double_press(position)
+            button.double_press(position)
+        
+        # set the blue dot and button as pressed
+        self.press(position)
+        button.press(position)
 
-    #     self._process_callback(self.when_pressed, position, self._when_pressed_background)
+    def _process_move(self, button, position):
+        # set the blue dot as moved
+        self.move(position)
+        # set the button as moved
+        button.move(position)
+        # was it a rotation
+        rotation = button.get_rotation()
+        if rotation is not None:
+            self.rotate(rotation)
+            button.rotate(rotation)
 
-    # def _double_pressed_old(self, position):
-    #     #was there a previous interaction
-    #     if self._interaction:
-    #         # was the previous interaction complete (i.e. had it been released)
-    #         if not self._interaction.active:
-    #             # was it less than the time threshold (0.3 seconds)
-    #             if self._interaction.duration < self._double_press_time:
-    #                 #was the dot pressed again in less than the threshold
-    #                 if time() - self._interaction.released_position.time < self._double_press_time:
-    #                     self._is_double_pressed_event.set()
-    #                     self._is_double_pressed_event.clear()
-
-    #                     self._process_callback(self.when_double_pressed, position, self._when_double_pressed_background)
-
-    # def _released_old(self, position):
-    #     self._is_pressed = False
-    #     self._is_released_event.set()
-    #     self._is_released_event.clear()
-
-    #     self._interaction.released(position)
-
-    #     self._process_callback(self.when_released, position, self._when_released_background)
-
-    #     self._process_swipe()
-
-    # def _moved_old(self, position):
-    #     self._is_moved_event.set()
-    #     self._is_moved_event.clear()
-
-    #     self._interaction.moved(position)
-
-    #     self._process_callback(self.when_moved, position, self._when_moved_background)
-
-    #     if self.when_rotated:
-    #         self._process_rotation()
-
-    
-
-    # def _process_swipe(self):
-    #     #was the Blue Dot swiped?
-    #     swipe = BlueDotSwipe(self._interaction)
-    #     if swipe.valid:
-    #         self._is_swiped_event.set()
-    #         self._is_swiped_event.clear()
-    #         self._process_callback(self.when_swiped, swipe, self._when_swiped_background)
-
-    # def _process_rotation(self):
-    #     rotation = BlueDotRotation(self._interaction, self._rotation_segments)
-    #     if rotation.valid:
-    #         self._process_callback(self.when_rotated, rotation, self._when_rotated_background)
+    def _process_release(self, button, position):
+        # set the blue dot as released
+        self.release(position)
+        # set the button as released
+        button.release(position)
+        
+        # was it a swipe?
+        swipe = button.get_swipe()
+        if swipe is not None:
+            self.swipe(swipe)
+            button.swipe(swipe)
                     
     def _check_protocol_version(self, protocol_version, client_name):
         try:
