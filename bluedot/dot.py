@@ -1307,12 +1307,12 @@ class BlueDot(Dot):
         self._when_client_disconnects = None
         self._when_client_disconnects_background = False
 
+        # setup the main "dot"
+        super().__init__(BLUE, False, False, True)
+
         # setup the grid
         self._buttons = {}
         self.resize(cols, rows)
-
-        # setup the main "dot"
-        super().__init__(BLUE, False, False, True)
 
         self._create_server()
 
@@ -1433,9 +1433,17 @@ class BlueDot(Dot):
     def is_pressed(self):
         """
         Returns ``True`` if the Blue Dot is pressed (or held).
+
+        .. note::
+
+            If there are multiple buttons, if any button is pressed, `True`
+            will be returned.
         """
-        # todo - needs implementing - if any button pressed
-        return None
+        for button in self.buttons:
+            if button._is_pressed:
+                return True
+
+        return False
 
     @property
     def interaction(self):
