@@ -1085,18 +1085,6 @@ class BlueDotButton(Dot):
 
     @property
     def color(self):
-        """
-        Sets or returns the color of the dot. Defaults to BLUE.
-        
-        An instance of :class:`.colors.Color` is returned.
-
-        Value can be set as a :class:`.colors.Color` object, a hex color value
-        in the format `#rrggbb` or `#rrggbbaa`, a tuple of `(red, green, blue)`
-        or `(red, green, blue, alpha)` values between `0` & `255` or a text 
-        description of the color, e.g. "red". 
-        
-        A dictionary of available colors can be obtained from `bluedot.COLORS`.
-        """
         return super(BlueDotButton, self.__class__).color.fget(self)
         
     @color.setter
@@ -1106,9 +1094,6 @@ class BlueDotButton(Dot):
 
     @property
     def square(self):
-        """
-        When set to `True` the 'dot' is made square. Default is `False`.
-        """
         return super(BlueDotButton, self.__class__).square.fget(self)
 
     @square.setter
@@ -1118,9 +1103,6 @@ class BlueDotButton(Dot):
 
     @property
     def border(self):
-        """
-        When set to `True` adds a border to the dot. Default is `False`.
-        """
         return super(BlueDotButton, self.__class__).border.fget(self)
 
     @border.setter
@@ -1130,14 +1112,6 @@ class BlueDotButton(Dot):
 
     @property
     def visible(self):
-        """
-        When set to `True` makes the dot invisible. Default is `False`.
-
-        .. note::
-
-            Events (press, release, moved) are still sent from the dot
-            when it is not visible.
-        """
         return super(BlueDotButton, self.__class__).visible.fget(self)
 
     @visible.setter
@@ -1148,7 +1122,7 @@ class BlueDotButton(Dot):
     @property
     def modified(self):
         """
-        Returns True if the button's appearance has been modified [is 
+        Returns `True` if the button's appearance has been modified [is 
         different] from the default.  
         """
         return not (
@@ -1232,14 +1206,20 @@ class BlueDotButton(Dot):
 
     def get_swipe(self):
         """
-        Returns an instance of :class:`BlueDotRotation` if the last interaction
-        with the button was a swipe. Returns `None` if the button was not swiped. 
+        Returns an instance of :class:`BlueDotSwipe` if the last interaction
+        with the button was a swipe. Returns `None` if the button was not 
+        swiped. 
         """
         swipe = BlueDotSwipe(self.interaction)
         if swipe.valid:
             return swipe
 
     def get_rotation(self):
+        """
+        Returns an instance of :class:`BlueDotRotation` if the last interaction
+        with the button was a rotation. Returns `None` if the button was not 
+        rotated. 
+        """
         # only bother checking to see if its a rotation if `when_rotated`
         # as been set. Performance thang!
         if self.when_rotated or self._bd.when_rotated:
@@ -1310,7 +1290,9 @@ class BlueDot(Dot):
         port = 1,
         auto_start_server = True,
         power_up_device = False,
-        print_messages = True):
+        print_messages = True,
+        cols=1,
+        rows=1):
 
         self._data_buffer = ""
         self._device = device
@@ -1325,11 +1307,11 @@ class BlueDot(Dot):
         self._when_client_disconnects = None
         self._when_client_disconnects_background = False
 
+        # setup the grid
         self._buttons = {}
-        self._cols = 1
-        self._rows = 1
+        self.resize(cols, rows)
 
-        # setup the "dot"
+        # setup the main "dot"
         super().__init__(BLUE, False, False, True)
 
         self._create_server()
@@ -1339,10 +1321,28 @@ class BlueDot(Dot):
 
     @property
     def buttons(self):
+        """
+        A dictionary of :class:`BlueDotButton` objects in the "grid". 
+        
+        The key is [col,row].
+
+        To return the 'first' button at grid position 0,0  ::
+
+            bd = BlueDot()
+            first_button = bd.buttons[0,0]
+
+        Or alternatively:
+
+            bd = BlueDot()
+            first_button = bd[0,0]
+        """
         return self._buttons
 
     @property
     def cols(self):
+        """
+        Sets or returns the number of columns in the grid of buttons
+        """
         return self._cols
     
     @cols.setter
@@ -1351,6 +1351,9 @@ class BlueDot(Dot):
 
     @property
     def rows(self):
+        """
+        Sets or returns the number of rows in the grid of buttons
+        """
         return self._rows
     
     @cols.setter
@@ -1403,8 +1406,8 @@ class BlueDot(Dot):
     @property
     def print_messages(self):
         """
-        When set to ``True`` results in messages relating to the status of the Bluetooth server
-        to be printed.
+        When set to ``True`` messages relating to the status of the Bluetooth server
+        will be printed.
         """
         return self._print_messages
 
@@ -1453,8 +1456,8 @@ class BlueDot(Dot):
     @property
     def color(self):
         """
-        Sets or returns the color of the dot. Defaults to BLUE.
-        
+        Sets or returns the color of the button. Defaults to BLUE.
+
         An instance of :class:`.colors.Color` is returned.
 
         Value can be set as a :class:`.colors.Color` object, a hex color value
@@ -1463,37 +1466,55 @@ class BlueDot(Dot):
         description of the color, e.g. "red". 
         
         A dictionary of available colors can be obtained from `bluedot.COLORS`.
+
+        .. note::
+        
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
         """
         return super(BlueDot, self.__class__).color.fget(self)
         
     @color.setter
     def color(self, value):
         super(BlueDot, self.__class__).color.fset(self, value)
-        self._send_bluedot_config()
+        for button in self.buttons:
+            button.color = value
 
     @property
     def square(self):
         """
         When set to `True` the 'dot' is made square. Default is `False`.
+
+        .. note::
+        
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
         """
         return super(BlueDot, self.__class__).square.fget(self)
 
     @square.setter
     def square(self, value):
         super(BlueDot, self.__class__).square.fset(self, value)
-        self._send_bluedot_config()
+        for button in self.buttons:
+            button.square = value
 
     @property
     def border(self):
         """
         When set to `True` adds a border to the dot. Default is `False`.
+
+        .. note::
+        
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
         """
         return super(BlueDot, self.__class__).border.fget(self)
 
     @border.setter
     def border(self, value):
         super(BlueDot, self.__class__).border.fset(self, value)
-        self._send_bluedot_config()
+        for button in self.buttons:
+            button.border = value
 
     @property
     def visible(self):
@@ -1504,13 +1525,17 @@ class BlueDot(Dot):
 
             Events (press, release, moved) are still sent from the dot
             when it is not visible.
+
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
         """
         return super(BlueDot, self.__class__).visible.fget(self)
 
     @visible.setter
     def visible(self, value):
         super(BlueDot, self.__class__).visible.fset(self, value)
-        self._send_bluedot_config()
+        for button in self.buttons:
+            button.visible = value
 
     @property
     def when_client_connects(self):
@@ -1581,8 +1606,8 @@ class BlueDot(Dot):
 
     def start(self):
         """
-        Start the :class:`.btcomm.BluetoothServer` if it is not already running. By default the server is started at
-        initialisation.
+        Start the :class:`.btcomm.BluetoothServer` if it is not already 
+        running. By default the server is started at initialisation.
         """
         self._server.start()
         self._print_message("Server started {}".format(self.server.server_address))
@@ -1606,8 +1631,8 @@ class BlueDot(Dot):
 
     def allow_pairing(self, timeout = 60):
         """
-        Allow a Bluetooth device to pair with your Raspberry Pi by Putting the adapter
-        into discoverable and pairable mode.
+        Allow a Bluetooth device to pair with your Raspberry Pi by putting
+        the adapter into discoverable and pairable mode.
 
         :param int timeout:
             The time in seconds the adapter will remain pairable. If set to ``None``
@@ -1616,6 +1641,13 @@ class BlueDot(Dot):
         self.server.adapter.allow_pairing(timeout = timeout)
 
     def resize(self, cols, rows):
+        """
+        Resizes the grid of buttons. 
+
+        Existing buttons will retain their state (color, border, etc), new
+        buttons in the grid will be created with the default value set by the 
+        :class:`.btcomm.BluetoothServer`.
+        """
         self._cols = cols
         self._rows = rows
 
