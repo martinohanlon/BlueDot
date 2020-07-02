@@ -101,22 +101,22 @@ def test_pressed_moved_released():
     assert mbd.value == 0
 
     #pressed
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert mbd.is_pressed
     assert mbd.value == 1
 
     #released
-    mbd.mock_blue_dot_released(0,0)
+    mbd.mock_blue_dot_released(0,0,0,0)
     assert not mbd.is_pressed
     assert mbd.value == 0
 
     #wait_for_press
-    delay_function(lambda: mbd.mock_blue_dot_pressed(0,0), 0.5)
+    delay_function(lambda: mbd.mock_blue_dot_pressed(0,0,0,0), 0.5)
     assert mbd.wait_for_press(1)
     assert not mbd.wait_for_release(0)
 
     #wait_for_release
-    delay_function(lambda: mbd.mock_blue_dot_released(0,0), 0.5)
+    delay_function(lambda: mbd.mock_blue_dot_released(0,0,0,0), 0.5)
     assert mbd.wait_for_release(1)
     assert not mbd.wait_for_press(0)
 
@@ -127,18 +127,18 @@ def test_double_press():
     def simulate_double_press():
         #sleep longer than the double press time, to clear any past double presses!
         sleep(mbd.double_press_time + 0.1)
-        mbd.mock_blue_dot_pressed(0,0)
-        mbd.mock_blue_dot_released(0,0)
-        mbd.mock_blue_dot_pressed(0,0)
-        mbd.mock_blue_dot_released(0,0)
+        mbd.mock_blue_dot_pressed(0,0,0,0)
+        mbd.mock_blue_dot_released(0,0,0,0)
+        mbd.mock_blue_dot_pressed(0,0,0,0)
+        mbd.mock_blue_dot_released(0,0,0,0)
 
     def simulate_failed_double_press():
         sleep(mbd.double_press_time + 0.1)
-        mbd.mock_blue_dot_pressed(0,0)
-        mbd.mock_blue_dot_released(0,0)
+        mbd.mock_blue_dot_pressed(0,0,0,0)
+        mbd.mock_blue_dot_released(0,0,0,0)
         sleep(mbd.double_press_time + 0.1)
-        mbd.mock_blue_dot_pressed(0,0)
-        mbd.mock_blue_dot_released(0,0)
+        mbd.mock_blue_dot_pressed(0,0,0,0)
+        mbd.mock_blue_dot_released(0,0,0,0)
 
     # when_double_pressed
     event_double_pressed = Event()
@@ -183,19 +183,19 @@ def test_when_pressed_moved_released():
     mbd.when_released = lambda: event_released.set()
 
     assert not event_pressed.is_set()
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert event_pressed.is_set()
 
     assert not event_moved.is_set()
-    mbd.mock_blue_dot_moved(1,1)
+    mbd.mock_blue_dot_moved(0,0,1,1)
     assert event_moved.is_set()
 
     assert not event_released.is_set()
-    mbd.mock_blue_dot_released(0,0)
+    mbd.mock_blue_dot_released(0,0,0,0)
     assert event_released.is_set()
 
     assert not event_double_pressed.is_set()
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert event_double_pressed.is_set()
 
 def test_when_pressed_moved_released_background():
@@ -220,17 +220,17 @@ def test_when_pressed_moved_released_background():
     
     # test that the events dont block
     assert not event_pressed.is_set()
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert not event_pressed.is_set()
     assert event_pressed.wait(1)
 
     assert not event_moved.is_set()
-    mbd.mock_blue_dot_moved(1,1)
+    mbd.mock_blue_dot_moved(0,0,1,1)
     assert not event_moved.is_set()
     assert event_moved.wait(1)
 
     assert not event_released.is_set()
-    mbd.mock_blue_dot_released(0,0)
+    mbd.mock_blue_dot_released(0,0,0,0)
     assert not event_released.is_set()
     assert event_released.wait(1)
 
@@ -238,11 +238,11 @@ def test_when_pressed_moved_released_background():
     mbd.set_when_pressed(None)
     mbd.set_when_moved(None)
     mbd.set_when_released(None)
-    mbd.mock_blue_dot_pressed(0,0)
-    mbd.mock_blue_dot_moved(1,1)
-    mbd.mock_blue_dot_released(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
+    mbd.mock_blue_dot_moved(0,0,1,1)
+    mbd.mock_blue_dot_released(0,0,0,0)
     assert not event_double_pressed.is_set()
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert not event_double_pressed.is_set()
     assert event_double_pressed.wait(1)
 
@@ -250,46 +250,46 @@ def test_position():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
 
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert not mbd.position.top
     assert mbd.position.middle
     assert not mbd.position.bottom
     assert not mbd.position.left
     assert not mbd.position.right
 
-    mbd.mock_blue_dot_moved(1,0)
+    mbd.mock_blue_dot_moved(0,0,1,0)
     assert not mbd.position.top
     assert not mbd.position.middle
     assert not mbd.position.bottom
     assert not mbd.position.left
     assert mbd.position.right
 
-    mbd.mock_blue_dot_moved(-1,0)
+    mbd.mock_blue_dot_moved(0,0,-1,0)
     assert not mbd.position.top
     assert not mbd.position.middle
     assert not mbd.position.bottom
     assert mbd.position.left
     assert not mbd.position.right
 
-    mbd.mock_blue_dot_moved(0,1)
+    mbd.mock_blue_dot_moved(0,0,0,1)
     assert mbd.position.top
     assert not mbd.position.middle
     assert not mbd.position.bottom
     assert not mbd.position.left
     assert not mbd.position.right
 
-    mbd.mock_blue_dot_moved(0,-1)
+    mbd.mock_blue_dot_moved(0,0,0,-1)
     assert not mbd.position.top
     assert not mbd.position.middle
     assert mbd.position.bottom
     assert not mbd.position.left
     assert not mbd.position.right
 
-    mbd.mock_blue_dot_moved(0.1234, -0.4567)
+    mbd.mock_blue_dot_moved(0,0,0.1234, -0.4567)
     assert mbd.position.x == 0.1234
     assert mbd.position.y == -0.4567
 
-    mbd.mock_blue_dot_moved(1, 0)
+    mbd.mock_blue_dot_moved(0,0,1, 0)
     assert mbd.position.distance == 1
     assert mbd.position.angle == 90
 
@@ -298,7 +298,7 @@ def test_interaction():
     mbd.mock_client_connected()
     assert mbd[0,0].interaction == None
 
-    mbd.mock_blue_dot_pressed(-1,0)
+    mbd.mock_blue_dot_pressed(0,0,-1,0)
     assert mbd[0,0].interaction.active
     assert len(mbd[0,0].interaction.positions) == 1
     assert mbd[0,0].interaction.distance == 0
@@ -309,7 +309,7 @@ def test_interaction():
     assert mbd[0,0].interaction.previous_position == None
     assert mbd[0,0].interaction.released_position == None
 
-    mbd.mock_blue_dot_moved(0,0)
+    mbd.mock_blue_dot_moved(0,0,0,0)
     assert mbd[0,0].interaction.active
     assert len(mbd[0,0].interaction.positions) == 2
     assert mbd[0,0].interaction.distance == 1
@@ -321,7 +321,7 @@ def test_interaction():
     assert mbd[0,0].interaction.previous_position.y == 0
     assert mbd[0,0].interaction.released_position == None
 
-    mbd.mock_blue_dot_released(1,0)
+    mbd.mock_blue_dot_released(0,0,1,0)
     assert not mbd[0,0].interaction.active
     assert len(mbd[0,0].interaction.positions) == 3
     assert mbd[0,0].interaction.distance == 2
@@ -343,9 +343,9 @@ def test_swipe():
         moved_x, moved_y, 
         released_x, released_y):
 
-        mbd.mock_blue_dot_pressed(pressed_x, pressed_y)
-        mbd.mock_blue_dot_moved(moved_x, moved_y)
-        mbd.mock_blue_dot_released(released_x, released_y)
+        mbd.mock_blue_dot_pressed(0,0,pressed_x, pressed_y)
+        mbd.mock_blue_dot_moved(0,0,moved_x, moved_y)
+        mbd.mock_blue_dot_released(0,0,released_x, released_y)
 
     #wait_for_swipe
     delay_function(lambda: simulate_swipe(-1,0,0,0,1,0), 0.5)
@@ -423,15 +423,15 @@ def test_callback_in_class():
     mbd.mock_client_connected()
 
     mbd.when_pressed = cc.no_pos
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert cc.event.is_set()
     assert cc.pos is None
     
-    mbd.mock_blue_dot_released(0,0)
+    mbd.mock_blue_dot_released(0,0,0,0)
     cc.event.clear()
 
     mbd.when_pressed = cc.with_pos
-    mbd.mock_blue_dot_pressed(0,0)
+    mbd.mock_blue_dot_pressed(0,0,0,0)
     assert cc.event.is_set()
     assert cc.pos.middle
 
@@ -444,7 +444,7 @@ def test_rotation():
     assert not event_rotated.is_set()
 
     #press the blue dot, no rotation
-    mbd.mock_blue_dot_pressed(-0.1,1)
+    mbd.mock_blue_dot_pressed(0,0,-0.1,1)
     assert not event_rotated.is_set()
     r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
     assert not r.valid
@@ -454,7 +454,7 @@ def test_rotation():
 
     #rotate clockwise
     event_rotated.clear()
-    mbd.mock_blue_dot_moved(0.1,1)
+    mbd.mock_blue_dot_moved(0,0,0.1,1)
     assert event_rotated.is_set()
     r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
     assert r.value == 1
@@ -464,7 +464,7 @@ def test_rotation():
 
     #rotate anti-clockwise
     event_rotated.clear()
-    mbd.mock_blue_dot_moved(-0.1,1)
+    mbd.mock_blue_dot_moved(0,0,-0.1,1)
     assert event_rotated.is_set()
     r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
     assert r.value == -1
@@ -476,7 +476,7 @@ def test_rotation():
     # rotate clockwise again
     event_rotated.clear()
     mbd.set_when_rotated(lambda: delay_function(event_rotated.set, 0.2), background=True)
-    mbd.mock_blue_dot_moved(0.1,1)
+    mbd.mock_blue_dot_moved(0,0,0.1,1)
     assert not event_rotated.is_set()
     assert event_rotated.wait(1)
     

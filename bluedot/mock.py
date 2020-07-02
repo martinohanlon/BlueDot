@@ -221,39 +221,59 @@ class MockBlueDot(BlueDot):
         """
         self._server.mock_client_disconnected()
 
-    def mock_blue_dot_pressed(self, x, y, col=0, row=0):
+    def mock_blue_dot_pressed(self, col, row, x, y):
         """
         Simulates the Blue Dot being pressed.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was pressed
+            The x position where the button was pressed
 
         :param int y:
-            The y position where the mock Blue Dot was pressed
+            The y position where the button was pressed
         """
         self._server.mock_client_sending_data("1,{},{},{},{}\n".format(col, row, x, y))
 
-    def mock_blue_dot_released(self, x, y, col=0, row=0):
+    def mock_blue_dot_released(self, col, row, x, y):
         """
         Simulates the Blue Dot being released.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was released
+            The x position where the button was released
 
         :param int y:
-            The y position where the mock Blue Dot was released
+            The y position where the button was released
+
         """
         self._server.mock_client_sending_data("0,{},{},{},{}\n".format(col, row, x, y))
 
-    def mock_blue_dot_moved(self, x, y, col=0, row=0):
+    def mock_blue_dot_moved(self, col, row, x, y):
         """
         Simulates the Blue Dot being moved.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was moved too
+            The x position where the button was moved too
 
         :param int y:
-            The y position where the mock Blue Dot was moved too
+            The y position where the button was moved too
+
         """
         self._server.mock_client_sending_data("2,{},{},{},{}\n".format(col, row, x, y))
 
