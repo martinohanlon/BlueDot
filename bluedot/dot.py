@@ -285,7 +285,7 @@ class Dot(object):
     @property
     def rotation_segments(self):
         """
-        Sets or returns the number of virtual segments the button is split into for  rotating.
+        Sets or returns the number of virtual segments the button is split into for rotating.
         Defaults to 8.
         """
         return self._rotation_segments
@@ -951,7 +951,7 @@ class BlueDot(Dot):
             If there are multiple buttons, if any button is pressed, `True`
             will be returned.
         """
-        for button in self.buttons:
+        for button in self.buttons.values():
             if button._is_pressed:
                 return True
 
@@ -972,6 +972,43 @@ class BlueDot(Dot):
         """
         # todo - needs depreciating, return button[0,0].interaction
         return None
+
+    @property
+    def rotation_segments(self):
+        """
+        Sets or returns the number of virtual segments the button is split into for rotating.
+        Defaults to 8.
+
+        .. note::
+        
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
+        """
+        return super(BlueDot, self.__class__).rotation_segments.fget(self)
+
+    @rotation_segments.setter
+    def rotation_segments(self, value):
+        super(BlueDot, self.__class__).rotation_segments.fset(self, value)
+        for button in self.buttons.values():
+            button.rotation_segments = value
+
+    @property
+    def double_press_time(self):
+        """
+        Sets or returns the time threshold in seconds for a double press. Defaults to 0.3.
+
+        .. note::
+        
+            If there are multiple buttons in the grid, the 'default' value
+            will be returned and when set all buttons will be updated.
+        """
+        return super(BlueDot, self.__class__).double_press_time.fget(self)
+
+    @double_press_time.setter
+    def double_press_time(self, value):
+        super(BlueDot, self.__class__).double_press_time.fset(self, value)
+        for button in self.buttons.values():
+            button.double_press_time = value
 
     @property
     def color(self):
@@ -997,7 +1034,7 @@ class BlueDot(Dot):
     @color.setter
     def color(self, value):
         super(BlueDot, self.__class__).color.fset(self, value)
-        for button in self.buttons:
+        for button in self.buttons.values():
             button.color = value
 
     @property
@@ -1015,7 +1052,7 @@ class BlueDot(Dot):
     @square.setter
     def square(self, value):
         super(BlueDot, self.__class__).square.fset(self, value)
-        for button in self.buttons:
+        for button in self.buttons.values():
             button.square = value
 
     @property
@@ -1033,7 +1070,7 @@ class BlueDot(Dot):
     @border.setter
     def border(self, value):
         super(BlueDot, self.__class__).border.fset(self, value)
-        for button in self.buttons:
+        for button in self.buttons.values():
             button.border = value
 
     @property
@@ -1054,7 +1091,7 @@ class BlueDot(Dot):
     @visible.setter
     def visible(self, value):
         super(BlueDot, self.__class__).visible.fset(self, value)
-        for button in self.buttons:
+        for button in self.buttons.values():
             button.visible = value
 
     @property

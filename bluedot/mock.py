@@ -221,7 +221,7 @@ class MockBlueDot(BlueDot):
         """
         self._server.mock_client_disconnected()
 
-    def mock_blue_dot_pressed(self, x, y):
+    def mock_blue_dot_pressed(self, x, y, col=0, row=0):
         """
         Simulates the Blue Dot being pressed.
 
@@ -231,9 +231,9 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock Blue Dot was pressed
         """
-        self._server.mock_client_sending_data("1,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("1,{},{},{},{}\n".format(col, row, x, y))
 
-    def mock_blue_dot_released(self, x, y):
+    def mock_blue_dot_released(self, x, y, col=0, row=0):
         """
         Simulates the Blue Dot being released.
 
@@ -243,9 +243,9 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock Blue Dot was released
         """
-        self._server.mock_client_sending_data("0,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("0,{},{},{},{}\n".format(col, row, x, y))
 
-    def mock_blue_dot_moved(self, x, y):
+    def mock_blue_dot_moved(self, x, y, col=0, row=0):
         """
         Simulates the Blue Dot being moved.
 
@@ -255,7 +255,7 @@ class MockBlueDot(BlueDot):
         :param int y:
             The y position where the mock Blue Dot was moved too
         """
-        self._server.mock_client_sending_data("2,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("2,{},{},{},{}\n".format(col, row, x, y))
 
     def launch_mock_app(self):
         """
