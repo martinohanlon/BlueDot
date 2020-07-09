@@ -25,7 +25,7 @@ def test_default_values():
     assert len(mbd.buttons.values()) == 1
 
 def test_modify_values():
-    mbd = MockBlueDot(device = "hci1", port = 2, auto_start_server = False, print_messages = False, cols=3, rows=2)
+    mbd = MockBlueDot(device = "hci1", port = 2, auto_start_server = False, print_messages = False, cols = 3, rows = 2)
     assert mbd.device == "hci1"
     assert mbd.port == 2
     assert not mbd.running
@@ -102,11 +102,11 @@ def test_when_connect_disconnect_background():
 
 def test_resize():
     mbd = MockBlueDot()
-    mdb.resize(2,3)
+    mbd.resize(4,3)
 
-    assert mbd.cols == 2
+    assert mbd.cols == 4
     assert mbd.rows == 3
-    assert len(mbd.buttons.values()) == 6
+    assert len(mbd.buttons.values()) == 12
 
 def test_pressed_moved_released():
     mbd = MockBlueDot()
@@ -383,43 +383,51 @@ def test_position():
 def test_interaction():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
-    assert mbd[0,0].interaction == None
+    
+    def interaction(dot, col, row):
+        assert dot.interaction == None
 
-    mbd.mock_blue_dot_pressed(0,0,-1,0)
-    assert mbd[0,0].interaction.active
-    assert len(mbd[0,0].interaction.positions) == 1
-    assert mbd[0,0].interaction.distance == 0
-    assert mbd[0,0].interaction.pressed_position.x == -1
-    assert mbd[0,0].interaction.pressed_position.y == 0
-    assert mbd[0,0].interaction.current_position.x == -1
-    assert mbd[0,0].interaction.current_position.y == 0
-    assert mbd[0,0].interaction.previous_position == None
-    assert mbd[0,0].interaction.released_position == None
+        mbd.mock_blue_dot_pressed(col,row,-1,0)
+        assert dot.interaction.active
+        assert len(dot.interaction.positions) == 1
+        assert dot.interaction.distance == 0
+        assert dot.interaction.pressed_position.x == -1
+        assert dot.interaction.pressed_position.y == 0
+        assert dot.interaction.current_position.x == -1
+        assert dot.interaction.current_position.y == 0
+        assert dot.interaction.previous_position == None
+        assert dot.interaction.released_position == None
 
-    mbd.mock_blue_dot_moved(0,0,0,0)
-    assert mbd[0,0].interaction.active
-    assert len(mbd[0,0].interaction.positions) == 2
-    assert mbd[0,0].interaction.distance == 1
-    assert mbd[0,0].interaction.pressed_position.x == -1
-    assert mbd[0,0].interaction.pressed_position.y == 0
-    assert mbd[0,0].interaction.current_position.x == 0
-    assert mbd[0,0].interaction.current_position.y == 0
-    assert mbd[0,0].interaction.previous_position.x == -1
-    assert mbd[0,0].interaction.previous_position.y == 0
-    assert mbd[0,0].interaction.released_position == None
+        mbd.mock_blue_dot_moved(col,row,0,0)
+        assert dot.interaction.active
+        assert len(dot.interaction.positions) == 2
+        assert dot.interaction.distance == 1
+        assert dot.interaction.pressed_position.x == -1
+        assert dot.interaction.pressed_position.y == 0
+        assert dot.interaction.current_position.x == 0
+        assert dot.interaction.current_position.y == 0
+        assert dot.interaction.previous_position.x == -1
+        assert dot.interaction.previous_position.y == 0
+        assert dot.interaction.released_position == None
 
-    mbd.mock_blue_dot_released(0,0,1,0)
-    assert not mbd[0,0].interaction.active
-    assert len(mbd[0,0].interaction.positions) == 3
-    assert mbd[0,0].interaction.distance == 2
-    assert mbd[0,0].interaction.pressed_position.x == -1
-    assert mbd[0,0].interaction.pressed_position.y == 0
-    assert mbd[0,0].interaction.current_position.x == 1
-    assert mbd[0,0].interaction.current_position.y == 0
-    assert mbd[0,0].interaction.previous_position.x == 0
-    assert mbd[0,0].interaction.previous_position.y == 0
-    assert mbd[0,0].interaction.released_position.x == 1
-    assert mbd[0,0].interaction.released_position.y == 0
+        mbd.mock_blue_dot_released(col,row,1,0)
+        assert not dot.interaction.active
+        assert len(dot.interaction.positions) == 3
+        assert dot.interaction.distance == 2
+        assert dot.interaction.pressed_position.x == -1
+        assert dot.interaction.pressed_position.y == 0
+        assert dot.interaction.current_position.x == 1
+        assert dot.interaction.current_position.y == 0
+        assert dot.interaction.previous_position.x == 0
+        assert dot.interaction.previous_position.y == 0
+        assert dot.interaction.released_position.x == 1
+        assert dot.interaction.released_position.y == 0
+
+    interaction(mbd[0,0], 0, 0)
+
+    mbd.resize(2,1)
+    
+    interaction(mbd[1,0], 1, 0)
 
 def test_swipe():
     mbd = MockBlueDot()
