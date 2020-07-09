@@ -803,8 +803,8 @@ class BlueDot(Dot):
         auto_start_server = True,
         power_up_device = False,
         print_messages = True,
-        cols=1,
-        rows=1):
+        cols = 1,
+        rows = 1):
 
         self._data_buffer = ""
         self._device = device
@@ -830,6 +830,8 @@ class BlueDot(Dot):
 
         if auto_start_server:
             self.start()
+
+        print(self._cols, self._rows)   
 
     @property
     def buttons(self):
@@ -868,7 +870,7 @@ class BlueDot(Dot):
         """
         return self._rows
     
-    @cols.setter
+    @rows.setter
     def rows(self, value):
         self.resize(self._cols, value)
 
@@ -1205,8 +1207,11 @@ class BlueDot(Dot):
         buttons in the grid will be created with the default value set by the 
         :class:`.btcomm.BluetoothServer`.
         """
+        print(cols, rows)
         self._cols = cols
         self._rows = rows
+        print(self._cols, self._rows)
+        
 
         # create new buttons
         new_buttons = {}
@@ -1222,6 +1227,8 @@ class BlueDot(Dot):
         self._buttons = new_buttons
 
         self._send_bluedot_config()
+
+        
 
     def _get_button(self, col, row):
         return self.buttons[col, row]
