@@ -12,7 +12,8 @@ Bluedot Python library
  * implementation of multiple buttons in a matrix
  * refactor of significant portions of the code base
  * improvement to btcomm to manage large messages 
- * deprecated BlueDot.interaction
+ * update to MockBlueDot
+ * depreciated BlueDot.interaction
  * support for protocol version 2
 
 
