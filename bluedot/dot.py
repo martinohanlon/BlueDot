@@ -1207,11 +1207,8 @@ class BlueDot(Dot):
         buttons in the grid will be created with the default value set by the 
         :class:`.btcomm.BluetoothServer`.
         """
-        print(cols, rows)
         self._cols = cols
-        self._rows = rows
-        print(self._cols, self._rows)
-        
+        self._rows = rows        
 
         # create new buttons
         new_buttons = {}
