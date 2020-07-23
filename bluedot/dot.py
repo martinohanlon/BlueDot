@@ -1,6 +1,7 @@
 from __future__ import division
 
 import sys
+import warnings
 from time import sleep, time
 from threading import Event
 
@@ -832,8 +833,6 @@ class BlueDot(Dot):
         if auto_start_server:
             self.start()
 
-        print(self._cols, self._rows)   
-
     @property
     def buttons(self):
         """
@@ -972,9 +971,11 @@ class BlueDot(Dot):
             will return the interaction when it was released, until it is
             pressed again.  If the Blue Dot has never been pressed
             :attr:`interaction` will return ``None``.
+
+        .. deprecated:: 2.0.0
+
         """
-        # todo - needs depreciating, return button[0,0].interaction
-        return None
+        return self._get_button((0,0)).interaction
 
     @property
     def rotation_segments(self):

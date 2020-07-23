@@ -10,6 +10,7 @@ def pressed(pos):
 
 def moved(pos):
     print("Moved        : {}".format(pos))
+    print(bd.interaction)
 
 def released(pos):
     print("Released     : {}".format(pos))
@@ -47,7 +48,6 @@ bd[0,0].when_released = released
 bd[0,0].when_double_pressed = double_press
 bd[0,0].when_swiped = swipe
 bd[0,0].when_rotated = rotation
-
 bd.when_pressed = pressed
 bd.when_moved = moved
 bd.when_released = released
