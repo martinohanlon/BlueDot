@@ -1281,10 +1281,10 @@ class BlueDot(Dot):
                     self._position = position
                 except ValueError:
                     # warn about the occasional corrupt command
-                    warnings.warn("Data received which could not be parsed\n{}".format(command))
+                    warnings.warn("Data received which could not be parsed.\n{}".format(command))
                 except ButtonDoesNotExist:
                     # data received for a button which could not be found
-                    warnings.warn("Data received for a button which does not exist\n{}".format(command))
+                    warnings.warn("Data received for a button which does not exist.\n{}".format(command))
                 else:
                     # dot released
                     if operation == "0":
@@ -1303,8 +1303,8 @@ class BlueDot(Dot):
                 self._check_protocol_version(params[0], params[1])
 
             else:
-                # operation not identified...  todo?
-                pass
+                # operation not identified...  
+                warnings.warn("Data received for an unknown operation.\n{}".format(command))
 
     def _parse_interaction_msg(self, operation, params):
         """
