@@ -1280,11 +1280,11 @@ class BlueDot(Dot):
                     button, position = self._parse_interaction_msg(operation, params)
                     self._position = position
                 except ValueError:
-                    # ignore the occasional corrupt command; XXX warn here?
-                    pass
+                    # warn about the occasional corrupt command
+                    warnings.warn("Data received which could not be parsed\n{}".format(command))
                 except ButtonDoesNotExist:
-                    # data received for a button which could not be found...  warn here?
-                    pass
+                    # data received for a button which could not be found
+                    warnings.warn("Data received for a button which does not exist\n{}".format(command))
                 else:
                     # dot released
                     if operation == "0":
