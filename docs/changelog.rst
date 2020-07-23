@@ -13,9 +13,9 @@ Bluedot Python library
  * refactor of significant portions of the code base
  * improvement to btcomm to manage large messages 
  * update to MockBlueDot
- * depreciated BlueDot.interaction
+ * deprecated BlueDot.interaction
+ * added warnings when invalid data is received
  * support for protocol version 2
-
 
 1.3.2 - 2019-04-22
 ~~~~~~~~~~~~~~~~~~
@@ -173,7 +173,7 @@ Android app
 7 (2.0) - tbc
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
- * implemenaton of multiple buttons in a matrix
+ * implementation of multiple buttons in a matrix
  * support for protocol version 2
 
 6 (1.3.1) - 2019-12-30

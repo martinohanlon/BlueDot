@@ -10,7 +10,6 @@ def pressed(pos):
 
 def moved(pos):
     print("Moved        : {}".format(pos))
-    print(bd.interaction)
 
 def released(pos):
     print("Released     : {}".format(pos))
