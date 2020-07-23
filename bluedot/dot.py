@@ -798,6 +798,12 @@ class BlueDot(Dot):
         If ``True`` (the default), server status messages will be printed stating
         when the server has started and when clients connect / disconect.
 
+    :param int cols:
+        The number of columns in the grid of buttons. Defaults to ``1``.
+
+    :param int rows:
+        The number of rows in the grid of buttons. Defaults to ``1``.
+
     """
     def __init__(self,
         device = "hci0",
@@ -855,7 +861,7 @@ class BlueDot(Dot):
     @property
     def cols(self):
         """
-        Sets or returns the number of columns in the grid of buttons
+        Sets or returns the number of columns in the grid of buttons.
         """
         return self._cols
     
@@ -866,7 +872,7 @@ class BlueDot(Dot):
     @property
     def rows(self):
         """
-        Sets or returns the number of rows in the grid of buttons
+        Sets or returns the number of rows in the grid of buttons.
         """
         return self._rows
     
@@ -1205,9 +1211,16 @@ class BlueDot(Dot):
         """
         Resizes the grid of buttons. 
 
-        Existing buttons will retain their state (color, border, etc), new
-        buttons in the grid will be created with the default value set by the 
-        :class:`.btcomm.BluetoothServer`.
+        :param int cols:
+            The number of columns in the grid of buttons.
+
+        :param int rows:
+            The number of rows in the grid of buttons.
+
+        .. note::
+            Existing buttons will retain their state (color, border, etc) when 
+            resized. New buttons will be created with the default values set 
+            by the :class:`.btcomm.BluetoothServer`.
         """
         self._cols = cols
         self._rows = rows        
@@ -1368,7 +1381,7 @@ class BlueDot(Dot):
                 msg += "Update the {}."
                 msg = msg.format(client_name, protocol_version, PROTOCOL_VERSION, client_name)
             self._server.disconnect_client()
-            print(msg)    
+            print(msg)
         
     # called whenever the BlueDot configuration is changed or a client connects
     def _send_bluedot_config(self):
