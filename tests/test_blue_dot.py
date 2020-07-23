@@ -433,71 +433,83 @@ def test_swipe():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
 
-    def simulate_swipe(
-        pressed_x, pressed_y, 
-        moved_x, moved_y, 
-        released_x, released_y):
+    def swipe(dot, col, row):
+        
+        def simulate_swipe(
+            col, row,
+            pressed_x, pressed_y, 
+            moved_x, moved_y, 
+            released_x, released_y):
 
-        mbd.mock_blue_dot_pressed(0,0,pressed_x, pressed_y)
-        mbd.mock_blue_dot_moved(0,0,moved_x, moved_y)
-        mbd.mock_blue_dot_released(0,0,released_x, released_y)
+            mbd.mock_blue_dot_pressed(col,row,pressed_x, pressed_y)
+            mbd.mock_blue_dot_moved(col,row,moved_x, moved_y)
+            mbd.mock_blue_dot_released(col,row,released_x, released_y)
 
-    #wait_for_swipe
-    delay_function(lambda: simulate_swipe(-1,0,0,0,1,0), 0.5)
-    assert mbd.wait_for_swipe(1)
+        #wait_for_swipe
+        delay_function(lambda: simulate_swipe(col,row,-1,0,0,0,1,0), 0.5)
+        assert dot.wait_for_swipe(1)
 
-    #when_swiped
-    event_swiped = Event()
-    mbd.when_swiped = lambda: event_swiped.set()
-    assert not event_swiped.is_set()
+        #when_swiped
+        event_swiped = Event()
+        dot.when_swiped = lambda: event_swiped.set()
+        assert not event_swiped.is_set()
 
-    #simulate swipe left to right
-    simulate_swipe(-1,0,0,0,1,0)
-    #check event
-    assert event_swiped.is_set()
-    #get the swipe
-    swipe = BlueDotSwipe(mbd[0,0].interaction)
-    assert swipe.right
-    assert not swipe.left
-    assert not swipe.up
-    assert not swipe.down
+        #simulate swipe left to right
+        simulate_swipe(col,row,-1,0,0,0,1,0)
+        #check event
+        assert event_swiped.is_set()
+        #get the swipe
+        swipe = BlueDotSwipe(mbd[col, row].interaction)
+        assert swipe.right
+        assert not swipe.left
+        assert not swipe.up
+        assert not swipe.down
 
-    #right to left
-    event_swiped.clear()
-    simulate_swipe(1,0,0,0,-1,0)
-    assert event_swiped.is_set()
-    swipe = BlueDotSwipe(mbd[0,0].interaction)
-    assert not swipe.right
-    assert swipe.left
-    assert not swipe.up
-    assert not swipe.down
+        #right to left
+        event_swiped.clear()
+        simulate_swipe(col,row,1,0,0,0,-1,0)
+        assert event_swiped.is_set()
+        swipe = BlueDotSwipe(mbd[col, row].interaction)
+        assert not swipe.right
+        assert swipe.left
+        assert not swipe.up
+        assert not swipe.down
 
-    #bottom to top
-    event_swiped.clear()
-    simulate_swipe(0,-1,0,0,0,1)
-    assert event_swiped.is_set()
-    swipe = BlueDotSwipe(mbd[0,0].interaction)
-    assert not swipe.right
-    assert not swipe.left
-    assert swipe.up
-    assert not swipe.down
+        #bottom to top
+        event_swiped.clear()
+        simulate_swipe(col,row,0,-1,0,0,0,1)
+        assert event_swiped.is_set()
+        swipe = BlueDotSwipe(mbd[col, row].interaction)
+        assert not swipe.right
+        assert not swipe.left
+        assert swipe.up
+        assert not swipe.down
 
-    #top to bottom
-    event_swiped.clear()
-    simulate_swipe(0,1,0,0,0,-1)
-    assert event_swiped.is_set()
-    swipe = BlueDotSwipe(mbd[0,0].interaction)
-    assert not swipe.right
-    assert not swipe.left
-    assert not swipe.up
-    assert swipe.down
+        #top to bottom
+        event_swiped.clear()
+        simulate_swipe(col,row,0,1,0,0,0,-1)
+        assert event_swiped.is_set()
+        swipe = BlueDotSwipe(mbd[col, row].interaction)
+        assert not swipe.right
+        assert not swipe.left
+        assert not swipe.up
+        assert swipe.down
 
-    # background
-    event_swiped.clear()
-    mbd.set_when_swiped(lambda: delay_function(event_swiped.set, 0.2), background=True)
-    simulate_swipe(0,1,0,0,0,-1)
-    assert not event_swiped.is_set()
-    assert event_swiped.wait(1)
+        # background
+        event_swiped.clear()
+        dot.set_when_swiped(lambda: delay_function(event_swiped.set, 0.2), background=True)
+        simulate_swipe(col,row,0,1,0,0,0,-1)
+        assert not event_swiped.is_set()
+        assert event_swiped.wait(1)
+
+    swipe(mbd, 0, 0)
+    swipe(mbd[0,0], 0, 0)
+
+    mbd.resize(2,1)
+
+    swipe(mbd, 1, 0)
+    swipe(mbd[1,0], 1, 0)
+
 
 def test_callback_in_class():
 
@@ -534,46 +546,55 @@ def test_rotation():
     mbd = MockBlueDot()
     mbd.mock_client_connected()
 
-    event_rotated = Event()
-    mbd.when_rotated = lambda: event_rotated.set()
-    assert not event_rotated.is_set()
+    def rotation(dot, col, row):
+        event_rotated = Event()
+        dot.when_rotated = lambda: event_rotated.set()
+        assert not event_rotated.is_set()
 
-    #press the blue dot, no rotation
-    mbd.mock_blue_dot_pressed(0,0,-0.1,1)
-    assert not event_rotated.is_set()
-    r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
-    assert not r.valid
-    assert r.value == 0
-    assert not r.clockwise
-    assert not r.anti_clockwise
+        #press the blue dot, no rotation
+        mbd.mock_blue_dot_pressed(col,row,-0.1,1)
+        assert not event_rotated.is_set()
+        r = BlueDotRotation(mbd[col,row].interaction, mbd[0,0].rotation_segments)
+        assert not r.valid
+        assert r.value == 0
+        assert not r.clockwise
+        assert not r.anti_clockwise
 
-    #rotate clockwise
-    event_rotated.clear()
-    mbd.mock_blue_dot_moved(0,0,0.1,1)
-    assert event_rotated.is_set()
-    r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
-    assert r.value == 1
-    assert r.valid
-    assert r.clockwise
-    assert not r.anti_clockwise
+        #rotate clockwise
+        event_rotated.clear()
+        mbd.mock_blue_dot_moved(col,row,0.1,1)
+        assert event_rotated.is_set()
+        r = BlueDotRotation(mbd[col,row].interaction, mbd[col,row].rotation_segments)
+        assert r.value == 1
+        assert r.valid
+        assert r.clockwise
+        assert not r.anti_clockwise
 
-    #rotate anti-clockwise
-    event_rotated.clear()
-    mbd.mock_blue_dot_moved(0,0,-0.1,1)
-    assert event_rotated.is_set()
-    r = BlueDotRotation(mbd[0,0].interaction, mbd[0,0].rotation_segments)
-    assert r.value == -1
-    assert r.valid
-    assert not r.clockwise
-    assert r.anti_clockwise
+        #rotate anti-clockwise
+        event_rotated.clear()
+        mbd.mock_blue_dot_moved(col,row,-0.1,1)
+        assert event_rotated.is_set()
+        r = BlueDotRotation(mbd[col,row].interaction, mbd[col,row].rotation_segments)
+        assert r.value == -1
+        assert r.valid
+        assert not r.clockwise
+        assert r.anti_clockwise
 
-    # background
-    # rotate clockwise again
-    event_rotated.clear()
-    mbd.set_when_rotated(lambda: delay_function(event_rotated.set, 0.2), background=True)
-    mbd.mock_blue_dot_moved(0,0,0.1,1)
-    assert not event_rotated.is_set()
-    assert event_rotated.wait(1)
+        # background
+        # rotate clockwise again
+        event_rotated.clear()
+        dot.set_when_rotated(lambda: delay_function(event_rotated.set, 0.2), background=True)
+        mbd.mock_blue_dot_moved(col,row,0.1,1)
+        assert not event_rotated.is_set()
+        assert event_rotated.wait(1)
+
+    rotation(mbd, 0, 0)
+    rotation(mbd[0,0], 0, 0)
+
+    mbd.resize(2,1)
+
+    rotation(mbd, 1, 0)
+    rotation(mbd[1,0], 1, 0)
     
 def test_allow_pairing():
     mbd = MockBlueDot()
@@ -590,14 +611,49 @@ def test_dot_appearance():
     assert mbd.border == False
     assert mbd.square == False
     assert mbd.visible == True
+
+    mbd.resize(2,1)
+
+    for button in mbd.buttons.values():
+        assert button.color == "blue"
+        assert button.border == False
+        assert button.square == False
+        assert button.visible == True
+
+    mbd[1,0].color = "red"
+    mbd[1,0].border = True
+    mbd[1,0].square = True
+    mbd[1,0].visible = False
+
+    assert mbd.color == "blue"
+    assert mbd.border == False
+    assert mbd.square == False
+    assert mbd.visible == True
+    
+    assert mbd[0,0].color == "blue"
+    assert mbd[0,0].border == False
+    assert mbd[0,0].square == False
+    assert mbd[0,0].visible == True
+
+    assert mbd[1,0].color == "red"
+    assert mbd[1,0].border == True
+    assert mbd[1,0].square == True
+    assert mbd[1,0].visible == False
+
     mbd.color = "red"
     mbd.border = True
     mbd.square = True
     mbd.visible = False
+
     assert mbd.color == "red"
     assert mbd.border == True
     assert mbd.square == True
     assert mbd.visible == False
+
+    assert mbd[0,0].color == "red"
+    assert mbd[0,0].border == True
+    assert mbd[0,0].square == True
+    assert mbd[0,0].visible == False
 
 def test_dot_colors():
     from bluedot.colors import BLUE, RED, GREEN, YELLOW
