@@ -14,6 +14,7 @@ from .threads import WrapThread
 from .constants import PROTOCOL_VERSION, CHECK_PROTOCOL_TIMEOUT
 from .interactions import BlueDotInteraction, BlueDotPosition, BlueDotRotation, BlueDotSwipe
 from .colors import parse_color, BLUE
+from .exceptions import ButtonDoesNotExist
 
 
 class Dot(object):
@@ -1225,10 +1226,11 @@ class BlueDot(Dot):
 
         self._send_bluedot_config()
 
-        
-
-    def _get_button(self, col, row):
-        return self.buttons[col, row]
+    def _get_button(self, key):
+        try:
+            return self.buttons[key]
+        except KeyError:
+            raise ButtonDoesNotExist("The button `{}` does not exist".format(key))
 
     def _client_connected(self):
         self._is_connected_event.set()
@@ -1279,8 +1281,8 @@ class BlueDot(Dot):
                 except ValueError:
                     # ignore the occasional corrupt command; XXX warn here?
                     pass
-                except KeyError:
-                    # button could not be found...  todo?
+                except ButtonDoesNotExist:
+                    # data received for a button which could not be found...  warn here?
                     pass
                 else:
                     # dot released
@@ -1312,7 +1314,7 @@ class BlueDot(Dot):
         col = int(params[0])
         row = int(params[1])
         position = BlueDotPosition(col, row, params[2], params[3])
-        button = self._get_button(col, row)
+        button = self._get_button((col, row))
         
         return button, position
 
@@ -1395,5 +1397,4 @@ class BlueDot(Dot):
             print(message)
 
     def __getitem__(self, key):
-        # KeyError will be raised if the button doesn't exist
-        return self.buttons[key]
+        return self._get_button(key)

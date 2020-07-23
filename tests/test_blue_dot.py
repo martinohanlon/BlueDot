@@ -1,4 +1,6 @@
+import pytest
 from bluedot import MockBlueDot, BlueDotSwipe, BlueDotRotation
+from bluedot.exceptions import ButtonDoesNotExist
 from time import sleep
 from threading import Event, Thread
 
@@ -595,6 +597,12 @@ def test_rotation():
 
     rotation(mbd, 1, 0)
     rotation(mbd[1,0], 1, 0)
+    
+def test_button_does_not_exist():
+    mbd = MockBlueDot()
+    
+    with pytest.raises(ButtonDoesNotExist):
+        button = mbd[0,1]
     
 def test_allow_pairing():
     mbd = MockBlueDot()
