@@ -24,7 +24,7 @@ def test_default_values():
     assert mbd.when_released == None
     assert mbd.when_swiped == None
 
-    assert len(mbd.buttons.values()) == 1
+    assert len(mbd.buttons) == 1
 
 def test_modify_values():
     mbd = MockBlueDot(device = "hci1", port = 2, auto_start_server = False, print_messages = False, cols = 3, rows = 2)
@@ -46,7 +46,7 @@ def test_modify_values():
     mbd.rotation_segments = 16
     assert mbd.rotation_segments == 16
 
-    assert len(mbd.buttons.values()) == 6
+    assert len(mbd.buttons) == 6
 
 def test_start_stop():
     mbd = MockBlueDot(auto_start_server = False)
@@ -108,7 +108,7 @@ def test_resize():
 
     assert mbd.cols == 4
     assert mbd.rows == 3
-    assert len(mbd.buttons.values()) == 12
+    assert len(mbd.buttons) == 12
 
 def test_pressed_moved_released():
     mbd = MockBlueDot()
@@ -622,7 +622,7 @@ def test_dot_appearance():
 
     mbd.resize(2,1)
 
-    for button in mbd.buttons.values():
+    for button in mbd.buttons:
         assert button.color == "blue"
         assert button.border == False
         assert button.square == False

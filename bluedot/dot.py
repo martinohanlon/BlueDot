@@ -772,6 +772,11 @@ class BlueDot(Dot):
         bd.wait_for_press()
         print("The button was pressed")
 
+    If there are multiple buttons, each button can be referenced using its [col, row]::
+
+        bd = BlueDot()
+        first_button = bd[0,0]
+
     :param str device:
         The Bluetooth device the server should use, the default is "hci0", if
         your device only has 1 Bluetooth adapter this shouldn't need to be changed.
@@ -842,21 +847,9 @@ class BlueDot(Dot):
     @property
     def buttons(self):
         """
-        A dictionary of :class:`BlueDotButton` objects in the "grid". 
-        
-        The key is [col,row].
-
-        To return the 'first' button at grid position 0,0  ::
-
-            bd = BlueDot()
-            first_button = bd.buttons[0,0]
-
-        Or alternatively:
-
-            bd = BlueDot()
-            first_button = bd[0,0]
+        A list of :class:`BlueDotButton` objects in the "grid". 
         """
-        return self._buttons
+        return self._buttons.values()
 
     @property
     def cols(self):
@@ -959,7 +952,7 @@ class BlueDot(Dot):
             If there are multiple buttons, if any button is pressed, `True`
             will be returned.
         """
-        for button in self.buttons.values():
+        for button in self.buttons:
             if button._is_pressed:
                 return True
 
@@ -999,7 +992,7 @@ class BlueDot(Dot):
     @rotation_segments.setter
     def rotation_segments(self, value):
         super(BlueDot, self.__class__).rotation_segments.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.rotation_segments = value
 
     @property
@@ -1017,7 +1010,7 @@ class BlueDot(Dot):
     @double_press_time.setter
     def double_press_time(self, value):
         super(BlueDot, self.__class__).double_press_time.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.double_press_time = value
 
     @property
@@ -1044,7 +1037,7 @@ class BlueDot(Dot):
     @color.setter
     def color(self, value):
         super(BlueDot, self.__class__).color.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.color = value
 
     @property
@@ -1062,7 +1055,7 @@ class BlueDot(Dot):
     @square.setter
     def square(self, value):
         super(BlueDot, self.__class__).square.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.square = value
 
     @property
@@ -1080,7 +1073,7 @@ class BlueDot(Dot):
     @border.setter
     def border(self, value):
         super(BlueDot, self.__class__).border.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.border = value
 
     @property
@@ -1101,7 +1094,7 @@ class BlueDot(Dot):
     @visible.setter
     def visible(self, value):
         super(BlueDot, self.__class__).visible.fset(self, value)
-        for button in self.buttons.values():
+        for button in self.buttons:
             button.visible = value
 
     @property
@@ -1242,7 +1235,7 @@ class BlueDot(Dot):
 
     def _get_button(self, key):
         try:
-            return self.buttons[key]
+            return self._buttons[key]
         except KeyError:
             raise ButtonDoesNotExist("The button `{}` does not exist".format(key))
 
@@ -1399,7 +1392,7 @@ class BlueDot(Dot):
 
             # send the configuration for the individual buttons
             button_config_msg = ""
-            for button in self.buttons.values():
+            for button in self.buttons:
                 if button.modified:
                     button_config_msg += button.build_config_msg()
 
