@@ -16,7 +16,7 @@ Hello World
 .. currentmodule:: bluedot
 
 Let's say "Hello World" by creating the :class:`BlueDot` object then waiting
-for the Blue Dot app to connect and be pressed:
+for the Blue Dot app to connect and the button be pressed:
 
 .. literalinclude:: examples/hello_world.py
 
@@ -26,7 +26,7 @@ function:
 .. literalinclude:: examples/hello_event.py
 
 :attr:`~BlueDot.wait_for_release` and :attr:`~BlueDot.when_released` also allow
-you to interact when the Blue Dot is released:
+you to interact when the button is released:
 
 .. literalinclude:: examples/goodbye_world.py
 
@@ -41,7 +41,7 @@ Flash an LED
 Using Blue Dot in combination with :mod:`gpiozero` you can interact with
 electronic components, such as LEDs, connected to your Raspberry Pi.
 
-When the Blue Dot is pressed, the LED connected to GPIO 27 will turn on; when
+When a button is pressed, the LED connected to GPIO 27 will turn on; when
 released it will turn off:
 
 .. literalinclude:: examples/led1.py
@@ -115,10 +115,97 @@ Alternatively you can use a generator and yield (x, y) values to the
 
 .. literalinclude:: examples/robot3.py
 
+Appearance
+----------
+
+The button doesn't have to be blue or a dot, you can change how it looks, or make it completely invisible.
+
+.. image:: images/bluedot_color_changing_smaller.gif
+   :alt: Animation of blue dot app cycling through colors and changing to a square
+
+Colo(u)r
+~~~~~~~~
+
+To change the color of the button use the :attr:`~BlueDot.color`: property:
+
+.. literalinclude:: examples/looks_color.py
+
+A dictionary of available colors can be obtained from ``bluedot.COLORS``.
+
+The color can also be set using a hex value of `#rrggbb` or `#rrggbbaa` value::
+
+    bd.color = "#00ff00"
+
+Or a tuple of 3 or 4 integers between `0` and `255` either (red, gree, blue) or (red, green, blue, alpha)::
+
+    bd.color = (0, 255, 0)
+
+Square
+~~~~~~
+
+The button can also be made square using the :attr:`~BlueDot.square`: property:
+
+.. literalinclude:: examples/looks_square.py
+
+Border
+~~~~~~
+
+A border can also been added to the button by setting the :attr:`~BlueDot.border`: property to `True`:
+
+.. literalinclude:: examples/looks_border.py
+
+(In)visible
+~~~~~~~~~~~
+
+The button can be hidden and shown using the :attr:`~BlueDot.visible`: property:
+
+.. literalinclude:: examples/looks_visible.py
+
+Many Buttons
+------------
+
+In a grid, blah
+
+android app has multi touch
+
+note - only supported by the android app
+
+Two Buttons
+~~~~~~~~~~~
+
+here are 2 buttons side by side
+
+.. literalinclude:: examples/two_buttons.py
+
+have each button call a different function
+
+.. literalinclude:: examples/two_buttons_two_events.py
+
+put a gap in between by creating 3 buttons and making the button in the middle invisible.
+
+.. literalinclude:: examples/two_buttons_gap.py
+
+Many Buttons
+~~~~~~~~~~~~
+
+10 buttons in a 2x5 grid
+
+.. literalinclude:: examples/many_buttons.py
+
+You could assign them all random colors
+
+.. literalinclude:: examples/many_buttons_random_colors.py
+
+D-pad
+~~~~~
+
+3x3 grid corners and middle made invisible
+
+
 Slider
 ------
 
-By holding down the Blue Dot and moving the position you can use it as an
+By holding down a button and moving the position you can use it as an
 analogue slider.
 
 Centre Out
@@ -210,54 +297,8 @@ property which changes the number of segments the Blue Dot is split into::
 
     bd.rotation_segments = 16
 
-Appearance
-----------
-
-The dot doesn't have to be blue or a dot, you can change how it looks, or make it completely invisible.
-
-.. image:: images/bluedot_color_changing_smaller.gif
-   :alt: Animation of blue dot app cycling through colors and changing to a square
-
-Colo(u)r
-~~~~~~~~
-
-To change the color of the dot use the :attr:`~BlueDot.color`: property:
-
-.. literalinclude:: examples/looks_color.py
-
-A dictionary of available colors can be obtained from ``bluedot.COLORS``.
-
-The color can also be set using a hex value of `#rrggbb` or `#rrggbbaa` value::
-
-    bd.color = "#00ff00"
-
-Or a tuple of 3 or 4 integers between `0` and `255` either (red, gree, blue) or (red, green, blue, alpha)::
-
-    bd.color = (0, 255, 0)
-
-Square
-~~~~~~
-
-The dot can also be made square using the :attr:`~BlueDot.square`: property:
-
-.. literalinclude:: examples/looks_square.py
-
-Border
-~~~~~~
-
-A border can also been added to the dot (or the square) by setting the :attr:`~BlueDot.border`: property to `True`:
-
-.. literalinclude:: examples/looks_border.py
-
-(In)visible
-~~~~~~~~~~~
-
-The dot can be hidden and shown using the :attr:`~BlueDot.visible`: property:
-
-.. literalinclude:: examples/looks_visible.py
-
-Multiple Blue Dots
-------------------
+Multiple Blue Dot Apps
+----------------------
 
 You can connect multiple Blue Dot clients (apps) to a single server (python 
 program) by using different Bluetooth ports for each app.
@@ -270,7 +311,7 @@ Change the BlueDot app to use the specific port by:
 
 1. Opening settings from the menu
 2. Turning *Auto port discovery* off
-3. Selecting the *Bluetooth port*
+3. Selecting the specific *Bluetooth port*
 
 .. image:: images/bluedotandroid_settings.png
    :alt: Android blue dot app showing the settings option on the menu

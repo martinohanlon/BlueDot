@@ -380,6 +380,7 @@ class BluetoothServer(object):
         :param str data:
             The data to be sent.
         """
+        print(data)
         if self._client_connected:
             if self._encoding is not None:
                 data = data.encode(self._encoding)

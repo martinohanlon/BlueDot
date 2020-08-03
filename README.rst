@@ -38,13 +38,17 @@ See the `getting started`_ guide to 'get started'!
 More
 ----
 
-The Blue Dot is a `joystick`_ as well as `button`_. You can tell if the dot was pressed in the middle, on the top, bottom, left or right. You can easily create a `BlueDot controlled Robot`_.
+Blue Dot is more than just one `button_`. You can create as many buttons as you want and change their appearance to create your own controller.
 
-Why be restricted by such vague positions like top and bottom though: you can get the exact (x, y) position or even the angle and distance from centre where the dot was pressed.
+|bluedotjoypad|
+
+Every `button`_ is also a `joystick`_. You can tell if a button was pressed in the middle, on the top, bottom, left or right. You can easily create a `BlueDot controlled Robot`_.
+
+Why be restricted by such vague positions like top and bottom though: you can get the exact (x, y) position or even the angle and distance from centre where the button was pressed.
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
 
-The dot doesn't have to be blue, or a dot, you can change its colour, make it square or give it a border.
+A button can be any colour, square, given give or hidden!
 
 You can press it, `slide it`_, `swipe it`_, `rotate it`_ - one blue circle can do a lot!
 
@@ -88,6 +92,12 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
    :width: 294 px
    :scale: 100 %
    :alt: blue dot python app
+
+.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotjoypad_small.png
+   :height: 148 px
+   :width: 294 px
+   :scale: 100 %
+   :alt: blue dot app as a joy pad controller
 
 .. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature_small.png
    :height: 247 px
