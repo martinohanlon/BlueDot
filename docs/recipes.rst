@@ -199,7 +199,9 @@ You could assign them all random colors
 D-pad
 ~~~~~
 
-3x3 grid corners and middle made invisible
+3x3 grid corners and middle made invisible.
+
+.. literalinclude:: examples/dpad_layout.py
 
 
 Slider
