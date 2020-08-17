@@ -187,7 +187,7 @@ Two Buttons
 
 Create 2 buttons side by side, by setting the number of `cols` to `2`:
 
-.. image:: images/layout_tow_buttons.png
+.. image:: images/layout_2_buttons.png
    :alt: Android blue dot app showing 2 buttons side by side
 
 .. literalinclude:: examples/two_buttons.py
@@ -202,7 +202,7 @@ Each button can be set to call its own function by using the grid position:
 
 To create a gap in between the buttons you could create a row of 3 buttons and hide the middle button:
 
-.. image:: images/layout_two_buttons_gap.png
+.. image:: images/layout_2_buttons_gap.png
    :alt: Android blue dot app showing 2 buttons side by side with a gap in the middle
 
 .. literalinclude:: examples/two_buttons_gap.py
