@@ -161,48 +161,82 @@ The button can be hidden and shown using the :attr:`~BlueDot.visible`: property:
 
 .. literalinclude:: examples/looks_visible.py
 
-Many Buttons
-------------
+Layout
+-------
 
-In a grid, blah
+You can have as many buttons as you want.
 
-android app has multi touch
+The Buttons need to be in a grid of columns and rows.
 
-note - only supported by the android app
+.. image:: images/layout_many_buttons.png
+   :alt: Android blue dot app showing 10 buttons in a 2x5 grid
+
+By hiding specific buttons being creative with the buttons appearance you can create very sophisticated layouts for your controllers using Blue Dot.
+
+.. image:: images/layout_joypad.png
+   :alt: Android blue dot app showing buttons layed out like a classic joypad
+
+The Blue Dot android app supports multi touch allowing you to use multi buttons simultaneously
+
+.. note::
+
+    Currently only the Android client app supports multi buttons.
 
 Two Buttons
 ~~~~~~~~~~~
 
-here are 2 buttons side by side
+Create 2 buttons side by side, by setting the number of `cols` to `2`:
+
+.. image:: images/layout_tow_buttons.png
+   :alt: Android blue dot app showing 2 buttons side by side
 
 .. literalinclude:: examples/two_buttons.py
 
-have each button call a different function
+The buttons could be made verticle by setting the `rows` attribute::
+
+    bd = BlueDot(rows=2)
+
+Each button can be set to call its own function by using the grid position:
 
 .. literalinclude:: examples/two_buttons_two_events.py
 
-put a gap in between by creating 3 buttons and making the button in the middle invisible.
+To create a gap in between the buttons you could create a row of 3 buttons and hide the middle button:
+
+.. image:: images/layout_two_buttons_gap.png
+   :alt: Android blue dot app showing 2 buttons side by side with a gap in the middle
 
 .. literalinclude:: examples/two_buttons_gap.py
 
 Many Buttons
 ~~~~~~~~~~~~
 
-10 buttons in a 2x5 grid
+Create a grid of buttons by setting the `cols` and `rows` e.g. a 10 buttons in a 2x5 grid:
+
+.. image:: images/layout_many_buttons.png
+   :alt: Android blue dot app showing 10 buttons in a 2x5 grid
 
 .. literalinclude:: examples/many_buttons.py
 
-You could assign them all random colors
+You could assign all the buttons random colors:
 
 .. literalinclude:: examples/many_buttons_random_colors.py
 
 D-pad
 ~~~~~
 
-3x3 grid corners and middle made invisible.
+Create a traditional d-pad layout you could use a 3x3 grid and hide the buttons and the corners and in the middle:
+
+.. image:: images/layout_dpad.png
+   :alt: Android blue dot app showing 4 buttons arranged in a cross
 
 .. literalinclude:: examples/dpad_layout.py
 
+Add 2 buttons to the left and create a joypad:
+
+.. image:: images/layout_joypad.png
+   :alt: Android blue dot app showing buttons layed out like a classic joypad
+
+.. literalinclude:: examples/dpad_layout.py
 
 Slider
 ------
