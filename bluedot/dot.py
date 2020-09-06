@@ -741,7 +741,7 @@ class BlueDotButton(Dot):
             if rotation.valid:
                 return rotation
 
-    def build_config_msg(self):
+    def _build_config_msg(self):
         return "5,{},{},{},{},{},{}\n".format(
                     self.color,
                     int(self.square),
@@ -753,12 +753,12 @@ class BlueDotButton(Dot):
 
     def _send_config(self):
         if self._bd.is_connected:
-            self._bd._server.send(self.build_config_msg())
+            self._bd._server.send(self._build_config_msg())
 
 class BlueDot(Dot):
     """
-    Interacts with a Blue Dot client application, communicating when and where it
-    has been pressed, released or held.
+    Interacts with a Blue Dot client application, communicating when and where a 
+    button has been pressed, released or held.
 
     This class starts an instance of :class:`.btcomm.BluetoothServer`
     which manages the connection with the Blue Dot client.
@@ -801,7 +801,7 @@ class BlueDot(Dot):
 
     :param bool print_messages:
         If ``True`` (the default), server status messages will be printed stating
-        when the server has started and when clients connect / disconect.
+        when the server has started and when clients connect / disconnect.
 
     :param int cols:
         The number of columns in the grid of buttons. Defaults to ``1``.
@@ -971,6 +971,9 @@ class BlueDot(Dot):
             pressed again.  If the Blue Dot has never been pressed
             :attr:`interaction` will return ``None``.
 
+            If there are multiple buttons, the interaction will only be 
+            returned for button [0,0]
+
         .. deprecated:: 2.0.0
 
         """
@@ -1100,7 +1103,8 @@ class BlueDot(Dot):
     @property
     def when_client_connects(self):
         """
-        Sets or returns the function which is called when a Blue Dot connects.
+        Sets or returns the function which is called when a Blue Dot 
+        application connects.
 
         The function will be run in the same thread and block, to run in a separate 
         thread use `set_when_client_connects(function, background=True)`
@@ -1213,7 +1217,7 @@ class BlueDot(Dot):
         .. note::
             Existing buttons will retain their state (color, border, etc) when 
             resized. New buttons will be created with the default values set 
-            by the :class:`.btcomm.BluetoothServer`.
+            by the :class:`BlueDot`.
         """
         self._cols = cols
         self._rows = rows        
@@ -1248,7 +1252,7 @@ class BlueDot(Dot):
         
         # wait for the protocol version to be checked.
         if not self._check_protocol_event.wait(CHECK_PROTOCOL_TIMEOUT):
-            self._print_message("Protocol version not received from client - update the client to the latest version.")
+            self._print_message("Protocol version not received from client - do you need to update the client to the latest version?")
             self._server.disconnect_client()
 
     def _client_disconnected(self):
@@ -1394,7 +1398,7 @@ class BlueDot(Dot):
             button_config_msg = ""
             for button in self.buttons:
                 if button.modified:
-                    button_config_msg += button.build_config_msg()
+                    button_config_msg += button._build_config_msg()
 
             if button_config_msg != "":
                 self._server.send(button_config_msg)
