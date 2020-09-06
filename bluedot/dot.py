@@ -131,7 +131,7 @@ class Dot(object):
         """
         Sets the function which is called when the button is pressed.
         
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -167,7 +167,7 @@ class Dot(object):
         """
         Sets the function which is called when the button is double pressed.
         
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -210,7 +210,7 @@ class Dot(object):
         """
         Sets the function which is called when the button is released.
         
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -242,7 +242,7 @@ class Dot(object):
         """
         Sets the function which is called when the position the button is pressed is moved.
 
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -274,7 +274,7 @@ class Dot(object):
         """
         Sets the function which is called when the position the button is swiped.
 
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -320,7 +320,7 @@ class Dot(object):
         Sets the function which is called when the position the button is rotated (like an
         iPod clock wheel).
 
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -1119,7 +1119,7 @@ class BlueDot(Dot):
         """
         Sets the function which is called when a Blue Dot connects.
         
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:
@@ -1147,7 +1147,7 @@ class BlueDot(Dot):
         """
         Sets the function which is called when a Blue Dot disconnects.
         
-        :param function callback:
+        :param Callable callback:
             The function to call, setting to `None` will stop the callback.
 
         :param bool background:

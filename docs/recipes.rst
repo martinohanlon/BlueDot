@@ -168,12 +168,12 @@ You can have as many buttons as you want.
 
 The Buttons need to be in a grid of columns and rows.
 
-.. image:: images/layout_many_buttons.png
+.. image:: images/layout_many_buttons_small.png
    :alt: Android blue dot app showing 10 buttons in a 2x5 grid
 
 By hiding specific buttons being creative with the buttons appearance you can create very sophisticated layouts for your controllers using Blue Dot.
 
-.. image:: images/layout_joypad.png
+.. image:: images/layout_joypad_small.png
    :alt: Android blue dot app showing buttons layed out like a classic joypad
 
 The Blue Dot android app supports multi touch allowing you to use multi buttons simultaneously
@@ -187,7 +187,7 @@ Two Buttons
 
 Create 2 buttons side by side, by setting the number of `cols` to `2`:
 
-.. image:: images/layout_2_buttons.png
+.. image:: images/layout_2_buttons_small.png
    :alt: Android blue dot app showing 2 buttons side by side
 
 .. literalinclude:: examples/two_buttons.py
@@ -202,7 +202,7 @@ Each button can be set to call its own function by using the grid position:
 
 To create a gap in between the buttons you could create a row of 3 buttons and hide the middle button:
 
-.. image:: images/layout_2_buttons_gap.png
+.. image:: images/layout_2_buttons_gap_small.png
    :alt: Android blue dot app showing 2 buttons side by side with a gap in the middle
 
 .. literalinclude:: examples/two_buttons_gap.py
@@ -212,7 +212,7 @@ Many Buttons
 
 Create a grid of buttons by setting the `cols` and `rows` e.g. a 10 buttons in a 2x5 grid:
 
-.. image:: images/layout_many_buttons.png
+.. image:: images/layout_many_buttons_small.png
    :alt: Android blue dot app showing 10 buttons in a 2x5 grid
 
 .. literalinclude:: examples/many_buttons.py
@@ -226,14 +226,14 @@ D-pad
 
 Create a traditional d-pad layout you could use a 3x3 grid and hide the buttons and the corners and in the middle:
 
-.. image:: images/layout_dpad.png
+.. image:: images/layout_dpad_small.png
    :alt: Android blue dot app showing 4 buttons arranged in a cross
 
 .. literalinclude:: examples/dpad_layout.py
 
 Add 2 buttons to the left and create a joypad:
 
-.. image:: images/layout_joypad.png
+.. image:: images/layout_joypad_small.png
    :alt: Android blue dot app showing buttons layed out like a classic joypad
 
 .. literalinclude:: examples/dpad_layout.py
