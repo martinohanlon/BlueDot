@@ -1,3 +1,6 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 from argparse import ArgumentParser
 import pygame
 import sys
@@ -15,10 +18,11 @@ CLIENT_NAME = "Blue Dot Python app"
 BORDER_THICKNESS = 0.025
 
 class BlueDotClient(object):
-    def __init__(self, device, server, fullscreen, width, height):
+    def __init__(self, device, server, port, fullscreen, width, height):
 
         self._device = device
         self._server = server
+        self._port = 1 if port is None else port
         self._fullscreen = fullscreen
         
         #init pygame
@@ -54,13 +58,13 @@ class BlueDotClient(object):
         pygame.quit()
 
     def _run(self):
-        #has a server been specified?  If so connected directly
+        # has a server been specified?  If so connected directly
         if self._server:
-            button_screen = ButtonScreen(self._screen, self._font, self._device, self._server, self._width, self._height)
+            button_screen = ButtonScreen(self._screen, self._font, self._device, self._server, self._port, self._width, self._height)
             button_screen.run()
         else:
-            #start the devices screen
-            devices_screen = DevicesScreen(self._screen, self._font, self._device, self._width, self._height)
+            # start the devices screen
+            devices_screen = DevicesScreen(self._screen, self._font, self._device, self._port, self._width, self._height)
             devices_screen.run()
 
 
@@ -71,20 +75,20 @@ class BlueDotScreen(object):
         self.width = width
         self.height = height
 
-        #setup screen attributes
+        # setup screen attributes
         self.frame_rect = pygame.Rect(BORDER, BORDER, self.width - (BORDER * 2) - FONTSIZE - FONTPAD, self.height - (BORDER * 2))
         self.close_rect = pygame.Rect(self.width - FONTSIZE - FONTPAD - BORDER, BORDER, FONTSIZE + FONTPAD, FONTSIZE + FONTPAD)
 
         self.draw_screen()
 
     def draw_screen(self):
-        #set the screen background
+        # set the screen background
         self.screen.fill(GRAY86.rgb)
 
         self.draw_close_button()
 
     def draw_close_button(self):
-        #draw close button
+        # draw close button
         pygame.draw.rect(self.screen, BLUE.rgb, self.close_rect, 2)
         pygame.draw.line(self.screen, BLUE.rgb,
                         (self.close_rect[0], self.close_rect[1]),
@@ -153,11 +157,12 @@ class BlueDotScreen(object):
 
 
 class DevicesScreen(BlueDotScreen):
-    def __init__(self, screen, font, device, width, height):
+    def __init__(self, screen, font, device, port, width, height):
         self.bt_adapter = BluetoothAdapter(device = device)
+        self.port = port
 
         super(DevicesScreen, self).__init__(screen, font, width, height)
-        #self.draw_screen()
+        # self.draw_screen()
 
     def draw_screen(self):
         self.device_rects = []
@@ -193,7 +198,7 @@ class DevicesScreen(BlueDotScreen):
                         if self.device_rects[d].collidepoint(pos):
                             # show the button
                             self.draw_status_message("Connecting")
-                            button_screen = ButtonScreen(self.screen, self.font, self.bt_adapter.device, self.bt_adapter.paired_devices[d][0], self.width, self.height)
+                            button_screen = ButtonScreen(self.screen, self.font, self.bt_adapter.device, self.bt_adapter.paired_devices[d][0], self.port, self.width, self.height)
                             button_screen.run()
 
                             #redraw the screen
@@ -213,9 +218,10 @@ class DevicesScreen(BlueDotScreen):
 
 
 class ButtonScreen(BlueDotScreen):
-    def __init__(self, screen, font, device, server, width, height):        
+    def __init__(self, screen, font, device, server, port, width, height):        
         self.device = device
         self.server = server
+        self.port = port
         self._data_buffer = ""
 
         self.last_x = 0
@@ -281,7 +287,7 @@ class ButtonScreen(BlueDotScreen):
             x = round(x, 4)
             y = ((pos[1] - self.dot_centre[1]) / float(self.dot_radius)) * -1
             y = round(y, 4)
-            message = "{},{},{}\n".format(op, x, y)
+            message = "{},0,0,{},{}\n".format(op, x, y)
             if op == 2:
                 if x != self.last_x or y != self.last_y:
                     self._send_message(message)
@@ -304,30 +310,46 @@ class ButtonScreen(BlueDotScreen):
             self.draw_error(e)
 
     def _data_received(self, data):
-        #add the data received to the buffer
+        # add the data received to the buffer
         self._data_buffer += data
 
-        #get any full commands ended by \n
+        # get any full commands ended by \n
         last_command = self._data_buffer.rfind("\n")
         if last_command != -1:
             commands = self._data_buffer[:last_command].split("\n")
-            #remove the processed commands from the buffer
+            # remove the processed commands from the buffer
             self._data_buffer = self._data_buffer[last_command + 1:]
             self._process_commands(commands)
 
     def _process_commands(self, commands):
         for command in commands:
             params = command.split(",")
+
             invalid_command = False
-            if len(params) == 5:
+            if len(params) == 7:
+
                 if params[0] == "4":
+                    # currently the python blue dot client only supports 1 button
+                    if params[5] != "1" or params[6] != "1":
+                        print("Error - The BlueDot python client only supports a single button.")
+
                     self._colour = parse_color(params[1])
                     self._square = True if params[2] == "1" else False
                     self._border = True if params[3] == "1" else False
                     self._visible = True if params[4] == "1" else False
 
                     self._draw_dot()
+
+                elif params[0] == "5":
+                    if params[5] == "0" and params[6] == "0":
+                        
+                        self._colour = parse_color(params[1])
+                        self._square = True if params[2] == "1" else False
+                        self._border = True if params[3] == "1" else False
+                        self._visible = True if params[4] == "1" else False                    
                     
+                        self._draw_dot()
+
             else:
                 invalid_command = True
 
@@ -388,7 +410,7 @@ class ButtonScreen(BlueDotScreen):
         self.bt_client.disconnect()
 
     def _connect(self):
-        self.bt_client = BluetoothClient(self.server, self._data_received, device = self.device, auto_connect = False)
+        self.bt_client = BluetoothClient(self.server, self._data_received, port = self.port, device = self.device, auto_connect = False)
         try:
             self.bt_client.connect()
         except:
@@ -400,13 +422,14 @@ def main():
     parser = ArgumentParser(description="Blue Dot Python App")
     parser.add_argument("--device", help="The name of the bluetooth device to use (default is hci0)")
     parser.add_argument("--server", help="The name or mac address of the bluedot server")
+    parser.add_argument("--port", help="The port number to use when connecting (default is 1)", type=int)
     parser.add_argument("--fullscreen", help="Fullscreen app", action="store_true")
     parser.add_argument("--width", type=int, help="A custom screen width (default is {})".format(DEFAULTSIZE[0]))
     parser.add_argument("--height", type=int, help="A customer screen height (default is {})".format(DEFAULTSIZE[1]))
     args = parser.parse_args()
 
     #start the blue dot client
-    blue_dot_client = BlueDotClient(args.device, args.server, args.fullscreen, args.width, args.height)
+    blue_dot_client = BlueDotClient(args.device, args.server, args.port, args.fullscreen, args.width, args.height)
 
 if __name__ == "__main__":
     main()

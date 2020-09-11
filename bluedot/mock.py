@@ -293,16 +293,16 @@ class MockBlueDot(BlueDot):
         self._mock_app_thread.start()
 
     def _launch_mock_app(self):
-        #imported here, so pygame is only a pre-requisite for the mock app
+        # imported here, so pygame is only a pre-requisite for the mock app
         from .app import BlueDotClient, ButtonScreen
 
         class MockBlueDotClient(BlueDotClient):
             def _run(self):
-                button_screen = MockButtonScreen(self._screen, self._font, self._device, self._server, self._width, self._height)
+                button_screen = MockButtonScreen(self._screen, self._font, self._device, self._server, self._port, self._width, self._height)
                 button_screen.run()
 
         class MockButtonScreen(ButtonScreen):
             def _connect(self):
                 self.bt_client = MockBluetoothClient(self.server, self._data_received, device = self.device, auto_connect = True)
 
-        MockBlueDotClient("mock2", self._server, None, None, None)
+        MockBlueDotClient("mock2", self._server, self._port, None, None, None)
