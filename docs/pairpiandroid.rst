@@ -8,9 +8,7 @@ On your Android phone:
 
 1. Open Settings
 
-2. Select Bluetooth
-
-3. This will make your phone "discoverable"
+2. Select Bluetooth and make your phone "discoverable"
 
 On your Raspberry Pi:
 
@@ -20,22 +18,26 @@ On your Raspberry Pi:
 
 3. Click :menuselection:`Bluetooth --> Add Device`
 
-4. Your phone will appear in the list, select it and click guilabel:`Pair`
+4. Your phone will appear in the list, select it and click :guilabel:`Pair`
 
-5. Enter a PIN code
+On your Android phone and Raspberry Pi.
 
-On your Android phone again:
+1. Confirm the pairing code matches
 
-1. Enter the same PIN code when prompted
-
-2. Touch "OK"
+2. Click OK
 
 .. note::
 
-    You may receive errors relating to services not being able available or being unable to connect: these can be ignored.
+    You may receive errors relating to services not being able available or being unable to connect: these can be ignored, your phone and Raspberry Pi are now paired.
 
 Using the Command Line
 ----------------------
+
+On your Android phone:
+
+1. Open Settings
+
+2. Select Bluetooth and make your phone "discoverable"
 
 On your Raspberry Pi:
 
@@ -47,19 +49,18 @@ On your Raspberry Pi:
        pairable on
        agent on
        default-agent
+       scan on
 
-On your Android phone:
+3. Wait for a message to appear showing the Android phone has been found::
 
-1. Open Settings
+       [NEW] Device 12:23:34:45:56:67 devicename
 
-2. Select Bluetooth
+4. Type pair with the mac address of your Android phone::
 
-3. Your Raspberry Pi will appear in the list; select it
+       pair 12:23:34:45:56:67
 
-4. Enter a PIN
+On your Android phone and Raspberry Pi.
 
-On your Raspberry Pi:
-
-1. Re-enter the PIN
+1. Confirm the passcode.
 
 2. Type :command:`quit` and press Enter to return to the command line
