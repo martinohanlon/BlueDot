@@ -29,6 +29,9 @@ def client_connected():
 def client_disconnected():
     print("disconnected callback")
 
+def rotated(rotation):
+    print("rotated: direction={}".format(rotation.value))
+
 dot.when_client_connects = client_connected
 dot.when_client_disconnects = client_disconnected
 dot.when_pressed = pressed
@@ -36,6 +39,7 @@ dot.when_released = released
 dot.when_moved = moved
 dot.when_swiped = swiped
 dot.when_double_pressed = double_presed
+dot.when_rotated = rotated
 dot[0,1].when_pressed = pressed_two
 
 dot.start()
