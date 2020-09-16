@@ -17,7 +17,7 @@ FONTPAD = 3
 CLIENT_NAME = "Blue Dot Python app"
 BORDER_THICKNESS = 0.025
 
-class BlueDotClient(object):
+class BlueDotClient:
     def __init__(self, device, server, port, fullscreen, width, height):
 
         self._device = device
@@ -68,7 +68,7 @@ class BlueDotClient(object):
             devices_screen.run()
 
 
-class BlueDotScreen(object):
+class BlueDotScreen:
     def __init__(self, screen, font, width, height):
         self.screen = screen
         self.font = font

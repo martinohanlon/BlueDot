@@ -1,45 +1,43 @@
 import sys
 from setuptools import setup
 
-if sys.version_info[0] == 2:
-    if not sys.version_info >= (2, 7):
-        raise ValueError('This package requires Python 2.7 or newer')
-elif sys.version_info[0] == 3:
-    if not sys.version_info >= (3, 3):
-        raise ValueError('This package requires Python 3.3 or newer')
+if sys.version_info.major == 2:
+    raise ValueError('This package does not support Python 2')
+elif sys.version_info.major == 3:
+    if sys.version_info.minor < 5:
+        raise ValueError('This package requires Python 3.5 or newer')
 else:
-    raise ValueError('Unrecognized major version of Python')
+    raise ValueError('Python version not identified')
 
 __project__ = 'bluedot'
 __desc__ = 'A zero boiler plate bluetooth remote'
-__version__ = '1.3.2'
+__version__ = '2.0.0'
 __author__ = "Martin O'Hanlon"
 __author_email__ = 'martin@ohanlonweb.com'
 __license__ = 'MIT'
 __url__ = 'https://github.com/martinohanlon/BlueDot'
-__requires__ = ['dbus-python',]
+__python_requires__ = '>=3.5'
+# __requires__ = ['dbus-python',]
 __keywords__ = [
     "raspberry",
     "pi",
     "raspberry pi",
     "bluetooth",
     "remote",
+    "android",
 ]
 __classifiers__ = [
-#   "Development Status :: 3 - Alpha",
-#   "Development Status :: 4 - Beta",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Education",
     "Intended Audience :: Developers",
     "Topic :: Education",
     "Topic :: Communications",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.3",
-    "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
 ]
 __long_description__ = """# Blue Dot
 
@@ -68,15 +66,19 @@ print("You pressed the blue dot!")
 
 5. Press the Blue Dot
 
-See the [getting started guide](http://bluedot.readthedocs.io/en/latest/gettingstarted.html) to 'get statred'!
+See the [getting started guide](http://bluedot.readthedocs.io/en/latest/gettingstarted.html) to 'get started'!
 
 ## More
 
-The Blue Dot is a joystick as well as button. You can tell if the dot was pressed in the middle, on the top, bottom, left or right. You can easily create a BlueDot controlled Robot.
+Blue Dot is more than just one button. You can create as many buttons as you want and change their appearance to create your own controller.
 
-Why be restricted by such vague positions like top and bottom though: you can get the exact (x, y) position or even the angle and distance from centre where the dot was pressed.
+Every button is also a joystick. You can tell if a button was pressed in the middle, on the top, bottom, left or right. You can easily create a BlueDot controlled Robot.
+
+Why be restricted by such vague positions like top and bottom though: you can get the exact (x, y) position or even the angle and distance from centre where the button was pressed.
 
 Its not all about when the button was pressed either - pressed, released or moved they all work.
+
+A button can be any colour, square, given give or hidden!
 
 You can press it, slide it, swipe it, rotate it - one blue circle can do a lot!
 
@@ -98,9 +100,9 @@ if __name__ == '__main__':
         keywords=__keywords__,
         classifiers=__classifiers__,
         packages = [__project__],
-        #install_requires = __requires__,
+        # install_requires = __requires__,
         entry_points={
             'console_scripts': [
                 'bluedotapp = bluedot.app:main'
                 ]},
-        zip_safe=False)
+        )

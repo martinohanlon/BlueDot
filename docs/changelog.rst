@@ -16,6 +16,7 @@ Bluedot Python library
  * deprecated BlueDot.interaction
  * added warnings when invalid data is received
  * support for protocol version 2
+ * removed support for Python 2, 3.3 & 3.4
 
 1.3.2 - 2019-04-22
 ~~~~~~~~~~~~~~~~~~

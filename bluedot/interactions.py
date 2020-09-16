@@ -1,7 +1,7 @@
 from time import time
 from math import atan2, degrees, hypot
 
-class BlueDotPosition(object):
+class BlueDotPosition:
     """
     Represents a position of where the blue dot is pressed, released or held.
 
@@ -128,7 +128,7 @@ class BlueDotPosition(object):
         )
 
 
-class BlueDotInteraction(object):
+class BlueDotInteraction:
     """
     Represents an interaction with the Blue Dot, from when it was pressed to
     when it was released.
@@ -245,7 +245,7 @@ class BlueDotInteraction(object):
         self._positions.append(released_position)
 
 
-class BlueDotSwipe(object):
+class BlueDotSwipe:
     """
     Represents a Blue Dot swipe interaction.
 
@@ -388,7 +388,7 @@ class BlueDotSwipe(object):
         )
 
 
-class BlueDotRotation(object):
+class BlueDotRotation:
     def __init__(self, interaction, no_of_segments):
         """
         Represents a Blue Dot rotation.

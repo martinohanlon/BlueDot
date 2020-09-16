@@ -4,11 +4,7 @@ import sys
 import warnings
 from time import sleep, time
 from threading import Event
-
-try:
-    from inspect import getfullargspec
-except ImportError:
-    from inspect import getargspec as getfullargspec
+from inspect import getfullargspec
 
 from .btcomm import BluetoothServer
 from .threads import WrapThread
@@ -18,7 +14,7 @@ from .colors import parse_color, BLUE
 from .exceptions import ButtonDoesNotExist
 
 
-class Dot(object):
+class Dot:
     """
     The internal base class for the implementation of a "button" or "buttons".
     """
