@@ -21,7 +21,43 @@ simple stream no acknowledgements or data is sent in response to commands.
 
 All messages between conform to the same format::
 
-    [operation],[param1],[param2],[*]\n
+    [operation],[params],[*]\n
+
+Messages are sent as utf-8 encoded strings.
+
+*\\n* represents the new-line character.
+
+The following operations are used to communicate between client and server.
+
++-------------------+-------------------------------------------------------------+-----------------+
+| Operations        | Message format                                              | Direction       |
++===================+=============================================================+=================+
+| Button released   | ``0,[col],[row],[x],[y]\n``                                 | Client > Server |
+| Button pressed    | ``1,[col],[row],[x],[y]\n``                                 | Client > Server |
+| Button moved      | ``2,[col],[row],[x],[y]\n``                                 | Client > Server |
+| Protocol check    | ``3,[protocol version],[client name]\n``                    | Client > Server |
+| Set config        | ``4,[color],[square],[border],[visible],[cols],[rows]\n``   | Server > Client |
+| Set button config | ``5,[color],[square],[border],[visible],[col],[row]\n``     | Server > Client |
++-------------------+-------------------------------------------------------------+-----------------+
+
+Messages are constructed using the following parameters.
+
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| Parameter         | Description                                                                                                 |
++===================+=============================================================================================================+
+| cols              | The number of columns in the matrix of buttons                                                              |
+| rows              | The number of rows in the matrix of buttons                                                                 |
+| col               | The column position of the button (0 is top)                                                                |
+| row               | The row position of the button (0 is left)                                                                  |
+| x                 | Horizontal position between -1 and +1, with 0 being the centre and +1 being the right radius of the button. |
+| y                 | Vertical position between -1 and +1, with 0 being the centre and +1 being the top radius of the button.     |
+| protocol version  | The version of protocol the client supports.                                                                |
+| client name       | The name of the client e.g. "Android Blue Dot App"                                                          |
+| color             | A hex value in the format ``#rrggbbaa`` representing red, green, blue, alpha values.                        | 
+| square            | 0 or 1, 1 if the dot should be a square.                                                                    | 
+| border            | 0 or 1, 1 if the dot should have a border.                                                                  | 
+| visible           | 0 or 1, 1 if the dot should be visible.                                                                     | 
++-------------------+-------------------------------------------------------------------------------------------------------------+
 
 Messages are sent when:
 
@@ -29,73 +65,8 @@ Messages are sent when:
 3. When the setup (or appearance) of a button changes
 2. A button is released, pressed or moved
 
-At connection the client sends a handshake - ``[3],[protocol version],[client name]\n``
-
-* client to server.
-
-* *operation* 3.
-
-* *protocol version* is sent and corresponds to the version of protocol the client supports.
-
-* *client name* is a string value used in exceptions to report what client has connected.
-
-At connection or when the default setup (or appearance) changes - ``[4],[color],[square],[border],[visible],[cols],[rows]\n``:
-
-* server to client.
-
-* *operation* 4.
-
-* set the values of the all the buttons
-
-* *color* is a hex value in the format #rrggbbaa representing red, green, blue, alpha values.
-
-* *square* is 0 or 1, 1 if the dot should be a square.
-
-* *border* is 0 or 1, 1 if the dot should have a border.
-
-* *visible* is 0 or 1, 1 if the dot should be visible.
-
-* *cols* is the number of columns in the matrix of buttons
-
-* *rows* is the number of columns in the matrix of buttons
-
-When the appearance of a button changes from the default - - ``[5],[color],[square],[border],[visible],[col],[row]\n``:
-
-* server to client.
-
-* *operation* 5.
-
-* *color* is a hex value in the format #rrggbbaa representing red, green, blue, alpha values.
-
-* *square* is 0 or 1, 1 if the dot should be a square.
-
-* *border* is 0 or 1, 1 if the dot should have a border.
-
-* *visible* is 0 or 1, 1 if the dot should be visible.
-
-* *col* and *row* specify the button's position in the matrix 
-
-When a button is released, pressed or moved - ``[0,1,2],[col],[row],[x],[y]\n``:
-
-* client to server.
-
-* *operation*:
-
-    0. Blue Dot released.
-
-    1. Blue Dot pressed.
-
-    2. Blue Dot pressed position moved.
-
-* *col* and *row* specify the button's position in the matrix
-
-* *x* & *y* specify the position on the Blue Dot that was pressed, released, and/or moved:
-
-    - Positions are values between -1 and +1, with 0 being the centre and 1 being the radius of the Blue Dot.
-
-    - *x* is the horizontal position where +1 is far right.
-
-    - *y* is the vertical position where +1 is the top.
+.. image:: images/protocol_state.png
+   :alt: Diagram showing the protocol states
 
 *\\n* represents the ASCII new-line character (ASCII character 10).
 
@@ -127,8 +98,8 @@ The color of the button is changed to "red" the server sends to the client::
 
     5,#ff0000ff,0,0,1,0,0\n
 
-Protocol versions
------------------
+Versions
+--------
 
 * 0 - initial version
 * 1 - introduction of operation 3, 4
