@@ -84,8 +84,6 @@ Messages are sent when:
 .. image:: images/protocol_state.png
    :alt: Diagram showing the protocol states
 
-*\\n* represents the ASCII new-line character (ASCII character 10).
-
 Example
 -------
 
