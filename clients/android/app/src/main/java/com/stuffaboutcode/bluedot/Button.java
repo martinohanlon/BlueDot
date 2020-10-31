@@ -237,18 +237,21 @@ public class Button extends AppCompatActivity {
 
         // check length
         if (parameters.length == 7) {
+
+            // set the size
+            // cols
+            if (!parameters[5].equals(""))
+                matrix.setCols(Integer.parseInt(parameters[5]));
+
+            // rows
+            if (!parameters[6].equals(""))
+                matrix.setRows(Integer.parseInt(parameters[6]));
+
             // is it invisible
             if (parameters[4].equals("0")) {
                 matrix.setVisible(false);
             } else {
 
-                // cols
-                if (!parameters[5].equals(""))
-                    matrix.setCols(Integer.parseInt(parameters[5]));
-
-                // rows
-                if (!parameters[6].equals(""))
-                    matrix.setRows(Integer.parseInt(parameters[6]));
 
                 //color
                 if (!parameters[1].equals("")) {
