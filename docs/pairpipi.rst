@@ -65,10 +65,8 @@ On the second Raspberry Pi:
 
        pair 12:23:34:45:56:67
 
-5. Enter a PIN
+On both Raspberry Pi's:
 
-On the first Raspberry Pi again:
-
-1. Enter the same PIN when prompted
+1. Confirm the passcode.
 
 2. Type :command:`quit` and press Enter to return to the command line

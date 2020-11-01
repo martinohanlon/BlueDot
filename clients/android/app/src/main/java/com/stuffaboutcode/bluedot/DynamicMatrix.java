@@ -274,20 +274,28 @@ class DynamicMatrix extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                pointerIndex = event.getActionIndex();
-                x = event.getX(pointerIndex);
-                y = event.getY(pointerIndex);
+                int numPointers = event.getPointerCount();
 
-                // was it inside the matrix?
-                if (mMatrixBounds.contains(x, y)) {
-                    // was it inside the pressed cell?
-                    pointerId = event.getPointerId(pointerIndex);
-                    pointer = pointers.get(pointerId);
-                    if (pointer != null) {
-                        pointer.move(x, y);
-                        //pointer.getPressedCell().moved();
-                        if (listener != null)
-                            listener.onMove(pointer.getPressedCell(), pointerId, x, y);
+                for (pointerIndex = 0; pointerIndex < numPointers; pointerIndex++) {
+                    //pointerIndex = event.getActionIndex();
+                    x = event.getX(pointerIndex);
+                    y = event.getY(pointerIndex);
+
+                    // was it inside the matrix?
+                    if (mMatrixBounds.contains(x, y)) {
+                        // was it inside the pressed cell?
+                        pointerId = event.getPointerId(pointerIndex);
+                        pointer = pointers.get(pointerId);
+                        if (pointer != null) {
+                            // has this pointer moved?
+                            if (pointer.getX() != x && pointer.getY() != y) {
+                                pointer.move(x, y);
+                                // removed - no need to update the cell view when it is moved
+                                // pointer.getPressedCell().moved();
+                                if (listener != null)
+                                    listener.onMove(pointer.getPressedCell(), pointerId, x, y);
+                            }
+                        }
                     }
                 }
                 break;

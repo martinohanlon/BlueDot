@@ -221,41 +221,61 @@ class MockBlueDot(BlueDot):
         """
         self._server.mock_client_disconnected()
 
-    def mock_blue_dot_pressed(self, x, y):
+    def mock_blue_dot_pressed(self, col, row, x, y):
         """
         Simulates the Blue Dot being pressed.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was pressed
+            The x position where the button was pressed
 
         :param int y:
-            The y position where the mock Blue Dot was pressed
+            The y position where the button was pressed
         """
-        self._server.mock_client_sending_data("1,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("1,{},{},{},{}\n".format(col, row, x, y))
 
-    def mock_blue_dot_released(self, x, y):
+    def mock_blue_dot_released(self, col, row, x, y):
         """
         Simulates the Blue Dot being released.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was released
+            The x position where the button was released
 
         :param int y:
-            The y position where the mock Blue Dot was released
-        """
-        self._server.mock_client_sending_data("0,{},{}\n".format(x, y))
+            The y position where the button was released
 
-    def mock_blue_dot_moved(self, x, y):
+        """
+        self._server.mock_client_sending_data("0,{},{},{},{}\n".format(col, row, x, y))
+
+    def mock_blue_dot_moved(self, col, row, x, y):
         """
         Simulates the Blue Dot being moved.
 
+        :param int col:
+            The column position of the button
+
+        :param int row:
+            The row position of the button 
+
         :param int x:
-            The x position where the mock Blue Dot was moved too
+            The x position where the button was moved too
 
         :param int y:
-            The y position where the mock Blue Dot was moved too
+            The y position where the button was moved too
+
         """
-        self._server.mock_client_sending_data("2,{},{}\n".format(x, y))
+        self._server.mock_client_sending_data("2,{},{},{},{}\n".format(col, row, x, y))
 
     def launch_mock_app(self):
         """
@@ -273,16 +293,16 @@ class MockBlueDot(BlueDot):
         self._mock_app_thread.start()
 
     def _launch_mock_app(self):
-        #imported here, so pygame is only a pre-requisite for the mock app
+        # imported here, so pygame is only a pre-requisite for the mock app
         from .app import BlueDotClient, ButtonScreen
 
         class MockBlueDotClient(BlueDotClient):
             def _run(self):
-                button_screen = MockButtonScreen(self._screen, self._font, self._device, self._server, self._width, self._height)
+                button_screen = MockButtonScreen(self._screen, self._font, self._device, self._server, self._port, self._width, self._height)
                 button_screen.run()
 
         class MockButtonScreen(ButtonScreen):
             def _connect(self):
                 self.bt_client = MockBluetoothClient(self.server, self._data_received, device = self.device, auto_connect = True)
 
-        MockBlueDotClient("mock2", self._server, None, None, None)
+        MockBlueDotClient("mock2", self._server, self._port, None, None, None)
