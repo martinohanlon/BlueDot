@@ -7,7 +7,7 @@ Blue Dot allows you to control your Raspberry Pi projects wirelessly - it's a Bl
 
 |bluedotfeature|
 
-|bluedotapp| |bluedotjoypad| |bluedotpython|
+|bluedotapp| |bluedotmanybuttons| |bluedotpython|
 
 Created by `Martin O'Hanlon`_ (`@martinohanlon`_, `stuffaboutco.de`_).
 
@@ -82,7 +82,7 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
 .. _rotate it: http://bluedot.readthedocs.io/en/latest/recipes.html#rotating
 
 .. |bluedotapp| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotandroid_small.png
-   :height: 247 px
+   :height: 270 px
    :width: 144 px
    :scale: 100 %
    :alt: blue dot app
@@ -93,15 +93,15 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
    :scale: 100 %
    :alt: blue dot python app
 
-.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotjoypad_small.png
-   :height: 148 px
+.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotjoypad_smaller.png
+   :height: 147 px
    :width: 294 px
    :scale: 100 %
    :alt: blue dot app as a joy pad controller
 
-.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/layout_many_buttons_small.png
-   :height: 148 px
-   :width: 294 px
+.. |bluedotmanybuttons| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/layout_many_buttons_smaller.png
+   :height: 270 px
+   :width: 144 px
    :scale: 100 %
    :alt: blue dot app with 10 buttons in a 2x5 grid
 
