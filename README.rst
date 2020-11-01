@@ -7,7 +7,7 @@ Blue Dot allows you to control your Raspberry Pi projects wirelessly - it's a Bl
 
 |bluedotfeature|
 
-|bluedotapp| |bluedotpython|
+|bluedotapp| |bluedotjoypad| |bluedotpython|
 
 Created by `Martin O'Hanlon`_ (`@martinohanlon`_, `stuffaboutco.de`_).
 
@@ -98,6 +98,12 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
    :width: 294 px
    :scale: 100 %
    :alt: blue dot app as a joy pad controller
+
+.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/layout_many_buttons_small.png
+   :height: 148 px
+   :width: 294 px
+   :scale: 100 %
+   :alt: blue dot app with 10 buttons in a 2x5 grid
 
 .. |bluedotfeature| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/blue_dot_feature_small.png
    :height: 247 px

@@ -768,10 +768,13 @@ class BlueDot(Dot):
         bd.wait_for_press()
         print("The button was pressed")
 
-    If there are multiple buttons, each button can be referenced using its [col, row]::
+    Multiple buttons can be created, by changing the number of columns and rows. Each button can be referenced using its [col, row]::
 
-        bd = BlueDot()
-        first_button = bd[0,0]
+        bd = BlueDot(cols=2, rows=2)
+        bd[0,0].wait_for_press()
+        print("Top left button pressed")
+        bd[1,1].wait_for_press()
+        print("Bottom right button pressed")
 
     :param str device:
         The Bluetooth device the server should use, the default is "hci0", if
