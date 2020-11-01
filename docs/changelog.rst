@@ -171,7 +171,7 @@ Alpha - initial testing
 Android app
 -----------
 
-7 (2.0) - tbc
+7 (2.0) - 2020-11-01
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
  * implementation of multiple buttons in a matrix
