@@ -21,7 +21,7 @@ from .threads import WrapThread
 BLUETOOTH_TIMEOUT = 0.01
 
 
-class BluetoothAdapter(object):
+class BluetoothAdapter:
     """
     Represents and allows interaction with a Bluetooth Adapter.
 
@@ -138,7 +138,7 @@ class BluetoothAdapter(object):
         self.pairable = False
 
 
-class BluetoothServer(object):
+class BluetoothServer:
     """
     Creates a Bluetooth server which will allow connections and accept incoming
     RFCOMM serial data.
@@ -380,6 +380,7 @@ class BluetoothServer(object):
         :param str data:
             The data to be sent.
         """
+        # print(data)
         if self._client_connected:
             if self._encoding is not None:
                 data = data.encode(self._encoding)
@@ -395,7 +396,7 @@ class BluetoothServer(object):
         :param bytes data:
             The data to be sent.
         """
-        self._client_sock.send(data)
+        self._client_sock.sendall(data)
 
     def disconnect_client(self):
         """
@@ -703,7 +704,7 @@ class BluetoothClient():
         :param bytes data:
             The data to be sent.
         """
-        self._client_sock.send(data)
+        self._client_sock.sendall(data)
 
     def _read(self):
         #read until the client is stopped or the client disconnects

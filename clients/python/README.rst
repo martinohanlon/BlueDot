@@ -38,6 +38,10 @@ You can specify the server to connect to at startup by using the ``--server`` op
 
     bluedotapp --server myraspberrypi
 
+If you are using a different port you can specify it using the ``--port`` option::
+
+    bluedotapp --port 1
+
 The screen size of the Blue Dot app can be changed using the ``width`` and ``height`` options and specifying the number of pixels::
 
     bluedotapp --width 500 --height 500

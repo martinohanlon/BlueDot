@@ -25,7 +25,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 import setup as _setup
 
 # Mock out certain modules while building documentation
-class Mock(object):
+class Mock:
     __all__ = []
     def __init__(self, *args, **kw): pass
     def __call__(self, *args, **kw): return Mock()

@@ -10,8 +10,8 @@ please send a pull request :)
 Bluetooth
 ---------
 
-Communication over Bluetooth is made using a RFCOMM serial port profile, on
-port 1, using UUID "00001101-0000-1000-8000-00805f9b34fb".
+Communication over Bluetooth is made using a RFCOMM serial port profile using 
+UUID "00001101-0000-1000-8000-00805f9b34fb".
 
 Specification
 -------------
@@ -21,82 +21,104 @@ simple stream no acknowledgements or data is sent in response to commands.
 
 All messages between conform to the same format::
 
-    [operation],[param1],[param2],[*]\n
+    [operation],[params],[*]\n
+
+Messages are sent as utf-8 encoded strings.
+
+*\\n* represents the new-line character.
+
+The following operations are used to communicate between client and server.
+
++-------------------+-------------------------------------------------------------+-----------------+
+| Operations        | Message format                                              | Direction       |
++===================+=============================================================+=================+
+| Button released   | ``0,[col],[row],[x],[y]\n``                                 | Client > Server |
++-------------------+-------------------------------------------------------------+-----------------+
+| Button pressed    | ``1,[col],[row],[x],[y]\n``                                 | Client > Server |
++-------------------+-------------------------------------------------------------+-----------------+
+| Button moved      | ``2,[col],[row],[x],[y]\n``                                 | Client > Server |
++-------------------+-------------------------------------------------------------+-----------------+
+| Protocol check    | ``3,[protocol version],[client name]\n``                    | Client > Server |
++-------------------+-------------------------------------------------------------+-----------------+
+| Set config        | ``4,[color],[square],[border],[visible],[cols],[rows]\n``   | Server > Client |
++-------------------+-------------------------------------------------------------+-----------------+
+| Set button config | ``5,[color],[square],[border],[visible],[col],[row]\n``     | Server > Client |
++-------------------+-------------------------------------------------------------+-----------------+
+
+Messages are constructed using the following parameters.
+
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| Parameter         | Description                                                                                                 |
++===================+=============================================================================================================+
+| cols              | The number of columns in the matrix of buttons                                                              |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| rows              | The number of rows in the matrix of buttons                                                                 |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| col               | The column position of the button (0 is top)                                                                |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| row               | The row position of the button (0 is left)                                                                  |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| x                 | Horizontal position between -1 and +1, with 0 being the centre and +1 being the right radius of the button. |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| y                 | Vertical position between -1 and +1, with 0 being the centre and +1 being the top radius of the button.     |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| protocol version  | The version of protocol the client supports.                                                                |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| client name       | The name of the client e.g. "Android Blue Dot App"                                                          |
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| color             | A hex value in the format ``#rrggbbaa`` representing red, green, blue, alpha values.                        | 
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| square            | 0 or 1, 1 if the dot should be a square.                                                                    | 
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| border            | 0 or 1, 1 if the dot should have a border.                                                                  | 
++-------------------+-------------------------------------------------------------------------------------------------------------+
+| visible           | 0 or 1, 1 if the dot should be visible.                                                                     | 
++-------------------+-------------------------------------------------------------------------------------------------------------+
 
 Messages are sent when:
 
-Blue Dot is released, pressed or moved - ``[0,1,2],[x],[y]\n``:
+1. A client connects
+2. When the setup (or appearance) of a button changes
+3. A button is released, pressed or moved
 
-* client to server.
-
-* *operation*:
-
-    0. Blue Dot released.
-
-    1. Blue Dot pressed.
-
-    2. Blue Dot pressed position moved.
-
-* *x* & *y* specify the position on the Blue Dot that was pressed, released, and/or moved:
-
-    - Positions are values between -1 and +1, with 0 being the centre and 1 being the radius of the Blue Dot.
-
-    - *x* is the horizontal position where +1 is far right.
-
-    - *y* is the vertical position where +1 is the top.
-
-At connection the client sends a handshake - ``[3],[protocol version],[client name]``
-
-* client to server.
-
-* *operation* 3.
-
-* *protocol version* is sent and corresponds to the version of protocol the client supports.
-
-* *client name* is a string value used in exceptions to report what client has connected.
-
-When the setup (or appearance) of the Blue Dot changes - ``[4],[color],[square],[border],[visible]``:
-
-* server to client.
-
-* *operation* 4.
-
-* *color* is a hex value in the format #rrggbbaa representing red, green, blue, alpha values.
-
-* *square* is 0 or 1, 1 if the dot should be a square.
-
-* *border* is 0 or 1, 1 if the dot should have a border.
-
-* *visible* is 0 or 1, 1 if the dot should be visible.
-
-*\\n* represents the ASCII new-line character (ASCII character 10).
+.. image:: images/protocol_state.png
+   :alt: Diagram showing the protocol states
 
 Example
 -------
 
-When the Android client connects using protocol version 1::
+When the Android client connects using protocol version 2::
 
-    3,1,Android Blue Dot app\n
+    3,2,Android Blue Dot app\n
 
-If the blue dot is pressed at the top, the following message will be sent::
+The setup of the Blue Dot is sent to the client::
 
-    1,0.0,1.0\n
+    4,#0000ffff,0,0,1,1,2\n
 
-While the blue dot is pressed (held down), the user moves their finger to the
+If any buttons are different to the default, the configuration is sent::
+
+    5,#00ff0000,0,0,1,0,1\n
+
+If the "first" button at position [0,0] is pressed at the top, the following message will be sent::
+
+    1,0,0,0.0,1.0\n
+
+While the button is pressed (held down), the user moves their finger to the
 far right causing the following message to be sent::
 
-    2,1.0,0.0\n
+    2,0,0,1.0,0.0\n
 
 The button is then released, resulting in the following message::
 
-    0,1.0,0.0\n
+    0,0,0,1.0,0.0\n
 
-The color of the dot is changed to "red" the server sends to the client::
+The color of the button is changed to "red" the server sends to the client::
 
-    4,#ff0000ff,0,0,1\n
+    5,#ff0000ff,0,0,1,0,0\n
 
-Protocol versions
------------------
+Versions
+--------
 
 * 0 - initial version
 * 1 - introduction of operation 3, 4
+* 2 - Blue Dot version 2, introduction of col, row for multiple buttons and operation 5

@@ -5,7 +5,7 @@ In order to use Blue Dot you will need:
 
 * A Raspberry Pi
 
-  - with built-in Bluetooth (such as the Pi 3 or Pi Zero W)
+  - with built-in Bluetooth (such as the Raspberry Pi 3, 4 or Zero W)
   - or a USB Bluetooth dongle
 
 * An Android phone or 2nd Raspberry Pi for the remote
@@ -29,13 +29,7 @@ Python Library
 Open a terminal (click :menuselection:`Menu --> Accessories --> Terminal`),
 then enter::
 
-    sudo apt install python3-dbus
     sudo pip3 install bluedot
-
-If you want to use Blue Dot with Python 2 (there really is no need though!)::
-
-    sudo apt install python-dbus
-    sudo pip install bluedot
 
 To upgrade to the latest version::
 
@@ -50,23 +44,24 @@ In order to use Blue Dot you will need to pair the Raspberry Pi to the remote
 Code
 ----
 
-1. Start up Python 3 (select :menuselection:`Menu --> Programming --> Python
-   3`)
+1. Start up Python 3 (e.g. :menuselection:`Menu --> Programming --> Thonny Python
+   IDE`)
 
-2. Select :menuselection:`File --> New File` to create a new program
+2. Create a new program
 
 3. Enter the following code::
 
-       from bluedot import BlueDot
-       bd = BlueDot()
-       bd.wait_for_press()
-       print("You pressed the blue dot!")
+    from bluedot import BlueDot
+    bd = BlueDot()
+    bd.wait_for_press()
+    print("You pressed the blue dot!")
 
-4. Save your program (select :menuselection:`File --> Save As`) and save as
-   :file:`mydot.py`
+4. Save your program as :file:`mydot.py`
 
-5. Run the program, (select :menuselection:`Run --> Run Module` or press
-   :kbd:`F5`)
+5. Run the program::
+
+    Server started ##:##:##:##:##:##
+    Waiting for connection
 
 .. warning::
 
@@ -81,6 +76,11 @@ Start-up the `Blue Dot app`_ on your Android phone or run the
 :doc:`bluedotpythonapp` on your 2nd Raspberry Pi:
 
 1. Select your Raspberry Pi from the list
+
+.. note::
+
+    Your python program will need to be running and ``Waiting for connection`` 
+    before the BlueDot app will be able to connect to your Raspberry Pi.
 
 2. Press the Blue Dot
 

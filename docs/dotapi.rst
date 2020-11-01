@@ -8,6 +8,11 @@ BlueDot
 
 .. autoclass:: BlueDot
 
+BlueDotButton
+-------------
+
+.. autoclass:: BlueDotButton
+
 BlueDotPosition
 ---------------
 
