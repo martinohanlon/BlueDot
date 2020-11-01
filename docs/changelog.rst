@@ -6,7 +6,7 @@ Change log
 Bluedot Python library
 ----------------------
 
-2.0.0 - tbc
+2.0.0 - 2020-11-01
 ~~~~~~~~~~~~~~~~~~
 
  * implementation of multiple buttons in a matrix
