@@ -93,7 +93,7 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
    :scale: 100 %
    :alt: blue dot python app
 
-.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/bluedotjoypad_smaller.png
+.. |bluedotjoypad| image:: https://raw.githubusercontent.com/martinohanlon/BlueDot/master/docs/images/layout_joypad_smaller.png
    :height: 147 px
    :width: 294 px
    :scale: 100 %
