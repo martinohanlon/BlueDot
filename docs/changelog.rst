@@ -171,6 +171,12 @@ Alpha - initial testing
 Android app
 -----------
 
+8 (2.1) - 2020-12-28
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * removed "auto port discovery" after the introduction of pulseaudio to Raspberry Pi OS broke it
+ * introduced the "default port" setting as an alternative
+
 7 (2.0) - 2020-11-01
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

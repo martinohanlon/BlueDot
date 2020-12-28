@@ -400,6 +400,7 @@ public class BluetoothChatService {
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
+            // if the port is 0 use the service record to connect, otherwise connect direct
             try {
                 if (secure) {
                     if (port == 0) {

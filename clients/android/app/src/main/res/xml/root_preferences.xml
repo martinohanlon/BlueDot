@@ -22,11 +22,9 @@
 
         <SwitchPreferenceCompat
             android:defaultValue="true"
-            android:key="auto_port"
-            android:title="Auto port discovery"
             android:icon="@android:drawable/ic_menu_preferences"
-            />
-
+            android:key="default_port"
+            android:title="Use default port" />
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/ports"

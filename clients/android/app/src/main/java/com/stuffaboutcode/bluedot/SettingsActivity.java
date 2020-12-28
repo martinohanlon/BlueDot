@@ -63,14 +63,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         private void setupPreferences() {
-            Preference auto_port = findPreference("auto_port");
-            SwitchPreferenceCompat auto_port_switch = (SwitchPreferenceCompat)auto_port;
+            Preference default_port = findPreference("default_port");
+            SwitchPreferenceCompat default_port_switch = (SwitchPreferenceCompat)default_port;
             Preference port = findPreference("port");
             ListPreference port_list = (ListPreference) port;
-            if (auto_port_switch != null) {
+            if (default_port_switch != null) {
                 if (port_list != null) {
-                    // disable the port if the auto_port is enabled
-                    if (auto_port_switch.isChecked()) port.setVisible(false);
+                    // disable the port if the default_port is enabled
+                    if (default_port_switch.isChecked()) port.setVisible(false);
                     else port.setVisible(true);
                     // set the port summary
                     port.setSummary(port_list.getEntry());

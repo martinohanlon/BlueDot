@@ -49,10 +49,11 @@ public class Button extends AppCompatActivity {
 
         // Get the bluetooth port number from preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int port_number = 0;
-        // if auto port discovery is not used, get the port
-        if (!sharedPreferences.getBoolean("auto_port", true)) {
-            String port_value = sharedPreferences.getString("port", "auto");
+
+        int port_number = 1;
+        // if the default port is not used, get the port
+        if (!sharedPreferences.getBoolean("default_port", true)) {
+            String port_value = sharedPreferences.getString("port", "0");
             port_number = Integer.parseInt(port_value);
         }
 
