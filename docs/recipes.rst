@@ -346,17 +346,17 @@ Create multiple `BlueDot` servers using specific ports:
 Change the BlueDot app to use the specific port by:
 
 1. Opening settings from the menu
-2. Turning *Auto port discovery* off
+2. Turning *Use default port* off
 3. Selecting the specific *Bluetooth port*
 
 .. image:: images/bluedotandroid_settings.png
    :alt: Android blue dot app showing the settings option on the menu
 
-.. image:: images/bluedotandroid_settings_autoport.png
-   :alt: Android blue dot app showing the settings page and auto port discovery turned on
+.. image:: images/bluedotandroid_settings_defaultport.png
+   :alt: Android blue dot app showing the settings page and use default port turned on
 
 .. image:: images/bluedotandroid_settings_port.png
-   :alt: Android blue dot app showing the settings page, auto port discovery turned off and bluetooth port 1 selected
+   :alt: Android blue dot app showing the settings page, use default port turned off and bluetooth port 1 selected
 
 Bluetooth
 ---------

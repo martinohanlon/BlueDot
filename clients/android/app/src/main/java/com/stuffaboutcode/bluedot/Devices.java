@@ -109,10 +109,10 @@ public class Devices
 
     private void setConnectMsg(SharedPreferences sharedPreferences) {
         String message = "Connect";
-        Boolean auto_port = sharedPreferences.getBoolean("auto_port", true);
+        Boolean default_port = sharedPreferences.getBoolean("default_port", true);
         String port_value = sharedPreferences.getString("port", "1");
 
-        if (!auto_port) {
+        if (!default_port) {
             message = message + " on port " + port_value;
         }
 
