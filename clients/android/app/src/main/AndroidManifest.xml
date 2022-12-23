@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:exported="true"
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".Devices">
@@ -21,6 +23,7 @@
                 android:value="com.stuffaboutcode.bluedot.Devices" />
         </activity>
         <activity
+            android:exported="true"
             android:name=".Devices"
             android:configChanges="orientation|screenSize">
             <intent-filter>
