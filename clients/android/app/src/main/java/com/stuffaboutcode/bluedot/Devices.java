@@ -39,27 +39,19 @@ public class Devices
     public static String EXTRA_ADDRESS = "device_address";
     public static String EXTRA_NAME = "device_name";
 
-    private static String[] PERMISSIONS_STORAGE = {
+    private static String[] PERMISSIONS = {
+            Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_CONNECT,
-    };
-    private static String[] PERMISSIONS_LOCATION = {
-            Manifest.permission.BLUETOOTH_CONNECT,
+
     };
 
     private void checkPermissions(){
-        int permission1 = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int permission2 = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN);
-        if (permission1 != PackageManager.PERMISSION_GRANTED) {
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     this,
-                    PERMISSIONS_STORAGE,
-                    1
-            );
-        } else if (permission2 != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    this,
-                    PERMISSIONS_LOCATION,
+                    PERMISSIONS,
                     1
             );
         }
