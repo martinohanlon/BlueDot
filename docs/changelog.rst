@@ -171,6 +171,16 @@ Alpha - initial testing
 Android app
 -----------
 
+10 (2.2.1) - 2022-01-03
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * Android 12+ fixes
+
+9 (2.2) - 2022-12-23
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+ * Android SDK and API version uplift (due to google play store minimum requirements change)
+
 8 (2.1) - 2020-12-28
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,6 +1,8 @@
 package com.stuffaboutcode.bluedot;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,8 +18,11 @@ import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 import android.content.SharedPreferences;
+import android.Manifest;
 
 import java.util.Set;
 import java.util.ArrayList;
@@ -34,12 +39,32 @@ public class Devices
     public static String EXTRA_ADDRESS = "device_address";
     public static String EXTRA_NAME = "device_name";
 
+    private static String[] PERMISSIONS = {
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+
+    };
+
+    private void checkPermissions(){
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS,
+                    1
+            );
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices);
 
         devicelist = (ListView)findViewById(R.id.listView);
+
+        checkPermissions();
 
         //if the device has bluetooth
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
