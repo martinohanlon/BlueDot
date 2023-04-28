@@ -22,7 +22,7 @@ Getting Started
 
 1. Install the Python library::
 
-       sudo pip3 install bluedot
+       pip3 install bluedot --user
 
 2. Get the `Android Blue Dot app`_ or use the `Python Blue Dot app`_
 
