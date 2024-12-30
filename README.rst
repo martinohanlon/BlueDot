@@ -75,7 +75,7 @@ Production - under active development. Be sure to raise an `issue`_ if you have 
 .. _Python library: http://bluedot.readthedocs.io/en/latest/dotapi.html
 .. _examples: https://github.com/martinohanlon/BlueDot/tree/master/examples
 .. _Recipes: http://bluedot.readthedocs.io/en/latest/recipes.html
-.. _Android Blue Dot app: http://play.google.com/store/apps/details?id=com.stuffaboutcode.bluedot
+.. _Android Blue Dot app: ./clients/android
 .. _Python Blue Dot app: http://bluedot.readthedocs.io/en/latest/bluedotpythonapp.html
 .. _issue: https://github.com/martinohanlon/bluedot/issues
 .. _BlueDot controlled Robot: https://youtu.be/eW9oEPySF58
