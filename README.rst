@@ -1,6 +1,8 @@
 Blue Dot
 ========
 
+fork to get the android app working on newer phones
+
 |pypibadge| |docsbadge|
 
 .. raw:: html
