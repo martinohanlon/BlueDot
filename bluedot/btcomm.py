@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import socket
 import sys
 import errno
+import select
 
 from .utils import (
     register_spp,
@@ -19,7 +20,7 @@ from .utils import (
 from .threads import WrapThread
 
 BLUETOOTH_TIMEOUT = 0.01
-
+BLUETOOTH_SELECT_TIMEOUT = 1.0
 
 class BluetoothAdapter:
     """
@@ -217,6 +218,7 @@ class BluetoothServer:
         self._power_up_device = power_up_device
         self._when_client_connects = when_client_connects
         self._when_client_disconnects = when_client_disconnects
+        self._print_messages = False
 
         self._running = False
         self._client_connected = False
@@ -330,6 +332,18 @@ class BluetoothServer:
     def when_client_disconnects(self, value):
         self._when_client_disconnects = value
 
+    @property
+    def print_messages(self):
+        """
+        When set to ``True`` prints diagnostic messaes to stdout. This includes the start and stop to  
+        handle connections and any exceptions.
+        """
+        return self._print_messages
+
+    @print_messages.setter
+    def print_messages(self, value):
+        self._print_messages = value
+
     def start(self):
         """
         Starts the Bluetooth server if its not already running. The server needs to be started before
@@ -349,7 +363,7 @@ class BluetoothServer:
             #start Bluetooth server
             #open the Bluetooth socket
             self._server_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
-            self._server_sock.settimeout(BLUETOOTH_TIMEOUT)
+            self._server_sock.setblocking(False)
             try:
                 self._server_sock.bind((self.server_address, self.port))
             except (socket.error, OSError) as e:
@@ -404,13 +418,7 @@ class BluetoothServer:
         """
         if self._client_connected:    
             self._client_connected = False
-            
-            # call the callback
-            if self.when_client_disconnects:
-                WrapThread(target=self.when_client_disconnects).start()
-            
             return True
-        
         else:
             return False
 
@@ -424,68 +432,83 @@ class BluetoothServer:
             self._client_connected = False
             while not self._conn_thread.stopping.is_set():
                 try:
-                    # accept() will timeout after BLUETOOTH_TIMEOUT seconds
-                    self._client_sock, self._client_info = self._server_sock.accept()
-                    self._client_connected = True
-                    break
-                except socket.timeout as e:
-                    self._handle_bt_error(e)
+                    readable, _, exceptional = select.select([self._server_sock], [], [self._server_sock], BLUETOOTH_SELECT_TIMEOUT)  
+                    if self._server_sock in readable:
+                        self._client_sock, self._client_info = self._server_sock.accept()
+                        self._client_connected = True
+                        break
+                    elif self._server_sock in exceptional:
+                        self._print_message("Server socket is in an exceptional state")
+                except Exception as e:
+                    self._print_message("Waiting for connection failed with error: {}".format(e))
 
             #did a client connect?
             if self._client_connected:
-                #call the call back
-                if self.when_client_connects:
-                    WrapThread(target=self.when_client_connects).start()
-
-                #read data
-                self._read()
+                self._handle_connection()
 
         #server has been stopped
-        self._server_sock.close()
+        try:
+            self._server_sock.close()
+        except:
+            pass
         self._server_sock = None
         self._running = False
 
+    def _handle_connection(self):
+        self._print_message("Start handling connection")
+        try:
+            #call the call back
+            if self.when_client_connects:
+                WrapThread(target=self.when_client_connects).start()
+
+            #read data
+            self._read()
+
+            #call the callback
+            if self.when_client_disconnects:
+                WrapThread(target=self.when_client_disconnects).start()
+        finally:
+            self._print_message("Stop handling connection")
+
     def _read(self):
+        self._client_sock.setblocking(False)
         #read until the server is stopped or the client disconnects
         while self._client_connected:
             #read data from Bluetooth socket
             try:
-                data = self._client_sock.recv(1024, socket.MSG_DONTWAIT)
-            except IOError as e:
-                self._handle_bt_error(e)
-                data = b""
-            if data:
-                if self._data_received_callback:
-                    if self._encoding:
-                        data = data.decode(self._encoding)
-                    self.data_received_callback(data)
-            if self._conn_thread.stopping.wait(BLUETOOTH_TIMEOUT):
+                readable, _, exceptional = select.select([self._client_sock], [], [self._client_sock], BLUETOOTH_SELECT_TIMEOUT)  
+                if self._client_sock in readable:
+                    data = self._client_sock.recv(1024)
+                    if data:
+                        if self._data_received_callback:
+                            if self._encoding:
+                                data = data.decode(self._encoding)
+                            self.data_received_callback(data)
+                    else:
+                        #A readable socket without data available is from a client that has disconnected.
+                        self._print_message("No data available on socket signalled for read. Client has disconnected")
+                        break
+                elif self._client_sock in exceptional:
+                    #Exceptional condition on socket. Disconnect client
+                    self._print_message("Exceptional condition on cient socket signalled")
+                    break
+            except Exception as e:
+                self._print_message("Receiving data failed with error: {}".format(e))
                 break
 
         #close the client socket
-        self._client_sock.close()
+        try:
+            self._client_sock.close()
+        except:
+            pass
+
         self._client_sock = None
         self._client_info = None
         self._client_connected = False
 
-    def _handle_bt_error(self, bt_error):
-        assert isinstance(bt_error, IOError)
-        #'timed out' is caused by the wait_for_connection loop
-        if isinstance(bt_error, socket.timeout):
-            pass
-        #'resource unavailable' is when data cannot be read because there is nothing in the buffer
-        elif bt_error.errno == errno.EAGAIN:
-            pass
-        #'connection reset' is caused when the client disconnects
-        elif bt_error.errno == errno.ECONNRESET:
-            self.disconnect_client()
-        #'conection timeout' is caused when the server can no longer connect to read from the client
-        # (perhaps the client has gone out of range)
-        elif bt_error.errno == errno.ETIMEDOUT:
-            self.disconnect_client()
-        else:
-            raise bt_error
-
+    def _print_message(self, *args):
+        if self.print_messages:
+            print(*args)
 
 class BluetoothClient():
     """
